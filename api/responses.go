@@ -52,7 +52,7 @@ func RespCreated() interface{} {
 	return response
 }
 
-func RespHandlingError(c echo.Context, api_err ApiError, i interface{}) (err error) {
+func RespHandlingError(c echo.Context, api_err *ApiError, i interface{}) (err error) {
 	if api_err.Error != nil {
 		if api_err.Error == ErrorUnauthorized {
 			return c.JSON(http.StatusUnauthorized, api_err.Message)
