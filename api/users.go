@@ -1,7 +1,5 @@
 package api
 
-import "log"
-
 type (
 	User struct {
 		ID            string       `json:"uuid" bson:"_id,omitempty" validation:"required,uuid"`
@@ -49,7 +47,3 @@ type (
 		On string   `bson:"on" json:"on"`
 	}
 )
-
-func Dummy() {
-	log.Print("dummy")
-}
