@@ -40,7 +40,7 @@ type (
 		Created int64 `json:"created" bson:"created,omitempty"`
 	}
 	PasswordInfo struct {
-		Password string   `bson:"password" json:"-"`
+		Password []byte   `bson:"password" json:"-"`
 		Hasher   string   `bson:"hasher" json:"-"`
 		Modified Modified `bson:"modified" json:"-"`
 	}
