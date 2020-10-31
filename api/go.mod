@@ -1,4 +1,4 @@
-module github.com/Viva-con-Agua/vca-go/api
+module github.com/Viva-con-Agua/vcago/api
 
 go 1.15
 
