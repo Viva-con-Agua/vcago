@@ -15,6 +15,7 @@ import (
 type (
 	ApiError struct {
 		Error     error
+		Message   ResponseMessage
 		Model     string
 		Line      int
 		FileName  string
@@ -25,13 +26,19 @@ type (
 		Key   string
 		Error string
 	}
+	ResponseError struct {
+		Message string
+		Data    string
+		Key     string
+	}
 )
 
 var (
 	ErrorNotFound     = errors.New("NotFound")
 	ErrorConflict     = errors.New("Conflict")
 	ErrorPassword     = errors.New("Password")
-	ErrorUserNotFound = errors.New("user not found")
+	ErrorUnauthorized = errors.New("Unauthorized")
+	ErrorForbidden    = errors.New("Forbidden")
 )
 
 const (
@@ -59,7 +66,7 @@ func FormatRequestPrint(r *http.Request) string {
 	return strings.Join(request, "\n\t")
 
 }
-func GetError(err error) *ApiError {
+func GetError(err error, message ResponseMessage) *ApiError {
 	//new ApiError
 	api_error := new(ApiError)
 	//get infos about function
@@ -68,6 +75,7 @@ func GetError(err error) *ApiError {
 	f := runtime.FuncForPC(pc[0])
 	//fill ApiError
 	api_error.Error = err
+	api_error.Message = message
 	_, api_error.Line = f.FileLine(pc[0])
 	api_error.FileName = runtime.FuncForPC(pc[0]).Name()
 	return api_error
