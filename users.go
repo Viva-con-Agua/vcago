@@ -1,4 +1,4 @@
-package api
+package vcago
 
 type (
 	User struct {
