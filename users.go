@@ -8,7 +8,7 @@ type (
 		PrivacyPolicy Confirmed    `json:"privacy_policy" bson:"privacy_policy" validation:"required"`
 		Modified      Modified     `json:"modified" bson:"modified" validation:"required"`
 		PasswordInfo  PasswordInfo `json:"-" bson:"password"`
-		Profile       Profile      `json:"profile" bson:"-"`
+		Profile       Profile      `json:"profile" bson:"profile"`
 	}
 	Profile struct {
 		ID          string   `bson:"_id" json:"id" validate:"required"`
