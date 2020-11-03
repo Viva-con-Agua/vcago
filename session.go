@@ -5,12 +5,13 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/Viva-con-Agua/vcago/vmod"
 	"github.com/gorilla/sessions"
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 )
 
-func SessionSet(c echo.Context, user *User) {
+func SessionSet(c echo.Context, user *vmod.User) {
 	secure := true
 	if os.Getenv("COOKIE_SECURE") == "false" {
 		secure = false
@@ -40,7 +41,7 @@ func SessionSet(c echo.Context, user *User) {
 	sess.Save(c.Request(), c.Response())
 }
 
-func SessionUserGet(c echo.Context) (u *User, contains bool) {
+func SessionUserGet(c echo.Context) (u *vmod.User, contains bool) {
 	sess, _ := session.Get("session", c)
 	val := sess.Values["user"]
 	var user []byte
