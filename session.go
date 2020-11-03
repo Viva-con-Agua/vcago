@@ -11,7 +11,8 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func SessionSet(c echo.Context, user *vmod.User) {
+//InitSession initial a session for a vmod.User via Redis
+func InitSession(c echo.Context, user *vmod.User) {
 	secure := true
 	if os.Getenv("COOKIE_SECURE") == "false" {
 		secure = false
@@ -41,7 +42,8 @@ func SessionSet(c echo.Context, user *vmod.User) {
 	sess.Save(c.Request(), c.Response())
 }
 
-func SessionUserGet(c echo.Context) (u *vmod.User, contains bool) {
+//GetSessionUser return user for c or false if c has no user in Redis
+func GetSessionUser(c echo.Context) (u *vmod.User, contains bool) {
 	sess, _ := session.Get("session", c)
 	val := sess.Values["user"]
 	var user []byte
@@ -54,7 +56,8 @@ func SessionUserGet(c echo.Context) (u *vmod.User, contains bool) {
 
 }
 
-func SessionDelete(c echo.Context) {
+//DeleteSession remove sessin for context c from Redis.
+func DeleteSession(c echo.Context) {
 	sess, _ := session.Get("session", c)
 	sess.Options = &sessions.Options{
 		Path:     "/",

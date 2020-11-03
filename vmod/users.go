@@ -1,6 +1,7 @@
 package vmod
 
 type (
+	//User represents the root struct for user handling in viva-con-agua api.
 	User struct {
 		ID         string     `json:"user_id" bson:"_id" validation:"required,uuid"`
 		Email      string     `json:"email" bson:"email" validation:"required,email"`

@@ -12,6 +12,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+//RedisSession middleware initial redis store for session handling
 func RedisSession() echo.MiddlewareFunc {
 	client := redis.NewClient(&redis.Options{
 		Addr: os.Getenv("REDIS_HOST") + ":" + os.Getenv("REDIS_PORT"),

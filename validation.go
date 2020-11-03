@@ -4,10 +4,24 @@ import (
 	"net/http"
 
 	"github.com/Viva-con-Agua/vcago/verr"
+	"github.com/go-playground/validator"
 	"github.com/labstack/echo/v4"
 )
 
-func JsonErrorHandling(c echo.Context, i interface{}) (r_err *verr.ResponseError) {
+//Validator represents a Json validator
+type (
+	Validator struct {
+		Validator *validator.Validate
+	}
+)
+
+//Validate interface i
+func (cv *Validator) Validate(i interface{}) error {
+	return cv.Validator.Struct(i)
+}
+
+//JSONErrorHandler formats JsonError to ResponseError
+func JSONErrorHandler(c echo.Context, i interface{}) (rErr *verr.ResponseError) {
 	if err := c.Bind(i); err != nil {
 		return &verr.ResponseError{Code: http.StatusBadRequest, Response: err}
 	}
@@ -19,13 +33,14 @@ func JsonErrorHandling(c echo.Context, i interface{}) (r_err *verr.ResponseError
 
 }
 
-func ResponseErrorHandling(c echo.Context, api_err *verr.ApiError, i interface{}) (r_err *verr.ResponseError) {
-	if api_err.Error != nil {
-		if api_err.ResponseError.Code == http.StatusInternalServerError {
-			LogApiError(api_err, c, i)
-			return api_err.ResponseError
+//ResponseErrorHandler handles ApiError
+func ResponseErrorHandler(c echo.Context, apiErr *verr.ApiError, i interface{}) (rErr *verr.ResponseError) {
+	if apiErr.Error != nil {
+		if apiErr.ResponseError.Code == http.StatusInternalServerError {
+			LogAPIError(apiErr, c, i)
+			return apiErr.ResponseError
 		}
-		return api_err.ResponseError
+		return apiErr.ResponseError
 	}
 	return nil
 }

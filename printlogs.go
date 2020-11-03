@@ -22,7 +22,8 @@ const (
 	colorWhite  = "\033[37m"
 )
 
-func LogApiError(e *verr.ApiError, c echo.Context, i interface{}) {
+//LogApiError via log.Print
+func LogAPIError(e *verr.ApiError, c echo.Context, i interface{}) {
 	u := c.Get("user")
 	var u_string string
 	if user, ok := u.(*vmod.User); ok {

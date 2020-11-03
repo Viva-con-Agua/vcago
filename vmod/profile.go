@@ -1,6 +1,7 @@
 package vmod
 
 type (
+	//Profile represents user Profile
 	Profile struct {
 		ID          string   `bson:"profile_id" json:"profile_id" validate:"required"`
 		UserID      string   `bson:"user_id" json:"user_id" validate:"required"`
@@ -13,8 +14,9 @@ type (
 		Avatar      Avatar   `json:"avatar"`
 		Modified    Modified `json:"modified" bson:"modified" validation:"required"`
 	}
+	//Avatar represents the avatar for an User
 	Avatar struct {
-		Url     string `json:"url"`
+		URL     string `json:"url"`
 		Type    string `json:"type"`
 		Updated int64  `json:"updated" validate:"required"`
 		Created int64  `json:"created" validate:"required"`

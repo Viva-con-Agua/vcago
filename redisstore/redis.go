@@ -48,7 +48,6 @@ func NewRedisStore(client redis.UniversalClient) (*RedisStore, error) {
 		keyGen:     generateRandomKey,
 		serializer: GobSerializer{},
 	}
-
 	return rs, rs.client.Ping(ctx).Err()
 }
 
