@@ -1,7 +1,7 @@
 # vca-go
 Package for handling vca-api
 
-## vca-go package
+## vcago package
 ```
 CONSTANTS
 
