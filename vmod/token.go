@@ -20,11 +20,11 @@ type (
 	}
 )
 
-//InitToken initial a Token with a 32bit random string Base64 encoded for Web handling. Use cTime for current time and set expired time max 1 month.
-func InitToken(tCase string, cTime int64, expired time.Duration, modelID string) (token *Token, apiErr *verr.ApiError) {
+//NewToken initial a Token with a 32bit random string Base64 encoded for Web handling. Use cTime for current time and set expired time max 1 month.
+func NewToken(tCase string, cTime int64, expired time.Duration, modelID string) (token *Token, apiErr *verr.APIError) {
 	code, err := vutils.RandomBase64(32)
 	if err != nil {
-		return nil, verr.GetApiError(err, &verr.RespErrorInternalServer)
+		return nil, verr.NewAPIError(err).InternalServerError()
 	}
 	token = new(Token)
 	token.ID = uuid.New().String()

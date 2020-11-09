@@ -1,8 +1,12 @@
 package vmod
 
+import "github.com/google/uuid"
+
 type (
 	//Policies represents the root struct for policy handling.
 	Policies struct {
+		ID           string       `bson:"_id" json:"id" validate:"required"`
+		UserID       string       `bson:"user_id" json:"user_id" validate:"required"`
 		Status       bool         `json:"status" bson:"status"`
 		PoliciesData PoliciesData `json:"data" bson:"data"`
 	}
@@ -16,11 +20,16 @@ type (
 )
 
 //InitPolicies initial a Policies struct
-func InitPolicies(p string, s bool, m int64) *Policies {
-	policies := make(PoliciesData)
-	policy := Policy{Status: s, Modified: m}
-	policies[p] = policy
-	return &Policies{Status: s, PoliciesData: policies}
+func InitPolicies(userID string, p string, m int64) *Policies {
+	policiesData := make(PoliciesData)
+	policy := Policy{Status: false, Modified: m}
+	policiesData[p] = policy
+	return &Policies{
+		ID:           uuid.New().String(),
+		UserID:       userID,
+		Status:       false,
+		PoliciesData: policiesData,
+	}
 }
 
 //Add Policy to Policies

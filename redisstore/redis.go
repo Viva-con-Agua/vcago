@@ -168,9 +168,10 @@ type SessionSerializer interface {
 	Deserialize(b []byte, s *sessions.Session) error
 }
 
-// Gob serializer
+// GobSerializer struct
 type GobSerializer struct{}
 
+//Serialize serializes struct
 func (gs GobSerializer) Serialize(s *sessions.Session) ([]byte, error) {
 	buf := new(bytes.Buffer)
 	enc := gob.NewEncoder(buf)
@@ -181,6 +182,7 @@ func (gs GobSerializer) Serialize(s *sessions.Session) ([]byte, error) {
 	return nil, err
 }
 
+//Deserialize deserializes struct
 func (gs GobSerializer) Deserialize(d []byte, s *sessions.Session) error {
 	dec := gob.NewDecoder(bytes.NewBuffer(d))
 	return dec.Decode(&s.Values)

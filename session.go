@@ -3,11 +3,13 @@ package vcago
 import (
 	"encoding/gob"
 	"encoding/json"
+	"errors"
 	"log"
 	"net/http"
 	"os"
 
 	"github.com/Viva-con-Agua/vcago/redisstore"
+	"github.com/Viva-con-Agua/vcago/verr"
 	"github.com/Viva-con-Agua/vcago/vmod"
 	"github.com/go-redis/redis/v8"
 	"github.com/gorilla/sessions"
@@ -31,10 +33,10 @@ func SessionRedisStore() echo.MiddlewareFunc {
 	return session.Middleware(redis)
 }
 
-//SessionInit creates a cookie using the `COOKIE_SECURE` and `SAME_SITE` variables from the os environment.
+//NewSession creates a cookie using the `COOKIE_SECURE` and `SAME_SITE` variables from the os environment.
 //For that use .env file in your project. The cookie is always be httpOnly and have a durancy of 7 days.
 //The `user` will be stored in that session as []byte generated with json.Marshal(user).
-func SessionInit(c echo.Context, user *vmod.User) {
+func NewSession(c echo.Context, user *vmod.User) {
 	secure := true
 	if os.Getenv("COOKIE_SECURE") == "false" {
 		secure = false
@@ -64,22 +66,24 @@ func SessionInit(c echo.Context, user *vmod.User) {
 	sess.Save(c.Request(), c.Response())
 }
 
-//SessionGetUser selects `u` from the session storage by using `c`. In case there is no user `contains` is set false.
-func SessionGetUser(c echo.Context) (u *vmod.User, contains bool) {
+//GetSession selects u from the session storage by using c. In case there is no user `contains` is set false.
+func GetSession(c echo.Context) (apiErr *verr.APIError) {
 	sess, _ := session.Get("session", c)
 	val := sess.Values["user"]
 	var user []byte
-	user, contains = val.([]byte)
+	user, contains := val.([]byte)
 	if contains == false {
-		return nil, contains
+		return verr.NewAPIError(errors.New("no user found in session storage")).Unauthorized()
 	}
+	u := new(vmod.User)
 	json.Unmarshal(user, &u)
-	return u, true
+	c.Set("user", u)
+	return nil
 
 }
 
-//SessionDelete removes session from storage using `c`.
-func SessionDelete(c echo.Context) {
+//DeleteSession removes session from storage using `c`.
+func DeleteSession(c echo.Context) {
 	sess, _ := session.Get("session", c)
 	sess.Options = &sessions.Options{
 		Path:     "/",
