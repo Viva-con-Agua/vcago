@@ -11,8 +11,8 @@ type (
 	}
 )
 
-//InitPermission map role to []Access(modelID, created) and initial Permission.
-func InitPermission(role string, modelID string, created int64) *Permission {
+//NewPermission map role to []Access(modelID, created) and initial Permission.
+func NewPermission(role string, modelID string, created int64) *Permission {
 	access := new(Access)
 	permission := make(Permission)
 	access.ModelID = modelID

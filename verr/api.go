@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"runtime"
 	"strings"
 
@@ -29,6 +30,7 @@ type (
 		Error error
 		Line  int
 		File  string
+		Level bool
 	}
 	//ResponseError represents the json body of an error response.
 	ResponseError struct {
@@ -58,27 +60,32 @@ func NewAPIError(err error) *APIError {
 //Conflict extend APIError for http status 409 Conflict and adds a message m that can response to client.
 func (a *APIError) Conflict(m string) *APIError {
 	a.Code = http.StatusConflict
-	a.Body = ResponseError{
-		Message: m,
-	}
+	a.Body = ResponseError{Message: m}
+	a.Level = false
+	return a
+}
+
+//Forbidden extend APIError for http status  Forbidden and adds a message m that can response to client.
+func (a *APIError) Forbidden(m string) *APIError {
+	a.Code = http.StatusForbidden
+	a.Body = ResponseError{Message: m}
+	a.Level = false
 	return a
 }
 
 //Unauthorized extend APIError for http status 401 Unauthorized and adds a message m that can response to client.
 func (a *APIError) Unauthorized() *APIError {
 	a.Code = http.StatusUnauthorized
-	a.Body = ResponseError{
-		Message: "unauthorized",
-	}
+	a.Body = ResponseError{Message: "unauthorized"}
+	a.Level = false
 	return a
 }
 
 //NotFound extend APIError for http status 404 Not Found and adds a message m that can response to client.
 func (a *APIError) NotFound(m string) *APIError {
 	a.Code = http.StatusNotFound
-	a.Body = ResponseError{
-		Message: m,
-	}
+	a.Body = ResponseError{Message: m}
+	a.Level = false
 	return a
 }
 
@@ -86,26 +93,29 @@ func (a *APIError) NotFound(m string) *APIError {
 func (a *APIError) InternalServerError() *APIError {
 	a.Code = http.StatusInternalServerError
 	a.Body = ResponseError{Message: "internal_server_error"}
+	a.Level = true
 	return a
 }
 
 //Log print APIError to server logs
 func (a *APIError) Log(c echo.Context) {
-	u := c.Get("user")
-	user, _ := json.MarshalIndent(u, "", "\t")
-	log.Print(
-		"\n",
-		string(colorRed), "Error Message: \n",
-		"\t", string(colorWhite), a.Error.Error(), "\n",
-		"\tFile: [", a.File, "]\n",
-		"\tLine: [", a.Line, "]\n",
-		string(colorYellow), "Session_User: "+string(colorWhite)+"\n", u, string(user), "\n",
-		string(colorYellow), "Request_Header: ", string(colorWhite), "\n\t",
-		formatRequestPrint(c.Request()), "\n",
-		string(colorYellow), "Request_Body: ", string(colorWhite), "\n",
+	if a.Level == true || os.Getenv("LOG_LEVEL") == "debug" {
+		u := c.Get("user")
+		user, _ := json.MarshalIndent(u, "", "\t")
+		log.Print(
+			"\n",
+			string(colorRed), "Error Message: \n",
+			"\t", string(colorWhite), a.Error.Error(), "\n",
+			"\tFile: [", a.File, "]\n",
+			"\tLine: [", a.Line, "]\n",
+			string(colorYellow), "Session_User: "+string(colorWhite)+"\n", u, string(user), "\n",
+			string(colorYellow), "Request_Header: ", string(colorWhite), "\n\t",
+			formatRequestPrint(c.Request()), "\n",
+			string(colorYellow), "Request_Body: ", string(colorWhite), "\n",
 
-		string(colorBlue), "### END ERROR", string(colorWhite), "\n\n",
-	)
+			string(colorBlue), "### END ERROR", string(colorWhite), "\n\n",
+		)
+	}
 }
 
 func formatRequestPrint(r *http.Request) string {

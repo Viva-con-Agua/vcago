@@ -52,7 +52,6 @@ func NewSession(c echo.Context, user *vmod.User) {
 		sameSite = http.SameSiteStrictMode
 	}
 	sess, _ := session.Get("session", c)
-
 	sess.Options = &sessions.Options{
 		Path:     "/",
 		MaxAge:   86400 * 7,
@@ -66,7 +65,7 @@ func NewSession(c echo.Context, user *vmod.User) {
 	sess.Save(c.Request(), c.Response())
 }
 
-//GetSession selects u from the session storage by using c. In case there is no user `contains` is set false.
+//GetSession selects u from the session storage by using c. In case there is no user contains is set false.
 func GetSession(c echo.Context) (apiErr *verr.APIError) {
 	sess, _ := session.Get("session", c)
 	val := sess.Values["user"]
@@ -82,7 +81,7 @@ func GetSession(c echo.Context) (apiErr *verr.APIError) {
 
 }
 
-//DeleteSession removes session from storage using `c`.
+//DeleteSession removes session from storage using c.
 func DeleteSession(c echo.Context) {
 	sess, _ := session.Get("session", c)
 	sess.Options = &sessions.Options{
@@ -93,4 +92,16 @@ func DeleteSession(c echo.Context) {
 	sess.Values["valid"] = nil
 	sess.Values["user"] = nil
 	sess.Save(c.Request(), c.Response())
+}
+
+//SessionAuth go to next if the request has a session else return 401.
+func SessionAuth(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		apiErr := GetSession(c)
+		if apiErr != nil {
+			apiErr.Log(c)
+			return echo.NewHTTPError(http.StatusUnauthorized, "")
+		}
+		return next(c)
+	}
 }
