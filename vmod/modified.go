@@ -9,8 +9,8 @@ type (
 	}
 )
 
-// InitModified initial Modified model, cTime is the current time Unix format.
-func InitModified(cTime int64) *Modified {
+// NewModified initial Modified model, cTime is the current time Unix format.
+func NewModified(cTime int64) *Modified {
 	m := Modified{Updated: cTime, Created: cTime}
 	return &m
 }

@@ -47,6 +47,7 @@ func (pol *Policies) Update(p string, m int64, s bool) *Policies {
 	poll := pol.PoliciesData[p]
 	poll.Status = s
 	poll.Modified = m
+	pol.PoliciesData[p] = poll
 	return pol
 }
 

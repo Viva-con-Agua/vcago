@@ -3,7 +3,7 @@ package vmod
 type (
 	//Profile represents user Profile
 	Profile struct {
-		ID          string   `bson:"profile_id" json:"profile_id" validate:"required"`
+		ID          string   `bson:"_id" json:"profile_id" validate:"required"`
 		UserID      string   `bson:"user_id" json:"user_id" validate:"required"`
 		FirstName   string   `json:"first_name" validate:"required"`
 		LastName    string   `json:"last_name" validate:"required"`
