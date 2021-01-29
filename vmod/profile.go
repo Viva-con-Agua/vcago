@@ -7,8 +7,8 @@ type (
 		UserID      string   `bson:"user_id" json:"user_id" validate:"required"`
 		FirstName   string   `json:"first_name" validate:"required"`
 		LastName    string   `json:"last_name" validate:"required"`
-		FullName    string   `json:"full_name" validate:"required"`
-		DisplayName string   `json:"display_name" validate:"required"`
+		FullName    string   `json:"full_name"`
+		DisplayName string   `json:"display_name"`
 		Gender      string   `json:"gender"`
 		Country     string   `bson:"country" json:"country"`
 		Avatar      Avatar   `json:"avatar"`

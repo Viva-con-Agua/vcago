@@ -1,6 +1,7 @@
 package verr
 
 import (
+	"log"
 	"net/http"
 	"strings"
 
@@ -32,6 +33,7 @@ func JSONErrorResponse(e error) (jList []JSONError) {
 	errorList := strings.Split(e.Error(), "\n")
 	for _, val := range errorList {
 		eList := strings.Split(val, "Key: ")
+		log.Print(eList)
 		eList = strings.Split(eList[1], " Error:")
 		jsonErr.Key = eList[0]
 		jsonErr.Error = eList[1]
