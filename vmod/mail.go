@@ -1,18 +1,17 @@
 package vmod
 
 type (
-	//Mail represents the email backend model
-	Mail struct {
-		From         string      `json:"from" bson:"from"`
+	//MailBase base model for request mail-backend via nats
+	MailBase struct {
 		To           string      `json:"to" bson:"to"`
-		TemplateData interface{} `json:"template_data" bson:"template_data"`
-		TemplateID   string      `json:"template_id" bson:"template_id"`
+		Case string `json:"case"`
+		Scope string `json:"scope"`
 	}
-
-	//MailTemplate represents a template model using for database storage.
-	MailTemplate struct {
-		ID       string `bson:"_id" json:"id" validate:"required"`
-		Name     string `bson:"name" json:"name" validate:"required"`
-		Template string `bson:"template" json:"template" `
+	//MailCode used for request mail-backend via nats
+	MailCode struct {
+		Name string `json:"name"`
+		Code string `json:"code"`
+		*MailBase
 	}
 )
+
