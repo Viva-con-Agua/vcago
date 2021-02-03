@@ -117,6 +117,19 @@ func (a *APIError) Log(c echo.Context) {
 		)
 	}
 }
+//LogNats print APIError to server logs
+func (a *APIError) LogNats() {
+	if a.Level == true || os.Getenv("LOG_LEVEL") == "debug" {
+		log.Print(
+			"\n",
+			string(colorRed), "Error Message: \n",
+			"\t", string(colorWhite), a.Error.Error(), "\n",
+			"\tFile: [", a.File, "]\n",
+			"\tLine: [", a.Line, "]\n",
+			string(colorBlue), "### END ERROR", string(colorWhite), "\n\n",
+		)
+	}
+}
 
 func formatRequestPrint(r *http.Request) string {
 	// Create return string

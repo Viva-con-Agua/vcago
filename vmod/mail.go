@@ -4,14 +4,18 @@ type (
 	//MailBase base model for request mail-backend via nats
 	MailBase struct {
 		To           string      `json:"to" bson:"to"`
-		Case string `json:"case"`
-		Scope string `json:"scope"`
+		JobCase string `json:"job_case"`
+		JobScope string `json:"job_scope"`
 	}
 	//MailCode used for request mail-backend via nats
 	MailCode struct {
-		Name string `json:"name"`
+		MailBase
+		UserName string `json:"user_name"`
 		Code string `json:"code"`
-		*MailBase
 	}
 )
 
+//NewMailCode initial new MailCode from given variables.
+func NewMailCode(to string, jobCase string, jobScope string, userName string, code string) MailCode{
+	return MailCode{MailBase: MailBase{To: to, JobCase: jobCase, JobScope: jobScope}, UserName: userName, Code: code}
+}

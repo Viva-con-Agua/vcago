@@ -3,13 +3,12 @@ package vmod
 import (
 	"time"
 
-	"github.com/Viva-con-Agua/vcago/verr"
 	"github.com/Viva-con-Agua/vcago/vutils"
 	"github.com/google/uuid"
 )
 
 type (
-	//Token represents token for handlings signup, password reset and ...
+	//LinkToken is used for handling link with token
 	LinkToken struct {
 		ID      string `bson:"_id" json:"token_id"`
 		Code    string `bson:"code" json:"code"`
@@ -22,10 +21,10 @@ type (
 )
 
 //NewLinkToken initial a Token with a 32bit random string Base64 encoded for Web handling. Set expired time max 1 month.
-func NewLinkToken(tCase string, expired time.Duration, modelID string, scope string) (*LinkToken, *verr.APIError) {
+func NewLinkToken(tCase string, expired time.Duration, modelID string, scope string) (*LinkToken, error) {
 	code, err := vutils.RandomBase64(32)
 	if err != nil {
-		return nil, verr.NewAPIError(err).InternalServerError()
+		return nil, err
 	}
 	return &LinkToken{
 		ID:      uuid.New().String(),
