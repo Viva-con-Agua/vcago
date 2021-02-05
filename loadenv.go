@@ -16,9 +16,8 @@ const (
 	colorWhite  = "\033[37m"
 	notSet = "is not set in the .env file."
 )
-
+//LoadEnv used for loading environment variables. 
 type LoadEnv []bool
-
 
 
 func envLogError(key string, e string, lvl string, dVal interface{}) bool{
@@ -77,7 +76,21 @@ func (l LoadEnv)GetEnvStringList(key string, lvl string, dVal []string)([]string
 
 	}
     return valList, append(l, true)
+}
 
+//GetEnvBool load a key from environment variables as bool.
+func (l LoadEnv) GetEnvBool(key string, lvl string, dVal bool)(bool, LoadEnv) {
+	val, ok := os.LookupEnv(key)
+	if !ok {
+		return dVal, append(l, envLogError(key, notSet, lvl, dVal))
+	}
+    if val == "true" {
+    	return true, append(l, true)
+	}
+	if val == "false" {
+		return false, append(l, false)
+	}
+    return dVal, append(l, envLogError(key, notSet, lvl, dVal))
 }
 
 //Validate check if LoadEnv is valid and log.Fatal if on entry is false.

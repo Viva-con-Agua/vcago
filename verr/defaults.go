@@ -1,8 +1,10 @@
 package verr
 
 import (
-	"github.com/labstack/echo/v4"
+	"context"
 	"net/http"
+
+	"github.com/labstack/echo/v4"
 )
 type BaseError struct {
 	Message string `json:"message"`
@@ -31,12 +33,12 @@ const (
 	SuccessWithColor = string(ColorGreen) + "Success: " + string(ColorWhite)
 )
 
-//InternalServerError is an error that handles internal server error response
+//InternalServerErrorMsg is an error that handles internal server error response
 var InternalServerErrorMsg = echo.NewHTTPError(http.StatusInternalServerError, BaseError{Message: "internal_server_error"})
 
 //InternalServerError with logs 
-func InternalServerError(c echo.Context, err error) error {
-    LogError(c, err, "prod")
+func InternalServerError(ctx context.Context, err error) error {
+    LogError(ctx, err, "prod")
     return InternalServerErrorMsg
 } 
 

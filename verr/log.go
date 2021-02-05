@@ -1,13 +1,12 @@
 package verr
 
 import (
-	"log"
+	"context"
 	"fmt"
+	"log"
 	"net/http"
 	"runtime"
 	"strings"
-
-	"github.com/labstack/echo/v4"
 )
 
 //LogLevel can be set by SetLogLevel. Default value is debug
@@ -20,21 +19,21 @@ func SetLogLevel(l string) {
 
 
 //LogError prints error in service logs
-func LogError(c echo.Context, err error, lvl string) {
+func LogError(ctx context.Context, err error, lvl string) {
 	if LogLevel == "debug" {
-		printError(c, err)
+		printError(ctx, err)
 	} else if LogLevel == "prod"{
 		if lvl == "prod" {
-			printError(c, err)
+			printError(ctx, err)
 		}
 	}
 }
 
 //printError log error to console.
-func printError(c echo.Context, err error) {
+func printError(ctx context.Context, err error) {
 	//get infos about function
 	pc := make([]uintptr, 10)
-	runtime.Callers(3, pc)
+	runtime.Callers(4, pc)
 	function := runtime.FuncForPC(pc[0])
 
 	//fill ApiError
@@ -48,7 +47,7 @@ func printError(c echo.Context, err error) {
 			"\tLine: [", line, "]\n",
 			//string(colorYellow), "Session_User: "+string(colorWhite)+"\n", u, string(user), "\n",
 			string(ColorYellow), "Request_Header: ", string(ColorWhite), "\n\t",
-			formatRequest(c.Request()), "\n",
+			//formatRequest(c.Request()), "\n",
 			//string(colorYellow), "Request_Body: ", string(colorWhite), "\n",
 
 			string(ColorBlue), "### END ERROR", string(ColorWhite), "\n\n",

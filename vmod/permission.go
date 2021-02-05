@@ -91,7 +91,7 @@ func (p *Permission) Validate(pValidate *PValidate) bool {
 //Restricted middleware function for handling Access
 func (pVal *PValidate) Restricted(next echo.HandlerFunc) echo.HandlerFunc {
 	return func (c echo.Context) error {
-		user := c.Get("user").(*jwt.Token)
+		user := c.Get("token").(*jwt.Token)
 		claims := user.Claims.(*AccessToken)
 		if ok := claims.User.Permission.Validate(pVal); ok {
 			return next(c)

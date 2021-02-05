@@ -3,12 +3,11 @@ package verr
 import (
 	"errors"
 	"net/http"
-	"runtime"
 	"strings"
 
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/gommon/log"
 	"go.mongodb.org/mongo-driver/mongo"
+	"golang.org/x/net/context"
 )
 
 type (
@@ -26,32 +25,49 @@ type (
 )
 
 //MongoInsertOneError handles error response and logging for collection.insertOne() function.
-func MongoInsertOneError(c echo.Context, err error, coll string) error {
+func MongoInsertOneError(ctx context.Context, err error, coll string) error {
     if strings.Contains(err.Error(), "duplicate key error"){
-        LogError(c, err, "debug")
+        LogError(ctx, err, "debug")
         return echo.NewHTTPError(http.StatusConflict, handleDuplicateKey(err))
     }
-    LogError(c, err, "prod")
+    LogError(ctx, err, "prod")
     return InternalServerErrorMsg
 } 
 //MongoFindOneError handles error response and logging for collection.findOne() function.
-func MongoFindOneError(c echo.Context, err error, coll string) error {
+func MongoFindOneError(ctx context.Context, err error, coll string) error {
     if err == mongo.ErrNoDocuments {
-        LogError(c, err, "debug")
+        LogError(ctx, err, "debug")
         return echo.NewHTTPError(http.StatusNotFound, MongoBase{Message: "not_found", Coll: coll})
     }
-    LogError(c, err, "prod")
+    LogError(ctx, err, "prod")
     return InternalServerErrorMsg
 }
-
-
-// Kann echt weg jo   | 
-//                   \/
-
-func NewMongoCollError(err error, coll string) error {
-    return errors.New(err.Error() + " collection: " + coll)
+//MongoUpdateOneError handles error response and logging for collection.deleteOne() function.
+func MongoUpdateOneError(ctx context.Context, err error, coll string, result *mongo.UpdateResult) error {
+    if err != nil {
+        LogError(ctx, err, "prod")
+        return InternalServerErrorMsg
+    }
+    if result.MatchedCount == 0 {
+        LogError(ctx, errors.New("no updated document"), "debug")
+        return echo.NewHTTPError(http.StatusNotFound, MongoBase{Message: "not_found", Coll: coll})
+    }
+    return nil
 }
 
+//MongoDeleteOneError handles error response and logging for collection.deleteOne() function.
+func MongoDeleteOneError(ctx context.Context, err error, coll string, result *mongo.DeleteResult) error {
+    if err != nil {
+        LogError(ctx, err, "prod")
+        return InternalServerErrorMsg
+    }
+    if result.DeletedCount == 0 {
+        LogError(ctx, errors.New("no deleted document"), "debug")
+        return echo.NewHTTPError(http.StatusNotFound, MongoBase{Message: "not_found", Coll: coll})
+    }
+    return nil
+}
+//handleDublicateKey parse an mongo duplicate key error and return MongoConflict
 func handleDuplicateKey(err error) *MongoConflict {
 		cut1 := strings.Split(err.Error(), "collection: ")
 		cut2 := strings.Split(cut1[1], " index: ") 
@@ -64,63 +80,3 @@ func handleDuplicateKey(err error) *MongoConflict {
             Value: value[0],
         }
 }
-
-func handleNoDocument(err error) *MongoBase {
-    cut := strings.Split(err.Error(), "collection:")
-    return &MongoBase{
-        Message: cut[0],
-        Coll: cut[1],
-    }
-}
-
-func logError(c echo.Context, errString string, coll string) {
-	//get infos about function
-	pc := make([]uintptr, 10)
-	runtime.Callers(2, pc)
-	function := runtime.FuncForPC(pc[0])
-
-	//fill ApiError
-	_, line := function.FileLine(pc[0])
-	file := runtime.FuncForPC(pc[0]).Name()   //get infos about function
-	log.Print(
-			"\n",
-			string(colorRed), "Error Message: \n",
-			"\t", string(colorWhite), errString, "\n",
-			"\tFile: [", file, "]\n",
-			"\tLine: [", line, "]\n",
-			//string(colorYellow), "Session_User: "+string(colorWhite)+"\n", u, string(user), "\n",
-			//string(colorYellow), "Request_Header: ", string(colorWhite), "\n\t",
-			//formatRequestPrint(c.Request()), "\n",
-		//	string(colorYellow), "Request_Body: ", string(colorWhite), "\n",
-
-			string(colorBlue), "### END ERROR", string(colorWhite), "\n\n",
-		)
-
-}
-
-func MongoHandleError(err error) *APIError{
-	//get infos about function
-	pc := make([]uintptr, 10)
-	runtime.Callers(3, pc)
-	f := runtime.FuncForPC(pc[0])
-    _, line := f.FileLine(pc[0])
-    apiErr := &APIError{
-        Error: err,
-        Line: line,
-        File: runtime.FuncForPC(pc[0]).Name(),
-    }
-    if strings.Contains(err.Error(), "duplicate key error"){
-        apiErr.Code = http.StatusConflict
-        apiErr.Body = handleDuplicateKey(err)
-        apiErr.Level = false
-        return apiErr
-    } else if strings.Contains(err.Error(), mongo.ErrNoDocuments.Error()) {
-        apiErr.Code = http.StatusNotFound
-        apiErr.Body = handleNoDocument(err)
-        apiErr.Level = false
-        return apiErr
-    }
-    return apiErr.InternalServerError()
-}
-
-
