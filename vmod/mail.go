@@ -6,6 +6,7 @@ type (
 		To           string      `json:"to" bson:"to"`
 		JobCase string `json:"job_case"`
 		JobScope string `json:"job_scope"`
+		Country string `json:"country"`
 	}
 	//MailCode used for request mail-backend via nats
 	MailCode struct {

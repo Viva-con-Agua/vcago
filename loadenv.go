@@ -71,7 +71,7 @@ func (l LoadEnv)GetEnvStringList(key string, lvl string, dVal []string)([]string
 		return dVal, append(l, envLogError(key, notSet, lvl, dVal))
 	}
     valList := strings.Split(val, ",")
-	if valList != nil {
+	if valList == nil {
 		return dVal, append(l, envLogError(key, notSet, lvl, dVal))
 
 	}
