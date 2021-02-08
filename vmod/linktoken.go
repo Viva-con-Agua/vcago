@@ -1,6 +1,7 @@
 package vmod
 
 import (
+	"context"
 	"time"
 
 	"github.com/Viva-con-Agua/vcago/verr"
@@ -9,7 +10,7 @@ import (
 )
 
 type (
-	//Token represents token for handlings signup, password reset and ...
+	//LinkToken is used for handling link with token
 	LinkToken struct {
 		ID      string `bson:"_id" json:"token_id"`
 		Code    string `bson:"code" json:"code"`
@@ -22,10 +23,10 @@ type (
 )
 
 //NewLinkToken initial a Token with a 32bit random string Base64 encoded for Web handling. Set expired time max 1 month.
-func NewLinkToken(tCase string, expired time.Duration, modelID string, scope string) (*LinkToken, *verr.APIError) {
+func NewLinkToken(ctx context.Context, tCase string, expired time.Duration, modelID string, scope string) (*LinkToken, error) {
 	code, err := vutils.RandomBase64(32)
 	if err != nil {
-		return nil, verr.NewAPIError(err).InternalServerError()
+		return nil, verr.InternalServerError(ctx, err)
 	}
 	return &LinkToken{
 		ID:      uuid.New().String(),
@@ -36,4 +37,16 @@ func NewLinkToken(tCase string, expired time.Duration, modelID string, scope str
 		Created: time.Now().Unix(),
 		ModelID: modelID,
 	}, nil
+}
+
+//NewCode generate a new code for LinkTokens
+func (l *LinkToken) NewCode(ctx context.Context, expired time.Duration) (*LinkToken, error) {
+	code, err := vutils.RandomBase64(32)
+	if err != nil {
+		return nil, verr.InternalServerError(ctx, err)
+	}
+	l.Code = code
+	l.Expired = time.Now().Add(expired).Unix()
+	l.Created = time.Now().Unix()
+	return l, nil
 }

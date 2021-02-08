@@ -14,8 +14,9 @@ type (
 		AccessToken  string `json:"access_token" bson:"access_token"`
 		RefreshToken string `json:"refresh_token" bson:"refresh_token"`
 		TokenType    string `json:"token_type" bson:"token_type"`
-		ExpiresIn    int    `json:"expires_in" bson:"expires_in"`
+		ExpiresAt    int64   `json:"expires_at" bson:"expires_at"`
 		Scope        string `json:"scope" bson:"scope"`
+
 	}
 	//AccessToken represents the access token contained in JWTToken
 	AccessToken struct {
@@ -47,10 +48,11 @@ var RefreshConfig = middleware.JWTConfig{
 
 //NewJWTToken returns a new JWTToken model contains an access and an refresh token
 func NewJWTToken(u *User, scope string) (*JWTToken, error) {
+	var exAT = time.Now().Add(time.Minute * 15).Unix()
 	accessToken := jwt.NewWithClaims(jwt.SigningMethodHS256, &AccessToken{
 		*u,
 		jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Minute * 15).Unix(),
+			ExpiresAt: exAT,
 		},
 	})
 	at, err := accessToken.SignedString([]byte(os.Getenv("JWT_SECRET")))
@@ -68,6 +70,5 @@ func NewJWTToken(u *User, scope string) (*JWTToken, error) {
 		return nil, err
 	}
 
-	return &JWTToken{AccessToken: at, RefreshToken: rf, TokenType: "Bearer", ExpiresIn: 15, Scope: scope}, nil
-
+	return &JWTToken{AccessToken: at, RefreshToken: rf, TokenType: "Bearer", ExpiresAt: exAT, Scope: scope,}, nil
 }
