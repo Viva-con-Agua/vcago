@@ -1,6 +1,5 @@
 package civi
 
-import "github.com/Viva-con-Agua/echo-pool/crm"
 
 type (
 	//CrmUser represents civi crm user
@@ -13,13 +12,13 @@ type (
 	}
 	//CrmDataBody represents civi crm data
 	CrmDataBody struct {
-		CrmData crm.CrmData `json:"crm_data"`
+		CrmData CrmData `json:"crm_data"`
 	}
 	//CrmUserSignUp represents civi crm signup request
 	CrmUserSignUp struct {
-		CrmData crm.CrmData `json:"crm_data" validate:"required"`
+		CrmData CrmData `json:"crm_data" validate:"required"`
 		CrmUser CrmUser     `json:"crm_user" validate:"required"`
-		Mail    Mail        `json:"mail" validate:"required"`
+		Mail    CrmEmail        `json:"mail" validate:"required"`
 		Offset  Offset      `json:"offset" validate:"required"`
 	}
 	//Offset represents additional information about user
@@ -27,9 +26,20 @@ type (
 		KnownFrom  string `json:"known_from" validate:"required"`
 		Newsletter bool   `json:"newsletter"`
 	}
-	//Mail represents an email to share links
-	Mail struct {
-		Email string `json:"email" validate:"required"`
-		Link  string `json:"link" validate:"required"`
+	CrmData struct {
+		CampaignID int    `json:"campaign_id" validate:"required"`
+		DropsID    string `json:"drops_id" validate:"required"`
+		Activity   string `json:"activity" validate:"required"`
+		Country    string `json:"country,omitempty"`
+		Created    int64  `json:"created"`
 	}
+	CrmEmail struct {
+		Email string `json:"email"`
+		Link  string `json:"link"`
+	}
+	CrmEmailBody struct {
+		CrmData CrmData  `json:"crm_data"`
+		Mail    CrmEmail `json:"mail"`
+	}
+
 )

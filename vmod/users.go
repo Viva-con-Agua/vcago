@@ -1,5 +1,7 @@
 package vmod
 
+import "github.com/Viva-con-Agua/vcago/civi"
+
 type (
 	//User represents the root struct for user handling in viva-con-agua api.
 	User struct {
@@ -12,3 +14,15 @@ type (
 		Profile       Profile    `json:"profile" bson:"-"`
 	}
 )
+
+func (u *User) CrmDataBody(civiID int, activity string) *civi.CrmDataBody() {
+	return &civi.CrmDataBody{
+		CrmData: civi.CrmData{
+			CampaignID: civiID,
+			DropsID: u.ID,
+			Activity: "EVENT_JOIN",
+			Country: u.Country
+		}
+	}
+	
+}

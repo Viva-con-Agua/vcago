@@ -88,7 +88,7 @@ func (l LoadEnv) GetEnvBool(key string, lvl string, dVal bool)(bool, LoadEnv) {
     	return true, append(l, true)
 	}
 	if val == "false" {
-		return false, append(l, false)
+		return false, append(l, true)
 	}
     return dVal, append(l, envLogError(key, notSet, lvl, dVal))
 }
