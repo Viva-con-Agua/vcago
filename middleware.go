@@ -16,7 +16,7 @@ import (
 func NewCORSConfig() middleware.CORSConfig {
 	return middleware.CORSConfig{
 		AllowOrigins:     strings.Split(os.Getenv("ALLOW_ORIGINS"), ","),
-		AllowHeaders:     []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderAuthorization},
+		AllowHeaders:     []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderAuthorization, echo.HeaderXRequestedWith},
 		AllowCredentials: true,
 	}
 }
@@ -26,10 +26,10 @@ var SessionOptions = new(sessions.Options)
 //SessionLoadEnv loads session
 func SessionLoadEnv() {
 	var l LoadEnv
-	sameSite, l := l.GetEnvString("COOKIE_SAME_SITE", "w", "strict")
+sameSite, l := l.GetEnvString("COOKIE_SAME_SITE", "w", "strict")
 	CookieSecure, l := l.GetEnvBool("COOKIE_SECURE", "w", true)
 	HTTPOnly, l := l.GetEnvBool("COOKIE_HTTP_ONLY", "w", true)
-	MaxAge, l := l.GetEnvInt("COOKIE_MAX_AGE", "w", 86400*7)
+	//MaxAge, l := l.GetEnvInt("COOKIE_MAX_AGE", "w", 86400*7)
 	var SameSite http.SameSite
 	if sameSite == "lax" {
 		SameSite = http.SameSiteLaxMode
@@ -42,7 +42,7 @@ func SessionLoadEnv() {
 	}
 	SessionOptions = &sessions.Options{
 		Path:     "/",
-		MaxAge:   MaxAge,
+	//	MaxAge:   MaxAge,
 		HttpOnly: HTTPOnly,
 		SameSite: SameSite,
 		Secure:   CookieSecure,
@@ -62,5 +62,5 @@ func SessionWithID(next echo.HandlerFunc) echo.HandlerFunc {
 		sess.Save(c.Request(), c.Response())
 		c.Set("session_id", sessionID)
 		return next(c)
-	}
+}
 }

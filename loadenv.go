@@ -2,10 +2,15 @@ package vcago
 
 import (
 	"log"
+	"net/http"
 	"os"
 	"strconv"
 	"strings"
 )
+
+//HTTPBaseCookie defines the base cookie setup for vcago
+var HTTPBaseCookie http.Cookie
+
 const (
 	colorRed    = "\033[31m"
 	colorGreen  = "\033[32m"
@@ -18,6 +23,26 @@ const (
 )
 //LoadEnv used for loading environment variables. 
 type LoadEnv []bool
+
+//Env load the environment variables for vcago
+func Env() {
+	var sameSite string
+	var l LoadEnv
+	sameSite, l = l.GetEnvString("COOKIE_SAME_SITE", "w", "strict")
+	if sameSite == "lax" {
+		HTTPBaseCookie.SameSite = http.SameSiteLaxMode
+	}
+	if sameSite == "strict" {
+		HTTPBaseCookie.SameSite = http.SameSiteStrictMode
+	}
+	if sameSite == "none" {
+		HTTPBaseCookie.SameSite = http.SameSiteNoneMode
+	}
+	HTTPBaseCookie.Secure, l = l.GetEnvBool("COOKIE_SECURE", "w", true)
+	HTTPBaseCookie.HttpOnly, l = l.GetEnvBool("COOKIE_HTTP_ONLY", "w", true)
+	HTTPBaseCookie.Path = "/"
+	//HTTPBaseCookie.MaxAge, l = l.GetEnvInt("COOKIE_MAX_AGE", "w", 86400*7)
+}
 
 
 func envLogError(key string, e string, lvl string, dVal interface{}) bool{
