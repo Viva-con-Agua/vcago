@@ -42,7 +42,7 @@ func Env() {
 	HTTPBaseCookie.Secure, l = l.GetEnvBool("COOKIE_SECURE", "w", true)
 	HTTPBaseCookie.HttpOnly, l = l.GetEnvBool("COOKIE_HTTP_ONLY", "w", true)
 	HTTPBaseCookie.Path = "/"
-	HTTPBaseCookie.DOMAIN = l.GetEnvString("COOKIE_DOMAIN", "w", "localhost")
+	HTTPBaseCookie.Domain, l = l.GetEnvString("COOKIE_DOMAIN", "w", "localhost")
 	//HTTPBaseCookie.MaxAge, l = l.GetEnvInt("COOKIE_MAX_AGE", "w", 86400*7)
 }
 
