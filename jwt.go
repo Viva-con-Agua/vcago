@@ -44,6 +44,6 @@ func JWTNewAccessCookie(token *vmod.JWTToken) (*http.Cookie){
 func JWTNewRefreshCookie(token *vmod.JWTToken) (*http.Cookie){
     var cookie = HTTPBaseCookie
     cookie.Name = "refresh_token"
-    cookie.Value = token.AccessToken
+    cookie.Value = token.RefreshToken
     return &cookie
 }

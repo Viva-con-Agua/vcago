@@ -62,7 +62,7 @@ func NewJWTToken(u *User, scope string) (*JWTToken, error) {
 	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, &RefreshToken{
 		u.ID,
 		jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Minute * 60).Unix(),
+			ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
 		},
 	})
 	rf, err := refreshToken.SignedString([]byte(os.Getenv("JWT_SECRET")))
