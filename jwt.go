@@ -52,6 +52,9 @@ func JWTNewRefreshCookie(token *vmod.JWTToken) *http.Cookie {
 
 func JWTUser(c echo.Context) (u *vmod.User) {
 	token := c.Get("token").(*jwt.Token)
+	if token == nil {
+		return nil
+	}
 	u = &token.Claims.(*vmod.AccessToken).User
 	return
 }
