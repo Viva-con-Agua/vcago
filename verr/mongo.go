@@ -47,6 +47,23 @@ func MongoDeleteErr(err error, result *mongo.DeleteResult) error {
 	return nil
 }
 
+func MongoErrorResponse(err error, collection string) *echo.HTTPError {
+	if strings.Contains(err.Error(), "duplicate key error") {
+		return echo.NewHTTPError(http.StatusConflict, MongoBase{Message: "duplicate key error", Coll: collection})
+	}
+	if err == mongo.ErrNoDocuments {
+		return echo.NewHTTPError(http.StatusNotFound, MongoBase{Message: "not found", Coll: collection})
+	}
+	if err == ErrMongoUpdate {
+		return echo.NewHTTPError(http.StatusNotFound, MongoBase{Message: "no updated document", Coll: collection})
+	}
+	if err == ErrMongoDelete {
+		return echo.NewHTTPError(http.StatusNotFound, MongoBase{Message: "no delete document", Coll: collection})
+	}
+	return InternalServerErrorMsg
+
+}
+
 //MongoInsertOneError handles error response and logging for collection.insertOne() function.
 func MongoInsertOneError(ctx context.Context, err error, coll string) error {
 	if strings.Contains(err.Error(), "duplicate key error") {

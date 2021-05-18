@@ -5,9 +5,9 @@ import "net/http"
 type (
 	//APIResponse type that will response in success cases
 	APIResponse struct {
-		Message string `json:"message"`
-		Model string `json:"model"`
-		Payload  interface{} `json:"payload,omitempty"`
+		Message string      `json:"message"`
+		Model   string      `json:"model"`
+		Payload interface{} `json:"payload,omitempty"`
 	}
 )
 
@@ -17,8 +17,13 @@ func RespCreated(i interface{}, model string) (int, interface{}) {
 }
 
 //RespUpdated creates the updated response
-func RespUpdated(model string) (int, interface{}){
-	return http.StatusCreated, APIResponse{Message: "successful_updated", Model: model}
+func RespUpdated(model string) (int, interface{}) {
+	return http.StatusOK, APIResponse{Message: "successful_updated", Model: model}
+}
+
+//RespDeleted creates the updated response
+func RespDeleted(model string) (int, interface{}) {
+	return http.StatusOK, APIResponse{Message: "successful_deleted", Model: model}
 }
 
 //RespSelected creates the selected response
@@ -35,4 +40,3 @@ func RespCreateBase(model string) (int, interface{}) {
 func RespExecuted(model string) (int, interface{}) {
 	return http.StatusOK, APIResponse{Message: "successful_executed", Model: model}
 }
-
