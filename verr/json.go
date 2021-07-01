@@ -1,7 +1,7 @@
 package verr
 
 import (
-	"log"
+	"errors"
 	"net/http"
 	"strings"
 
@@ -22,22 +22,26 @@ type (
 	}
 )
 
+var ErrJSONBind = errors.New("json can't bind to the interface")
+var ErrJSONValidate = errors.New("json is not valid")
+
 //Validate extend JSONValidator with Validate function.
 func (cv *JSONValidator) Validate(i interface{}) error {
 	return cv.Validator.Struct(i)
 }
 
 //JSONErrorResponse creates a response for json validation error.
-func JSONErrorResponse(e error) (jList []JSONError) {
-	jsonErr := new(JSONError)
-	errorList := strings.Split(e.Error(), "\n")
-	for _, val := range errorList {
-		eList := strings.Split(val, "Key: ")
-		log.Print(eList)
-		eList = strings.Split(eList[1], " Error:")
-		jsonErr.Key = eList[0]
-		jsonErr.Error = eList[1]
-		jList = append(jList, *jsonErr)
+func JSONErrorResponse(err error) (jList []JSONError) {
+	if err != ErrJSONBind {
+		jsonErr := new(JSONError)
+		errorList := strings.Split(err.Error(), "\n")
+		for _, val := range errorList {
+			eList := strings.Split(val, "Key: ")
+			eList = strings.Split(eList[1], " Error:")
+			jsonErr.Key = eList[0]
+			jsonErr.Error = eList[1]
+			jList = append(jList, *jsonErr)
+		}
 	}
 	return jList
 }
@@ -45,7 +49,7 @@ func JSONErrorResponse(e error) (jList []JSONError) {
 //JSONValidate validates a json bind in echo.Context.
 //The interface i is used for validation.
 //If the c.Bind(i) or the validation returns errors the function return an APIError.
-func JSONValidate(c echo.Context, i interface{}) (error) {
+func JSONValidate(c echo.Context, i interface{}) error {
 	if err := c.Bind(i); err != nil {
 		LogError(c.Request().Context(), err, "debug")
 		return echo.NewHTTPError(http.StatusBadRequest, err)

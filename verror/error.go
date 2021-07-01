@@ -13,24 +13,27 @@ import (
 type (
 	//Error represents an error for vcago
 	Error struct {
-		File       string `json:"file"`
-		Line       int    `json:"line"`
-		Error      error  `json:"-"`
-		ErrorMsg   string `json:"error_msg"`
-		Time       int64  `json:"time"`
-		TimeString string `json:"time_string"`
+		File          string        `json:"file"`
+		Line          int           `json:"line"`
+		Error         error         `json:"-"`
+		ErrorMsg      string        `json:"error_msg"`
+		Time          int64         `json:"time"`
+		TimeString    string        `json:"time_string"`
+		ErrorResponse ErrorResponse `json:"response"`
 	}
 	//ErrorResponse represents an response json in case of an error.
 	ErrorResponse struct {
-		Message string `json:"message"`
-		Coll    string `json:"collection,omitempty"`
+		Status  int         `json:"-"`
+		Message string      `json:"message"`
+		Body    interface{} `json:"body,omitempty"`
+		Coll    string      `json:"collection,omitempty"`
 	}
 )
 
 var InternalServerErrorMsg = echo.NewHTTPError(http.StatusInternalServerError, ErrorResponse{Message: "internal_server_error"})
 
 //New creates new error
-func New(err error) *Error {
+func New(err error, coll ...string) *Error {
 	pc := make([]uintptr, 10)
 	runtime.Callers(3, pc)
 	function := runtime.FuncForPC(pc[0])
@@ -45,8 +48,47 @@ func New(err error) *Error {
 		Time:       now,
 		TimeString: time.Unix(now, 0).String(),
 	}
+
 }
 
+func (verr *Error) Body(body interface{}) *Error {
+	verr.ErrorResponse.Body = body
+	return verr
+}
+
+func (verr *Error) Status(status int) *Error {
+	verr.ErrorResponse.Status = status
+	return verr
+}
+
+func (verr *Error) Response() (int, interface{}) {
+	return verr.ErrorResponse.Status, verr.ErrorResponse
+}
+
+func (verr *Error) Mongo(coll string) *Error {
+	response := new(ErrorResponse)
+	response.Coll = coll
+	if strings.Contains(verr.ErrorMsg, "duplicate key error") {
+		response.Message = "duplicate key error"
+		response.Status = http.StatusConflict
+	}
+	if verr.Error == mongo.ErrNoDocuments {
+		response.Message = "model not found"
+		response.Status = http.StatusNotFound
+	}
+	if verr.Error == ErrMongoUpdate {
+		response.Message = "no updated document"
+		response.Status = http.StatusNotFound
+	}
+	if verr.Error == ErrMongoDelete {
+		response.Message = "no deleted document"
+		response.Status = http.StatusNotFound
+	}
+	verr.ErrorResponse = *response
+	return verr
+}
+
+/*
 //ErrorResponse handle http response in error case
 func (verr *Error) ErrorResponse(collection ...string) (int, interface{}) {
 	response := new(ErrorResponse)
@@ -55,6 +97,7 @@ func (verr *Error) ErrorResponse(collection ...string) (int, interface{}) {
 	}
 	if strings.Contains(verr.Error.Error(), "duplicate key error") {
 		response.Message = "duplicate key error"
+
 		return http.StatusConflict, response
 	}
 	if verr.Error == mongo.ErrNoDocuments {
@@ -71,4 +114,4 @@ func (verr *Error) ErrorResponse(collection ...string) (int, interface{}) {
 	}
 	return http.StatusInternalServerError, ErrorResponse{Message: "internal_server_error"}
 
-}
+}*/
