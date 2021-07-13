@@ -27,10 +27,11 @@ type (
 		Message string      `json:"message"`
 		Body    interface{} `json:"body,omitempty"`
 		Coll    string      `json:"collection,omitempty"`
+		Model   string      `json:"model,omitempty"`
 	}
 )
 
-var InternalServerErrorMsg = echo.NewHTTPError(http.StatusInternalServerError, ErrorResponse{Message: "internal_server_error"})
+var InternalServerError = echo.NewHTTPError(http.StatusInternalServerError, ErrorResponse{Message: "internal_server_error"})
 
 //New creates new error
 func New(err error, coll ...string) *Error {

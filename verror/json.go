@@ -41,14 +41,13 @@ func JSONErrorResponse(e error) (jList []JSONError) {
 //JSONValidate validates a json bind in echo.Context.
 //The interface i is used for validation.
 //If the c.Bind(i) or the validation returns errors the function return an APIError.
-func JSONValidate(c echo.Context, i interface{}) *Error {
+func JSONValidate(c echo.Context, i interface{}) error {
 	if err := c.Bind(i); err != nil {
-		return New(err).Status(http.StatusBadRequest)
-		//return echo.NewHTTPError(http.StatusBadRequest, err)
+		return echo.NewHTTPError(http.StatusBadRequest, err)
 	}
 	// validate body
 	if err := c.Validate(i); err != nil {
-		return New(err).Body(JSONErrorResponse(err)).Status(http.StatusBadRequest)
+		return echo.NewHTTPError(http.StatusBadRequest, JSONErrorResponse(err))
 	}
 	return nil
 }
