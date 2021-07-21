@@ -52,6 +52,10 @@ func New(err error, coll ...string) *Error {
 
 }
 
+func BadRequestResponse(message string) error {
+	return echo.NewHTTPError(http.StatusBadRequest, ErrorResponse{Message: message})
+}
+
 func (verr *Error) Body(body interface{}) *Error {
 	verr.ErrorResponse.Body = body
 	return verr

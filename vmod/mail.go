@@ -3,20 +3,27 @@ package vmod
 type (
 	//MailBase base model for request mail-backend via nats
 	MailBase struct {
-		To           string      `json:"to" bson:"to"`
-		JobCase string `json:"job_case"`
+		To       string `json:"to" bson:"to"`
+		JobCase  string `json:"job_case"`
 		JobScope string `json:"job_scope"`
-		Country string `json:"country"`
+		Country  string `json:"country"`
 	}
 	//MailCode used for request mail-backend via nats
 	MailCode struct {
 		MailBase
 		UserName string `json:"user_name"`
-		Code string `json:"code"`
+		Code     string `json:"code"`
+	}
+	MailContactAt struct {
+		FirstName string `json:"first_name"`
+		LastName  string `json:"last_name"`
+		Comment   string `json:"comment"`
+		Email     string `json:"email"`
+		KnownFrom string `json:"known_from"`
 	}
 )
 
 //NewMailCode initial new MailCode from given variables.
-func NewMailCode(to string, jobCase string, jobScope string, userName string, code string) MailCode{
+func NewMailCode(to string, jobCase string, jobScope string, userName string, code string) MailCode {
 	return MailCode{MailBase: MailBase{To: to, JobCase: jobCase, JobScope: jobScope}, UserName: userName, Code: code}
 }
