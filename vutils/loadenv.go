@@ -1,4 +1,4 @@
-package vcago
+package vutils
 
 import (
 	"log"
@@ -22,6 +22,9 @@ const (
 	notSet      = "is not set in the .env file."
 )
 
+//Logger defines the Logger type. Can set to IO for StdOut and NATS for nats logging
+var Logger string
+
 //LoadEnv used for loading environment variables.
 type LoadEnv []bool
 
@@ -44,6 +47,7 @@ func Env() {
 	HTTPBaseCookie.Path = "/"
 	HTTPBaseCookie.Domain, l = l.GetEnvString("COOKIE_DOMAIN", "w", "localhost")
 	//HTTPBaseCookie.MaxAge, l = l.GetEnvInt("COOKIE_MAX_AGE", "w", 86400*7)
+	Logger, l = l.GetEnvString("LOGGER", "w", "IO")
 }
 
 func envLogError(key string, e string, lvl string, dVal interface{}) bool {

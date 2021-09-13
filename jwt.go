@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/Viva-con-Agua/vcago/venv"
 	"github.com/Viva-con-Agua/vcago/vmod"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo/v4"
@@ -36,7 +37,7 @@ var RefreshCookieConfig = middleware.JWTConfig{
 
 //JWTNewAccessCookie create a new http.Cookie contains the access_token.
 func JWTNewAccessCookie(token *vmod.JWTToken) *http.Cookie {
-	var cookie = HTTPBaseCookie
+	var cookie = venv.HTTPBaseCookie
 	cookie.Name = "access_token"
 	cookie.Value = token.AccessToken
 	return &cookie
@@ -44,7 +45,7 @@ func JWTNewAccessCookie(token *vmod.JWTToken) *http.Cookie {
 
 //JWTNewRefreshCookie create a new http.Cookie contains the refresh_token.
 func JWTNewRefreshCookie(token *vmod.JWTToken) *http.Cookie {
-	var cookie = HTTPBaseCookie
+	var cookie = venv.HTTPBaseCookie
 	cookie.Name = "refresh_token"
 	cookie.Value = token.RefreshToken
 	return &cookie

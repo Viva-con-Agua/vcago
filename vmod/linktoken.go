@@ -1,10 +1,9 @@
 package vmod
 
 import (
-	"context"
 	"time"
 
-	"github.com/Viva-con-Agua/vcago/verr"
+	"github.com/Viva-con-Agua/vcago/verror"
 	"github.com/Viva-con-Agua/vcago/vutils"
 	"github.com/google/uuid"
 )
@@ -23,10 +22,10 @@ type (
 )
 
 //NewLinkToken initial a Token with a 32bit random string Base64 encoded for Web handling. Set expired time max 1 month.
-func NewLinkToken(ctx context.Context, tCase string, expired time.Duration, modelID string, scope string) (*LinkToken, error) {
+func NewLinkToken(tCase string, expired time.Duration, modelID string, scope string) (*LinkToken, error) {
 	code, err := vutils.RandomBase64(32)
 	if err != nil {
-		return nil, verr.InternalServerError(ctx, err)
+		return nil, verror.InternalServerError(err)
 	}
 	return &LinkToken{
 		ID:      uuid.New().String(),
@@ -40,10 +39,10 @@ func NewLinkToken(ctx context.Context, tCase string, expired time.Duration, mode
 }
 
 //NewCode generate a new code for LinkTokens
-func (l *LinkToken) NewCode(ctx context.Context, expired time.Duration) (*LinkToken, error) {
+func (l *LinkToken) NewCode(expired time.Duration) (*LinkToken, error) {
 	code, err := vutils.RandomBase64(32)
 	if err != nil {
-		return nil, verr.InternalServerError(ctx, err)
+		return nil, verror.InternalServerError(err)
 	}
 	l.Code = code
 	l.Expired = time.Now().Add(expired).Unix()
