@@ -48,15 +48,6 @@ func (i *Mongo) Connect(dbName string) (r *Mongo) {
 	log.Print("database successfully connected!")
 	return i
 }
-
-func (i Mongo) InsertOne(ctx context.Context, collection string, value interface{}) (err error) {
-	_, err = i.DB.Collection(collection).InsertOne(ctx, value)
-	if err != nil {
-		return NewMongoError(err, value, i.DBName, collection)
-	}
-	return
-}
-
 func (i *Mongo) CreateIndex(collection string, field string, unique bool) {
 
 	mod := mongo.IndexModel{
@@ -70,8 +61,27 @@ func (i *Mongo) CreateIndex(collection string, field string, unique bool) {
 	log.Print("database index created for: " + collection)
 }
 
+func (i Mongo) InsertOne(ctx context.Context, collection string, value interface{}) (err error) {
+	_, err = i.DB.Collection(collection).InsertOne(ctx, value)
+	if err != nil {
+		return NewMongoError(err, value, i.DBName, collection)
+	}
+	return
+}
+
+func (i *Mongo) FindOne(ctx context.Context, collection string, value bson.M, result interface{}) (err error) {
+	err = i.DB.Collection(collection).FindOne(
+		ctx,
+		value,
+	).Decode(result)
+	if err != nil {
+		return NewMongoError(err, value, i.DBName, collection)
+	}
+	return
+}
+
 type MongoError struct {
-	Err        error       `json:"error" bson:"error"`
+	Err        string      `json:"error" bson:"error"`
 	Value      interface{} `json:"value" bson:"value"`
 	Database   string      `json:"database" bson:"database"`
 	Collection string      `json:"collection" bson:"collection"`
@@ -79,7 +89,7 @@ type MongoError struct {
 
 func NewMongoError(err error, value interface{}, database string, collection string) *MongoError {
 	return &MongoError{
-		Err:        err,
+		Err:        err.Error(),
 		Value:      value,
 		Database:   database,
 		Collection: collection,

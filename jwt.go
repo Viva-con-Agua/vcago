@@ -4,12 +4,31 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/Viva-con-Agua/vcago/venv"
 	"github.com/Viva-con-Agua/vcago/vmod"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
+
+func Env() {
+	var sameSite string
+	var l LoadEnv
+	sameSite = l.GetEnvString("COOKIE_SAME_SITE", "w", "strict")
+	if sameSite == "lax" {
+		HTTPBaseCookie.SameSite = http.SameSiteLaxMode
+	}
+	if sameSite == "strict" {
+		HTTPBaseCookie.SameSite = http.SameSiteStrictMode
+	}
+	if sameSite == "none" {
+		HTTPBaseCookie.SameSite = http.SameSiteNoneMode
+	}
+	HTTPBaseCookie.Secure = l.GetEnvBool("COOKIE_SECURE", "w", true)
+	HTTPBaseCookie.HttpOnly = l.GetEnvBool("COOKIE_HTTP_ONLY", "w", true)
+	HTTPBaseCookie.Path = "/"
+	HTTPBaseCookie.Domain = l.GetEnvString("COOKIE_DOMAIN", "w", "localhost")
+	//HTTPBaseCookie.MaxAge, l = l.GetEnvInt("COOKIE_MAX_AGE", "w", 86400*7)
+}
 
 //JWTMiddleware handles authentication by jwt
 type JWTMiddleware struct {
@@ -37,7 +56,7 @@ var RefreshCookieConfig = middleware.JWTConfig{
 
 //JWTNewAccessCookie create a new http.Cookie contains the access_token.
 func JWTNewAccessCookie(token *vmod.JWTToken) *http.Cookie {
-	var cookie = venv.HTTPBaseCookie
+	var cookie = HTTPBaseCookie
 	cookie.Name = "access_token"
 	cookie.Value = token.AccessToken
 	return &cookie
@@ -45,7 +64,7 @@ func JWTNewAccessCookie(token *vmod.JWTToken) *http.Cookie {
 
 //JWTNewRefreshCookie create a new http.Cookie contains the refresh_token.
 func JWTNewRefreshCookie(token *vmod.JWTToken) *http.Cookie {
-	var cookie = venv.HTTPBaseCookie
+	var cookie = HTTPBaseCookie
 	cookie.Name = "refresh_token"
 	cookie.Value = token.RefreshToken
 	return &cookie
