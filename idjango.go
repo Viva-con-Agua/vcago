@@ -7,8 +7,6 @@ import (
 	"log"
 	"net/http"
 	"runtime"
-
-	"github.com/Viva-con-Agua/vcago/vutils"
 )
 
 //Mongo represents the initial struct for an Mongo connection.
@@ -22,10 +20,9 @@ type IDjango struct {
 //Host can be set via NATS_HOST
 //Port can be set via NATS_PORT
 func (i *IDjango) LoadEnv() {
-	var l vutils.LoadEnv
-	i.URL, l = l.GetEnvString("IDJANGO_URL", "w", "https://idjangostage.vivaconagua.org")
-	i.Key, l = l.GetEnvString("IDJANGO_KEY", "w", "")
-	i.Export, l = l.GetEnvBool("IDJANGO_EXPORT", "w", false)
+	i.URL = Config.GetEnvString("IDJANGO_URL", "w", "https://idjangostage.vivaconagua.org")
+	i.Key = Config.GetEnvString("IDJANGO_KEY", "w", "")
+	i.Export = Config.GetEnvBool("IDJANGO_EXPORT", "w", false)
 }
 
 func (i *IDjango) Post(data interface{}, path string) (err error) {

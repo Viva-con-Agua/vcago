@@ -18,16 +18,6 @@ type (
 	}
 )
 
-//type ErrorHandler map[error]error
-
-//func (i *ErrorHandler) Init() *ErrorHandler {
-//	i := make[DefaultError]
-//}
-
-//func (i *ErrorHandler) Set(key error, value error) *ErrorHandler {
-//	i[key] = value
-//}
-
 //HTTPErrorHandler handles echo.HTTPError and return the correct response.
 func HTTPErrorHandler(err error, c echo.Context) {
 	code := http.StatusInternalServerError
