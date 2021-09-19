@@ -47,7 +47,22 @@ func (i *ValidationError) Valid(err error) {
 }
 
 func (i *ValidationError) Bind(err error) {
-	i.Errors = append(i.Errors, err.Error())
+	dummy := err.Error()
+	temp := strings.Split(dummy, "expected=")
+	temp = strings.Split(temp[1], ",")
+	expected := temp[0]
+	temp = strings.Split(dummy, "got=")
+	temp = strings.Split(temp[1], ",")
+	got := temp[0]
+	temp = strings.Split(dummy, "field=")
+	temp = strings.Split(temp[1], ",")
+	field := temp[0]
+
+	i.Errors = append(i.Errors, "field "+field+" expected "+expected+" but got "+got+".")
+}
+
+func (i *ValidationError) Response() (int, interface{}) {
+	return BadRequest("validation error", i)
 }
 
 func BindAndValidate(c echo.Context, i interface{}) error {

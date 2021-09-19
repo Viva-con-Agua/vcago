@@ -34,6 +34,8 @@ func HTTPErrorHandler(err error, c echo.Context) {
 		}
 	} else if resp, ok := err.(*MongoError); ok {
 		c.JSON(resp.Response())
+	} else if resp, ok := err.(*ValidationError); ok {
+		c.JSON(resp.Response())
 	} else {
 		c.JSON(code, ErrorResponse{Message: "internal_server_error"})
 	}

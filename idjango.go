@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"runtime"
 )
@@ -31,7 +30,6 @@ func (i *IDjango) Post(data interface{}, path string) (err error) {
 		if jsonData, err = json.Marshal(data); err != nil {
 			return
 		}
-		log.Print(i.URL + path)
 		request := new(http.Request)
 		request, err = http.NewRequest("POST", i.URL+path, bytes.NewBuffer(jsonData))
 		request.Header.Set("Content-Type", "application/json; charset=UTF-8")
