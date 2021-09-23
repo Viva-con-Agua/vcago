@@ -41,8 +41,8 @@ func (i *NatsDAO) Publish(message string, body interface{}) {
 	i.connection.Publish(message, body)
 }
 
-func (i *NatsDAO) Subscribe(message string, catch func()) {
-	_, err := i.connection.Subscribe("auth.access.add", catch)
+func (i *NatsDAO) Subscribe(message string, catch interface{}) {
+	_, err := i.connection.Subscribe(message, catch)
 	if err != nil {
 		//TODO: nats logging message
 		log.Print(err)
