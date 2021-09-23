@@ -93,7 +93,7 @@ func (i *Mongo) FindOne(ctx context.Context, collection string, filter bson.M, v
 }
 
 func (i *Mongo) Find(ctx context.Context, collection string, filter bson.M, value interface{}) (err error) {
-	cursor, err := i.DB.Collection("forms").Find(ctx, filter)
+	cursor, err := i.DB.Collection(collection).Find(ctx, filter)
 	if err != nil {
 		return NewMongoError(err, value, filter, i.DBName, collection)
 	}
@@ -103,7 +103,7 @@ func (i *Mongo) Find(ctx context.Context, collection string, filter bson.M, valu
 	return
 }
 func (i *Mongo) Aggregate(ctx context.Context, collection string, filter bson.D, value interface{}) (err error) {
-	cursor, err := i.DB.Collection("forms").Aggregate(ctx, filter)
+	cursor, err := i.DB.Collection(collection).Aggregate(ctx, filter)
 	if err != nil {
 		return
 	}

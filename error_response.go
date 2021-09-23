@@ -36,6 +36,8 @@ func HTTPErrorHandler(err error, c echo.Context) {
 		c.JSON(resp.Response())
 	} else if resp, ok := err.(*ValidationError); ok {
 		c.JSON(resp.Response())
+	} else if resp, ok := err.(*Status); ok {
+		c.JSON(resp.Response())
 	} else {
 		c.JSON(code, ErrorResponse{Message: "internal_server_error"})
 	}
