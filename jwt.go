@@ -10,6 +10,26 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
+func Env() {
+	var sameSite string
+	var l LoadEnv
+	sameSite = l.GetEnvString("COOKIE_SAME_SITE", "w", "strict")
+	if sameSite == "lax" {
+		HTTPBaseCookie.SameSite = http.SameSiteLaxMode
+	}
+	if sameSite == "strict" {
+		HTTPBaseCookie.SameSite = http.SameSiteStrictMode
+	}
+	if sameSite == "none" {
+		HTTPBaseCookie.SameSite = http.SameSiteNoneMode
+	}
+	HTTPBaseCookie.Secure = l.GetEnvBool("COOKIE_SECURE", "w", true)
+	HTTPBaseCookie.HttpOnly = l.GetEnvBool("COOKIE_HTTP_ONLY", "w", true)
+	HTTPBaseCookie.Path = "/"
+	HTTPBaseCookie.Domain = l.GetEnvString("COOKIE_DOMAIN", "w", "localhost")
+	//HTTPBaseCookie.MaxAge, l = l.GetEnvInt("COOKIE_MAX_AGE", "w", 86400*7)
+}
+
 //JWTMiddleware handles authentication by jwt
 type JWTMiddleware struct {
 	RequestCount uint64 `json:"request_count"`

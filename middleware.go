@@ -1,17 +1,6 @@
 package vcago
 
-import (
-	"net/http"
-	"os"
-	"strings"
-
-	"github.com/google/uuid"
-	"github.com/gorilla/sessions"
-	"github.com/labstack/echo-contrib/session"
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
-)
-
+/*
 //NewCORSConfig create a echo middleware for cors handling.
 func NewCORSConfig() middleware.CORSConfig {
 	return middleware.CORSConfig{
@@ -23,12 +12,13 @@ func NewCORSConfig() middleware.CORSConfig {
 
 //SessionOptions used for user session
 var SessionOptions = new(sessions.Options)
+
 //SessionLoadEnv loads session
 func SessionLoadEnv() {
 	var l LoadEnv
-sameSite, l := l.GetEnvString("COOKIE_SAME_SITE", "w", "strict")
-	CookieSecure, l := l.GetEnvBool("COOKIE_SECURE", "w", true)
-	HTTPOnly, l := l.GetEnvBool("COOKIE_HTTP_ONLY", "w", true)
+	sameSite := l.GetEnvString("COOKIE_SAME_SITE", "w", "strict")
+	CookieSecure := l.GetEnvBool("COOKIE_SECURE", "w", true)
+	HTTPOnly := l.GetEnvBool("COOKIE_HTTP_ONLY", "w", true)
 	//MaxAge, l := l.GetEnvInt("COOKIE_MAX_AGE", "w", 86400*7)
 	var SameSite http.SameSite
 	if sameSite == "lax" {
@@ -41,13 +31,14 @@ sameSite, l := l.GetEnvString("COOKIE_SAME_SITE", "w", "strict")
 		SameSite = http.SameSiteNoneMode
 	}
 	SessionOptions = &sessions.Options{
-		Path:     "/",
-	//	MaxAge:   MaxAge,
+		Path: "/",
+		//	MaxAge:   MaxAge,
 		HttpOnly: HTTPOnly,
 		SameSite: SameSite,
 		Secure:   CookieSecure,
 	}
 }
+
 //SessionWithID return session wir id
 func SessionWithID(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
@@ -62,5 +53,5 @@ func SessionWithID(next echo.HandlerFunc) echo.HandlerFunc {
 		sess.Save(c.Request(), c.Response())
 		c.Set("session_id", sessionID)
 		return next(c)
-}
-}
+	}
+}*/

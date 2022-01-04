@@ -3,6 +3,7 @@ package verr
 import (
 	"errors"
 	"net/http"
+	"regexp"
 	"strings"
 
 	"github.com/go-playground/validator"
@@ -17,8 +18,7 @@ type (
 
 	//JSONError represents a json validation error. Used om return of JSONErrorResponse:w
 	JSONError struct {
-		Key   string
-		Error string
+		Error []string `json:"error"`
 	}
 )
 
@@ -30,6 +30,15 @@ func (cv *JSONValidator) Validate(i interface{}) error {
 	return cv.Validator.Struct(i)
 }
 
+var matchFirstCap = regexp.MustCompile("(.)([A-Z][a-z]+)")
+var matchAllCap = regexp.MustCompile("([a-z0-9])([A-Z])")
+
+func ToSnakeCase(str string) string {
+	snake := matchFirstCap.ReplaceAllString(str, "${1}_${2}")
+	snake = matchAllCap.ReplaceAllString(snake, "${1}_${2}")
+	return strings.ToLower(snake)
+}
+
 //JSONErrorResponse creates a response for json validation error.
 func JSONErrorResponse(err error) (jList []JSONError) {
 	if err != ErrJSONBind {
@@ -38,9 +47,7 @@ func JSONErrorResponse(err error) (jList []JSONError) {
 		for _, val := range errorList {
 			eList := strings.Split(val, "Key: ")
 			eList = strings.Split(eList[1], " Error:")
-			jsonErr.Key = eList[0]
-			jsonErr.Error = eList[1]
-			jList = append(jList, *jsonErr)
+			jsonErr.Error = append(jsonErr.Error, ToSnakeCase(eList[1]))
 		}
 	}
 	return jList

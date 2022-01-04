@@ -2,10 +2,8 @@ package verror
 
 import (
 	"errors"
-	"net/http"
 	"strings"
 
-	"github.com/labstack/echo/v4"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -36,51 +34,51 @@ func MongoDeleteErr(err error, result *mongo.DeleteResult) error {
 	}
 	return nil
 }
+
 func Mongo(err error, model string) error {
 	if strings.Contains(err.Error(), "duplicate key error") {
-		return echo.NewHTTPError(http.StatusConflict, &ErrorResponse{Message: "duplicate key error", Model: model})
+		return Conflict("duplicate key error", model)
 	}
-	if err == mongo.ErrNoDocuments {
-		return echo.NewHTTPError(http.StatusNotFound, &ErrorResponse{Message: "document_not_found", Model: model})
-
+	switch err {
+	case mongo.ErrNoDocuments:
+		return NotFound("document_not_found", model)
+	case ErrMongoUpdate:
+		return NotFound("document_not_updated", model)
+	case ErrMongoDelete:
+		return NotFound("document_not_deleted", model)
+	default:
+		return InternalServerError(err)
 	}
-	if err == ErrMongoUpdate {
-		return echo.NewHTTPError(http.StatusNotFound, &ErrorResponse{Message: "document_not_updated", Model: model})
-	}
-	if err == ErrMongoDelete {
-		return echo.NewHTTPError(http.StatusNotFound, &ErrorResponse{Message: "document_not_deleted", Model: model})
-
-	}
-	return echo.NewHTTPError(http.StatusInternalServerError, ErrorResponse{Message: "internal_server_error", Model: model})
 }
 
 func MongoCreate(err error, model string) error {
 	if strings.Contains(err.Error(), "duplicate key error") {
-		return echo.NewHTTPError(http.StatusConflict, &ErrorResponse{Message: "duplicate key error", Model: model})
+		return Conflict("duplicate key error", model)
 	}
-	return echo.NewHTTPError(http.StatusInternalServerError, ErrorResponse{Message: "internal_server_error", Model: model})
+	return InternalServerError(err)
+
 }
 func MongoGet(err error, model string) error {
 	if err == mongo.ErrNoDocuments {
-		return echo.NewHTTPError(http.StatusNotFound, &ErrorResponse{Message: "document_not_found", Model: model})
+		return NotFound("document_not_found", model)
 	}
-	return echo.NewHTTPError(http.StatusInternalServerError, ErrorResponse{Message: "internal_server_error", Model: model})
+	return InternalServerError(err)
 }
 
 func MongoList(err error, model string) error {
-	return echo.NewHTTPError(http.StatusInternalServerError, ErrorResponse{Message: "internal_server_error", Model: model})
+	return InternalServerError(err)
 }
 
 func MongoUpdate(err error, model string) error {
 	if err == ErrMongoUpdate {
-		return echo.NewHTTPError(http.StatusNotFound, &ErrorResponse{Message: "document_not_updated", Model: model})
+		return NotFound("document_not_updated", model)
 	}
-	return echo.NewHTTPError(http.StatusInternalServerError, ErrorResponse{Message: "internal_server_error", Model: model})
+	return InternalServerError(err)
 }
 
 func MongoDelete(err error, model string) error {
 	if err == ErrMongoDelete {
-		return echo.NewHTTPError(http.StatusNotFound, &ErrorResponse{Message: "document_not_deleted", Model: model})
+		return NotFound("document_not_deleted", model)
 	}
-	return echo.NewHTTPError(http.StatusInternalServerError, ErrorResponse{Message: "internal_server_error", Model: model})
+	return InternalServerError(err)
 }
