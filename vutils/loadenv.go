@@ -6,6 +6,8 @@ import (
 	"os"
 	"strconv"
 	"strings"
+
+	"github.com/joho/godotenv"
 )
 
 //HTTPBaseCookie defines the base cookie setup for vcago
@@ -22,32 +24,22 @@ const (
 	notSet      = "is not set in the .env file."
 )
 
-//Logger defines the Logger type. Can set to IO for StdOut and NATS for nats logging
-var Logger string
-
 //LoadEnv used for loading environment variables.
 type LoadEnv []bool
 
+var Config = LoadConfig()
+
+//NatsHost is the ip of the nats service.
+var NatsHost string
+
+//NatsPort is the port ot the nats service.
+var NatsPort string
+
 //Env load the environment variables for vcago
-func Env() {
-	var sameSite string
-	var l LoadEnv
-	sameSite, l = l.GetEnvString("COOKIE_SAME_SITE", "w", "strict")
-	if sameSite == "lax" {
-		HTTPBaseCookie.SameSite = http.SameSiteLaxMode
-	}
-	if sameSite == "strict" {
-		HTTPBaseCookie.SameSite = http.SameSiteStrictMode
-	}
-	if sameSite == "none" {
-		HTTPBaseCookie.SameSite = http.SameSiteNoneMode
-	}
-	HTTPBaseCookie.Secure, l = l.GetEnvBool("COOKIE_SECURE", "w", true)
-	HTTPBaseCookie.HttpOnly, l = l.GetEnvBool("COOKIE_HTTP_ONLY", "w", true)
-	HTTPBaseCookie.Path = "/"
-	HTTPBaseCookie.Domain, l = l.GetEnvString("COOKIE_DOMAIN", "w", "localhost")
-	//HTTPBaseCookie.MaxAge, l = l.GetEnvInt("COOKIE_MAX_AGE", "w", 86400*7)
-	Logger, l = l.GetEnvString("LOGGER", "w", "IO")
+
+func LoadConfig() *LoadEnv {
+	godotenv.Load(".env")
+	return new(LoadEnv)
 }
 
 func envLogError(key string, e string, lvl string, dVal interface{}) bool {
@@ -70,12 +62,14 @@ func envLogError(key string, e string, lvl string, dVal interface{}) bool {
 //The lvl param defines the log level. For warnings set "w" and for error set "e".
 //If the variable is not used or can be ignored use n for do nothing.
 //The default value can be set by the dVal param.
-func (l LoadEnv) GetEnvString(key string, lvl string, dVal string) (string, LoadEnv) {
+func (l LoadEnv) GetEnvString(key string, lvl string, dVal string) string {
 	val, ok := os.LookupEnv(key)
 	if !ok {
-		return dVal, append(l, envLogError(key, notSet, lvl, dVal))
+		l = append(l, envLogError(key, notSet, lvl, dVal))
+		return dVal
 	}
-	return val, append(l, true)
+	l = append(l, true)
+	return val
 }
 
 //GetEnvInt loads a key from enviroment variables as int.
@@ -83,46 +77,57 @@ func (l LoadEnv) GetEnvString(key string, lvl string, dVal string) (string, Load
 //For warnings set "w" and for error set "e".
 //If the variable is not used or can be ignored use n for do nothing.
 //The default value can be set by the dVal param.
-func (l LoadEnv) GetEnvInt(key string, lvl string, dVal int) (int, LoadEnv) {
+func (l LoadEnv) GetEnvInt(key string, lvl string, dVal int) int {
 	val, ok := os.LookupEnv(key)
 	if !ok {
-		return dVal, append(l, envLogError(key, notSet, lvl, dVal))
+		l = append(l, envLogError(key, notSet, lvl, dVal))
+		return dVal
 	}
 	valInt, err := strconv.Atoi(val)
 	if err != nil {
-		return dVal, append(l, envLogError(key, notSet, lvl, dVal))
+		l = append(l, envLogError(key, notSet, lvl, dVal))
+		return dVal
 	}
-	return valInt, append(l, true)
+	l = append(l, true)
+	return valInt
 
 }
 
 //GetEnvStringList as
-func (l LoadEnv) GetEnvStringList(key string, lvl string, dVal []string) ([]string, LoadEnv) {
+func (l LoadEnv) GetEnvStringList(key string, lvl string, dVal []string) []string {
 	val, ok := os.LookupEnv(key)
 	if !ok {
-		return dVal, append(l, envLogError(key, notSet, lvl, dVal))
+		l = append(l, envLogError(key, notSet, lvl, dVal))
+		return dVal
 	}
 	valList := strings.Split(val, ",")
 	if valList == nil {
-		return dVal, append(l, envLogError(key, notSet, lvl, dVal))
+		l = append(l, envLogError(key, notSet, lvl, dVal))
+		return dVal
 
 	}
-	return valList, append(l, true)
+	l = append(l, true)
+
+	return valList
 }
 
 //GetEnvBool load a key from environment variables as bool.
-func (l LoadEnv) GetEnvBool(key string, lvl string, dVal bool) (bool, LoadEnv) {
+func (l LoadEnv) GetEnvBool(key string, lvl string, dVal bool) bool {
 	val, ok := os.LookupEnv(key)
 	if !ok {
-		return dVal, append(l, envLogError(key, notSet, lvl, dVal))
+		l = append(l, envLogError(key, notSet, lvl, dVal))
+		return dVal
 	}
 	if val == "true" {
-		return true, append(l, true)
+		l = append(l, true)
+		return true
 	}
 	if val == "false" {
-		return false, append(l, true)
+		l = append(l, true)
+		return false
 	}
-	return dVal, append(l, envLogError(key, notSet, lvl, dVal))
+	l = append(l, envLogError(key, notSet, lvl, dVal))
+	return dVal
 }
 
 //Validate check if LoadEnv is valid and log.Fatal if on entry is false.

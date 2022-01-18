@@ -1,4 +1,4 @@
-package vcago
+package vutils
 
 import (
 	"crypto/rand"

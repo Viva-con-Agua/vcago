@@ -1,10 +1,13 @@
-package vcago
+package verr
 
 import (
 	"encoding/json"
 	"net/http"
+	"strings"
 
+	"github.com/Viva-con-Agua/vcago/vmdb"
 	"github.com/labstack/echo/v4"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type (
@@ -19,7 +22,7 @@ type (
 )
 
 //HTTPErrorHandler handles echo.HTTPError and return the correct response.
-func HTTPErrorHandler(err error, c echo.Context) {
+func ErrorHandler(err error, c echo.Context) {
 	code := http.StatusInternalServerError
 	response := new(interface{})
 	if he, ok := err.(*echo.HTTPError); ok {
@@ -61,4 +64,23 @@ func Conflict(message string, body ...interface{}) (int, *ErrorResponse) {
 //NotFound creates an echo.HTTPError with the status http.StatusNotFound
 func NotFound(message string, body ...interface{}) (int, *ErrorResponse) {
 	return http.StatusNotFound, &ErrorResponse{Message: message, Body: body}
+}
+
+//Response return the ErrorResponse for handling in httpErrorHandler
+func ResponseMongo(i *vmdb.MongoError) (int, interface{}) {
+	if strings.Contains(i.Message, "duplicate key error") {
+		temp := strings.Split(i.Message, "key: {")
+		temp = strings.Split(temp[1], "}")
+		return Conflict("duplicate key error", "key: {"+temp[0]+"}")
+	}
+	switch i.Err {
+	case mongo.ErrNoDocuments:
+		return NotFound("document not found", i.Filter)
+	case vmdb.ErrMongoUpdate:
+		return NotFound("document not updated", i.Filter)
+	case vmdb.ErrMongoDelete:
+		return NotFound("document not deleted", i.Filter)
+	default:
+		return InternalServerError()
+	}
 }

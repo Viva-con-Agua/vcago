@@ -1,4 +1,4 @@
-package vcago
+package verr
 
 import (
 	"encoding/json"

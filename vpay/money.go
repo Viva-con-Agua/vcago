@@ -1,7 +1,9 @@
-package vcago
+package vpay
 
 import (
 	"strings"
+
+	"github.com/Viva-con-Agua/vcago/verr"
 )
 
 type Money struct {
@@ -10,7 +12,7 @@ type Money struct {
 }
 
 func (i *Money) ValidateAmount(minAmount int64) (err error) {
-	vErr := new(ValidationError)
+	vErr := new(verr.ValidationError)
 	if i.Amount < minAmount {
 		vErr.Errors = []string{"Amount is to low"}
 		return vErr
@@ -20,7 +22,7 @@ func (i *Money) ValidateAmount(minAmount int64) (err error) {
 
 func (i *Money) ValidateCurrency(currency string) (err error) {
 	if !strings.Contains(currency, i.Currency) {
-		vErr := new(ValidationError)
+		vErr := new(verr.ValidationError)
 		vErr.Errors = []string{"Currency is not supported!"}
 		return vErr
 	}
