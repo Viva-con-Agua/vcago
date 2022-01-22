@@ -1,6 +1,7 @@
-package vcago
+package vauth
 
 import (
+	"github.com/Viva-con-Agua/vcago/vutils"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -12,7 +13,7 @@ type CORSConfig struct {
 var CORS = new(CORSConfig)
 
 func (i *CORSConfig) LoadEnv() *CORSConfig {
-	i.allowOrigins = Config.GetEnvStringList("ALLOW_ORIGINS", "w", []string{"localhost:8080"})
+	i.allowOrigins = vutils.Config.GetEnvStringList("ALLOW_ORIGINS", "w", []string{"localhost:8080"})
 	return i
 }
 

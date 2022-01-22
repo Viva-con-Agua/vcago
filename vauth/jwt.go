@@ -66,5 +66,5 @@ func NewJWTToken(u *User, scope string) (*JWToken, error) {
 		return nil, err
 	}
 
-	return &JWToken{AccessToken: at, RefreshToken: rf, TokenType: "Bearer", ExpiresAt: exAT, Scope: scope}, nil
+	return &JWToken{AccessToken: at, RefreshToken: rf, Type: "Bearer", ExpiresAt: exAT, Scope: scope}, nil
 }

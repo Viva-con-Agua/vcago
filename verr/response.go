@@ -35,8 +35,8 @@ func ErrorHandler(err error, c echo.Context) {
 			json.Unmarshal([]byte((*response).(string)), res)
 			c.JSON(code, res)
 		}
-	} else if resp, ok := err.(*MongoError); ok {
-		c.JSON(resp.Response())
+	} else if resp, ok := err.(*vmdb.MongoError); ok {
+		c.JSON(ResponseMongo(resp))
 	} else if resp, ok := err.(*ValidationError); ok {
 		c.JSON(resp.Response())
 	} else if resp, ok := err.(*Status); ok {

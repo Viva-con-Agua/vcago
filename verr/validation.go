@@ -10,18 +10,18 @@ import (
 )
 
 type Validator struct {
-	validator *validator.Validate
+	Validator *validator.Validate
 }
 
 //Validate extend JSONValidator with Validate function.
 
 func (i *Validator) New(v *validator.Validate) *Validator {
-	i.validator = v
+	i.Validator = v
 	return i
 }
 
 func (i *Validator) Validate(valid interface{}) error {
-	return i.validator.Struct(valid)
+	return i.Validator.Struct(valid)
 }
 
 type ValidationError struct {
