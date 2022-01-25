@@ -54,6 +54,7 @@ func (i *LoggingHandler) New(service string) (logger *LoggingHandler) {
 func (i *LoggingHandler) Write(data []byte) (n int, err error) {
 	n = len(data)
 	logError := new(LogError)
+	logError.Modified = *vmod.NewModified()
 	if err = json.Unmarshal(data, logError); err != nil {
 		if data != nil {
 			fmt.Print(string(data) + "\n")
@@ -68,6 +69,9 @@ func (i *LoggingHandler) Write(data []byte) (n int, err error) {
 	}
 	if i.output == "nats" {
 		i.Log(logError)
+	} else if i.output == "pretty" {
+		t, _ := json.MarshalIndent(logError, "", "    ")
+		fmt.Print(string(t) + "\n")
 	} else {
 		t, _ := json.Marshal(logError)
 		fmt.Print(string(t) + "\n")
