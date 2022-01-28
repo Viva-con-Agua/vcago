@@ -33,6 +33,12 @@ func (i *ValidationError) Error() string {
 	return string(res)
 }
 
+func NewValidationError(err string) *ValidationError {
+	return &ValidationError{
+		Errors: []string{err},
+	}
+}
+
 func (i *ValidationError) Valid(err error) {
 	var matchFirstCap = regexp.MustCompile("(.)([A-Z][a-z]+)")
 	var matchAllCap = regexp.MustCompile("([a-z0-9])([A-Z])")
@@ -62,7 +68,7 @@ func (i *ValidationError) Bind(err error) {
 }
 
 func (i *ValidationError) Response() (int, interface{}) {
-	return BadRequest("validation error", i)
+	return NewResponse("validation error", i).BadRequest()
 }
 
 func BindAndValidate(c echo.Context, i interface{}) error {

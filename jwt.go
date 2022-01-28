@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/Viva-con-Agua/vcago/vmod"
-	"github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
