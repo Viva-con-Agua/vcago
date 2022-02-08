@@ -2,19 +2,21 @@
 The package contains standard functions that are used in the Viva-con-Agua API services and is on the [echo web framework](https://github.com/labstack/echo)
 
 
-## CORS
+## PACKAGE
 
-### Setup in server.go
+### CORS
+
+#### Setup in server.go
 
 ```
 func main() {
-	e := echo.New()
+    e := echo.New()
     ...
     e.Use(vcago.CORS.Init())
     ...
 }
 ```
-### edit the .env file
+#### edit the .env file
 
 ```
 ...
