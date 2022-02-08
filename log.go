@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/Viva-con-Agua/vcago/vmod"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/nats-io/nats.go"
@@ -28,7 +27,7 @@ var Logger = new(LoggingHandler)
 func (i *LoggingHandler) Write(data []byte) (n int, err error) {
 	n = len(data)
 	logError := new(LogError)
-	logError.Modified = *vmod.NewModified()
+	logError.Modified = NewModified()
 	if err = json.Unmarshal(data, logError); err != nil {
 		if data != nil {
 			fmt.Print(string(data) + "\n")
@@ -74,19 +73,19 @@ func (i *LoggingHandler) Init() echo.MiddlewareFunc {
 
 //LogError represents the an LogError for handling via nats and store into mongo databases. The struct matches the Config Format string as json.
 type LogError struct {
-	ID           string        `json:"id" bson:"_id"`
-	Service      string        `json:"service" bson:"service"`
-	Time         string        `json:"time" bson:"time"`
-	RemoteIP     string        `json:"remote_ip" bson:"remote_io"`
-	Host         string        `json:"host" bson:"host"`
-	Method       string        `json:"method" bson:"method"`
-	Uri          string        `json:"uri" bson:"uri"`
-	UserAgent    string        `json:"user_agent" bson:"user_agent"`
-	Status       int           `json:"status" bson:"status"`
-	Error        interface{}   `json:"error" bson:"error"`
-	Latency      int64         `json:"latency" bson:"latency"`
-	LatencyHuman string        `json:"latency_human" bson:"latency_human"`
-	ByteIn       string        `json:"byte_in" bson:"byte_in"`
-	ByteOut      string        `json:"byte_out" bson:"byte_out"`
-	Modified     vmod.Modified `json:"modified" bson:"modified"`
+	ID           string      `json:"id" bson:"_id"`
+	Service      string      `json:"service" bson:"service"`
+	Time         string      `json:"time" bson:"time"`
+	RemoteIP     string      `json:"remote_ip" bson:"remote_io"`
+	Host         string      `json:"host" bson:"host"`
+	Method       string      `json:"method" bson:"method"`
+	Uri          string      `json:"uri" bson:"uri"`
+	UserAgent    string      `json:"user_agent" bson:"user_agent"`
+	Status       int         `json:"status" bson:"status"`
+	Error        interface{} `json:"error" bson:"error"`
+	Latency      int64       `json:"latency" bson:"latency"`
+	LatencyHuman string      `json:"latency_human" bson:"latency_human"`
+	ByteIn       string      `json:"byte_in" bson:"byte_in"`
+	ByteOut      string      `json:"byte_out" bson:"byte_out"`
+	Modified     Modified    `json:"modified" bson:"modified"`
 }

@@ -3,7 +3,6 @@ package vcago
 import (
 	"log"
 
-	"github.com/Viva-con-Agua/vcago/verr"
 	"github.com/nats-io/nats.go"
 )
 
@@ -27,11 +26,11 @@ func (i *NatsDAO) Connect() (r *NatsDAO) {
 	natsUrl := "nats://" + i.host + ":" + i.port
 	nc, err := nats.Connect(natsUrl)
 	if err != nil {
-		log.Fatal(verr.ErrorWithColor, err, " ", "NatsUrl: ", natsUrl)
+		log.Fatal(err, " ", "NatsUrl: ", natsUrl)
 	}
 	i.connection, err = nats.NewEncodedConn(nc, nats.JSON_ENCODER)
 	if err != nil {
-		log.Fatal(verr.ErrorWithColor, err)
+		log.Fatal(err)
 	}
 	log.Print("nats successfully connected!")
 	return i
