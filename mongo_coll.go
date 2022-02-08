@@ -10,7 +10,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-//Collection represents an mongo db database collection
+//MongoColl represents an mongo db database collection
 type MongoColl struct {
 	Name         string
 	DatabaseName string
@@ -19,7 +19,6 @@ type MongoColl struct {
 
 //CreateIndex creates an index for a given collection.
 func (i *MongoColl) CreateIndex(field string, unique bool) *MongoColl {
-
 	mod := mongo.IndexModel{
 		Keys:    bson.M{field: 1},
 		Options: options.Index().SetUnique(unique),
@@ -71,10 +70,10 @@ func (i *MongoColl) Find(ctx context.Context, filter bson.M, value interface{}) 
 func (i *MongoColl) Aggregate(ctx context.Context, filter bson.D, value interface{}) (err error) {
 	cursor, err := i.Collection.Aggregate(ctx, filter)
 	if err != nil {
-		return
+		return NewMongoError(err, value, bson.M{"filter": filter}, i.DatabaseName, i.Name)
 	}
 	if err = cursor.All(ctx, value); err != nil {
-		return
+		return NewMongoError(err, value, bson.M{"filter": filter}, i.DatabaseName, i.Name)
 	}
 	return
 }
@@ -90,10 +89,10 @@ func (i *MongoColl) UpdateOne(ctx context.Context, filter bson.M, value interfac
 		bson.M{"$set": value},
 	)
 	if err != nil {
-		return err
+		return NewMongoError(err, value, filter, i.DatabaseName, i.Name)
 	}
 	if result.MatchedCount == 0 {
-		return ErrMongoUpdate
+		return NewMongoError(ErrMongoUpdate, value, filter, i.DatabaseName, i.Name)
 	}
 	return
 }
@@ -108,10 +107,30 @@ func (i *MongoColl) DeleteOne(ctx context.Context, filter bson.M) (err error) {
 		bson.M{"_id": filter},
 	)
 	if err != nil {
-		return err
+		return NewMongoError(err, nil, filter, i.DatabaseName, i.Name)
 	}
 	if result.DeletedCount == 0 {
-		return ErrMongoDelete
+		return NewMongoError(ErrMongoDelete, nil, filter, i.DatabaseName, i.Name)
+	}
+	return
+}
+
+//InsertOrUpdate updates a value via "$set" and the given bson.M filter. Return an MongoError in case that no element has updated.
+func (i *MongoColl) InsertOrUpdate(ctx context.Context, filter bson.M, value interface{}) (err error) {
+	result, err := i.Collection.UpdateOne(
+		ctx,
+		filter,
+		bson.M{"$set": value},
+	)
+	if err != nil {
+		return NewMongoError(err, value, filter, i.DatabaseName, i.Name)
+	}
+	if result.MatchedCount == 0 {
+		_, err = i.Collection.InsertOne(ctx, value)
+		if err != nil {
+			return NewMongoError(err, value, filter, i.DatabaseName, i.Name)
+		}
+		return
 	}
 	return
 }

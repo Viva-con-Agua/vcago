@@ -13,11 +13,15 @@ type Validator struct {
 	validator *validator.Validate
 }
 
+var JSONValidator = NewValidator()
+
 //Validate extend JSONValidator with Validate function.
 
-func (i *Validator) New(v *validator.Validate) *Validator {
-	i.validator = v
-	return i
+func NewValidator() (r *Validator) {
+	r = new(Validator)
+	v := validator.New()
+	r.validator = v
+	return
 }
 
 func (i *Validator) Validate(valid interface{}) error {
@@ -31,6 +35,12 @@ type ValidationError struct {
 func (i *ValidationError) Error() string {
 	res, _ := json.Marshal(i)
 	return string(res)
+}
+
+func NewValidationError(err string) *ValidationError {
+	return &ValidationError{
+		Errors: []string{err},
+	}
 }
 
 func (i *ValidationError) Valid(err error) {
@@ -62,7 +72,7 @@ func (i *ValidationError) Bind(err error) {
 }
 
 func (i *ValidationError) Response() (int, interface{}) {
-	return BadRequest("validation error", i)
+	return NewResponse("validation error", i).BadRequest()
 }
 
 func BindAndValidate(c echo.Context, i interface{}) error {

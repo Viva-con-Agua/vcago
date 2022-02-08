@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/Viva-con-Agua/vcago/vmod"
+	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/nats-io/nats.go"
 )
@@ -23,37 +24,11 @@ type LoggingHandler struct {
 
 var Logger = new(LoggingHandler)
 
-func (i *LoggingHandler) LoadEnv() (r *LoggingHandler) {
-	i.service = Config.GetEnvString("SERVICE_NAME", "w", "default")
-	i.output = Config.GetEnvString("LOGGING_OUTPUT", "w", "strout")
-	return i
-}
-
-/*
-func (i *LoggingHandler) New(service string) (logger *LoggingHandler) {
-	logger = &LoggingHandler{
-		service: service,
-		output:  ,
-	}
-	if i.output == "NATS" {
-		natsUrl := "nats://" + venv.NatsHost + ":" + venv.NatsPort
-		nc, err := nats.Connect(natsUrl)
-		if err != nil {
-			log.Fatal(verr.ErrorWithColor, err, " ", "NatsUrl: ", natsUrl)
-		}
-		logger.Nats, err = nats.NewEncodedConn(nc, nats.JSON_ENCODER)
-		if err != nil {
-			log.Fatal(verr.ErrorWithColor, err)
-		}
-		log.Print("nats successfully connected!")
-	}
-	return
-}*/
-
 //Write is an IOWriter for handling the middleware Logger output.
 func (i *LoggingHandler) Write(data []byte) (n int, err error) {
 	n = len(data)
 	logError := new(LogError)
+	logError.Modified = *vmod.NewModified()
 	if err = json.Unmarshal(data, logError); err != nil {
 		if data != nil {
 			fmt.Print(string(data) + "\n")
@@ -68,6 +43,9 @@ func (i *LoggingHandler) Write(data []byte) (n int, err error) {
 	}
 	if i.output == "nats" {
 		i.Log(logError)
+	} else if i.output == "pretty" {
+		t, _ := json.MarshalIndent(logError, "", "    ")
+		fmt.Print(string(t) + "\n")
 	} else {
 		t, _ := json.Marshal(logError)
 		fmt.Print(string(t) + "\n")
@@ -82,14 +60,16 @@ func (i *LoggingHandler) Log(logError *LogError) {
 }
 
 //Config for echo middleware Logger. Use logger for handle Nats connection.
-func (i *LoggingHandler) Config() *middleware.LoggerConfig {
-	return &middleware.LoggerConfig{
+func (i *LoggingHandler) Init() echo.MiddlewareFunc {
+	i.service = Config.GetEnvString("SERVICE_NAME", "w", "default")
+	i.output = Config.GetEnvString("LOGGING_OUTPUT", "w", "strout")
+	return middleware.LoggerWithConfig(middleware.LoggerConfig{
 		Format: `{"time":"${time_rfc3339_nano}","id":"${id}","remote_ip":"${remote_ip}",` +
 			`"host":"${host}","method":"${method}","uri":"${uri}","user_agent":"${user_agent}",` +
 			`"status":${status},"error":"${error}","latency":${latency},"latency_human":"${latency_human}"` +
 			`,"bytes_in":${bytes_in},"bytes_out":${bytes_out}}`,
 		Output: i,
-	}
+	})
 }
 
 //LogError represents the an LogError for handling via nats and store into mongo databases. The struct matches the Config Format string as json.

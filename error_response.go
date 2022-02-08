@@ -2,6 +2,7 @@ package vcago
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -22,6 +23,7 @@ type (
 func HTTPErrorHandler(err error, c echo.Context) {
 	code := http.StatusInternalServerError
 	response := new(interface{})
+	log.Print(err)
 	if he, ok := err.(*echo.HTTPError); ok {
 		code = he.Code
 		response = &he.Message

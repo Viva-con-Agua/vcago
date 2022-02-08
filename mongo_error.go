@@ -67,3 +67,14 @@ func (i *MongoError) Response() (int, interface{}) {
 		return InternalServerError()
 	}
 }
+
+func MongoNoDocuments(err error) bool {
+	merr, ok := err.(*MongoError)
+	if !ok {
+		return false
+	}
+	if merr.Err == mongo.ErrNoDocuments {
+		return true
+	}
+	return false
+}
