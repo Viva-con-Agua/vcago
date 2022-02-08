@@ -95,10 +95,23 @@ func main() {
 }
 ```
 
+#### Use in handler
+
+BindAndValidate follows simple [this](https://echo.labstack.com/guide/request/#validate-data) documentation. 
+In the event of an error, an `ValidationError` will always be returned, 
+which can be processed by the `HTTPErrorHandler`.
 
 ```
-
+func Example(c echo.Context) (err error) {
+	...
+	//Validate JSON
+	body := new(dao.Example)
+	if vcago.BindAndValidate(c, body); err != nil {
+		return
+	}
+    ...
 ```
+
 
 ```
 func main() {
