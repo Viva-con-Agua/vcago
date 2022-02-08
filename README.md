@@ -1,7 +1,48 @@
-# vca-go
-Package for handling vca-api
+# vcago
+The package contains standard functions that are used in the Viva-con-Agua API services and is on the [echo web framework](https://github.com/labstack/echo)
 
-## vcago package
+
+## CORS
+
+### Setup in server.go
+
+```
+func main() {
+	e := echo.New()
+    ...
+    e.Use(vcago.CORS.Init())
+    ...
+}
+```
+### edit the .env file
+
+```
+...
+ALLOW_ORIGINS="https://example.com,https://api.example.com"
+...
+```
+
+
+```
+func main() {
+	e := echo.New()
+	e.Debug = false
+	// Middleware
+	e.Use(vcago.Logger.Init())
+	e.Use(vcago.CORS.Init())
+
+	//error
+	e.HTTPErrorHandler = vcago.HTTPErrorHandler
+	e.Validator = vcago.JSONValidator
+	handlers.CreateClient()
+	login := e.Group("/v1/auth")
+	login.POST("/callback", handlers.CallbackHandler)
+
+	//server
+	appPort := vcago.Config.GetEnvString("APP_PORT", "n", "1323")
+	e.Logger.Fatal(e.Start(":" + appPort))
+```
+
 ```
 CONSTANTS
 
