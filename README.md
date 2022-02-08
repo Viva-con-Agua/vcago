@@ -24,6 +24,81 @@ ALLOW_ORIGINS="https://example.com,https://api.example.com"
 ...
 ```
 
+### ErrorHandler
+
+#### Setup in server.go
+
+```
+func main() {
+    e := echo.New()
+    ...
+    e.HTTPErrorHandler = vcago.HTTPErrorHandler    
+    ...
+}
+```
+### Logger
+
+#### Setup in server.go
+
+```
+func main() {
+    e := echo.New()
+    ...
+    e.Use(vcago.Logger.Init()) 
+    ...
+}
+```
+#### edit the .env file
+```
+SERVICE_NAME=default  //service name, default default
+LOGGING_OUTPUT=strout  // pretty, nats default strout
+```
+
+#### output pretty
+
+```
+{
+    "id": "",  //not implemented
+    "service": "example",
+    "time": "2022-02-07T19:50:08.971851362+01:00",
+    "remote_ip": "127.0.0.1",
+    "host": "localhost:1323",
+    "method": "POST",
+    "uri": "/example",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64; rv:96.0) Gecko/20100101 Firefox/96.0",
+    "status": 500,
+    "error": {
+        "status_message": "example error",
+        "status_type": "internal_error"
+    },
+    "latency": 2002915,
+    "latency_human": "2.002915ms",
+    "byte_in": "",
+    "byte_out": "",
+    "modified": {
+        "updated": 1644259808,
+        "created": 1644259808
+    }
+}
+```
+
+### JSONValidator
+
+#### Setup in server.go
+
+```
+func main() {
+    e := echo.New()
+    ...
+    e.Validator = vcago.JSONValidator
+    ...
+}
+```
+
+
+```
+
+```
 
 ```
 func main() {
