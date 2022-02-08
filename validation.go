@@ -13,11 +13,15 @@ type Validator struct {
 	validator *validator.Validate
 }
 
+var JSONValidator = NewValidator()
+
 //Validate extend JSONValidator with Validate function.
 
-func (i *Validator) New(v *validator.Validate) *Validator {
-	i.validator = v
-	return i
+func NewValidator() (r *Validator) {
+	r = new(Validator)
+	v := validator.New()
+	r.validator = v
+	return
 }
 
 func (i *Validator) Validate(valid interface{}) error {

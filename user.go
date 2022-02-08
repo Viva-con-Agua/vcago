@@ -7,11 +7,10 @@ import (
 type (
 	//User represents the user model
 	User struct {
-		ID       string   `json:"id,omitempty" bson:"_id"`
-		Email    string   `json:"email" bson:"email" validate:"required,email"`
-		Profile  Profile  `json:"profile" bson:"profile"`
-		Roles    string   `json:"roles" bson:"roles"`
-		Modified Modified `json:"modified" bson:"modified"`
+		ID      string  `json:"id,omitempty" bson:"_id"`
+		Email   string  `json:"email" bson:"email" validate:"required,email"`
+		Profile Profile `json:"profile" bson:"profile"`
+		Roles   string  `json:"roles" bson:"roles"`
 	}
 	//Profile contains the profile information of an user model
 	Profile struct {
