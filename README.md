@@ -4,7 +4,7 @@ The package contains standard functions that are used in the Viva-con-Agua API s
 
 ## PACKAGE
 
-### Basic Webservcer
+### Basic Webserver
 
 
 #### Setup in server.go
