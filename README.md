@@ -4,57 +4,37 @@ The package contains standard functions that are used in the Viva-con-Agua API s
 
 ## PACKAGE
 
-### CORS
+### Basic Webservcer
+
 
 #### Setup in server.go
 
 ```
 func main() {
     e := echo.New()
-    ...
+    e.HTTPErrorHandler = vcago.HTTPErrorHandler    
+    e.Validator = vcago.JSONValidator
     e.Use(vcago.CORS.Init())
+    e.Use(vcago.Logger.Init()) 
     ...
+
+    ...
+	appPort := vcago.Config.GetEnvString("APP_PORT", "n", "1323")
+	e.Logger.Fatal(e.Start(":" + appPort))
+
 }
 ```
 #### edit the .env file
 
 ```
-...
+SERVICE_NAME=default  //service name, default default
+APP_PORT=1323           // default port 1323
+LOGGING_OUTPUT=strout  // pretty, nats default strout
 ALLOW_ORIGINS="https://example.com,https://api.example.com"
 ...
 ```
 
-### ErrorHandler
-
-#### Setup in server.go
-
-```
-func main() {
-    e := echo.New()
-    ...
-    e.HTTPErrorHandler = vcago.HTTPErrorHandler    
-    ...
-}
-```
-### Logger
-
-#### Setup in server.go
-
-```
-func main() {
-    e := echo.New()
-    ...
-    e.Use(vcago.Logger.Init()) 
-    ...
-}
-```
-#### edit the .env file
-```
-SERVICE_NAME=default  //service name, default default
-LOGGING_OUTPUT=strout  // pretty, nats default strout
-```
-
-#### output pretty
+#### output logger pretty
 
 ```
 {
@@ -82,22 +62,9 @@ LOGGING_OUTPUT=strout  // pretty, nats default strout
 }
 ```
 
-### JSONValidator
-
-#### Setup in server.go
-
-```
-func main() {
-    e := echo.New()
-    ...
-    e.Validator = vcago.JSONValidator
-    ...
-}
-```
-
 #### Use in handler
 
-BindAndValidate follows simple [this](https://echo.labstack.com/guide/request/#validate-data) documentation. 
+BindAndValidate follows  [this](https://echo.labstack.com/guide/request/#validate-data) documentation. 
 In the event of an error, an `ValidationError` will always be returned, 
 which can be processed by the `HTTPErrorHandler`.
 
