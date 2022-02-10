@@ -2,6 +2,7 @@ package vcago
 
 import (
 	"context"
+	"errors"
 	"log"
 
 	"github.com/coreos/go-oidc/v3/oidc"
@@ -54,7 +55,7 @@ func (i *HydraClient) Callback(ctx context.Context, callback *Callback) (r *User
 	// Extract the ID Token from OAuth2 token.
 	rawIDToken, ok := oauth2Token.Extra("id_token").(string)
 	if !ok {
-		// handle missing token
+		return nil, NewStatusInternal(errors.New("hydra token is missing"))
 	}
 	// Parse and verify ID Token payload.
 	idToken := new(oidc.IDToken)
