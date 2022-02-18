@@ -11,21 +11,14 @@ type (
 		Email   string  `json:"email" bson:"email" validate:"required,email"`
 		Profile Profile `json:"profile" bson:"profile"`
 		Roles   string  `json:"roles" bson:"roles"`
+		Country string  `bson:"country" json:"country"`
 	}
 	//Profile contains the profile information of an user model
 	Profile struct {
-		FirstName   string `bson:"first_name" json:"first_name" validate:"required"`
-		LastName    string `bson:"last_name" json:"last_name" validate:"required"`
-		FullName    string `bson:"full_name" json:"full_name"`
-		DisplayName string `bson:"display_name" json:"display_name"`
-		Gender      string `bson:"gender" json:"gender"`
-		Country     string `bson:"country" json:"country"`
-		Avatar      Avatar `bson:"avatar" json:"avatar"`
-	}
-	//Avatar contains the link and picturetype of the user avatar
-	Avatar struct {
-		URL  string `bson:"url" json:"url"`
-		Type string `bson:"type" json:"type"`
+		FirstName string `bson:"first_name" json:"first_name" validate:"required"`
+		LastName  string `bson:"last_name" json:"last_name" validate:"required"`
+		FullName  string `bson:"full_name" json:"full_name"`
+		Gender    string `bson:"gender" json:"gender"`
 	}
 )
 

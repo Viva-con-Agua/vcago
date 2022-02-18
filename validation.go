@@ -58,17 +58,29 @@ func (i *ValidationError) Valid(err error) {
 
 func (i *ValidationError) Bind(err error) {
 	dummy := err.Error()
-	temp := strings.Split(dummy, "expected=")
-	temp = strings.Split(temp[1], ",")
-	expected := temp[0]
-	temp = strings.Split(dummy, "got=")
-	temp = strings.Split(temp[1], ",")
-	got := temp[0]
-	temp = strings.Split(dummy, "field=")
-	temp = strings.Split(temp[1], ",")
-	field := temp[0]
-
-	i.Errors = append(i.Errors, "field "+field+" expected "+expected+" but got "+got+".")
+	expected := ""
+	if strings.Contains(dummy, "expected=") {
+		temp := strings.Split(dummy, "expected=")
+		temp = strings.Split(temp[1], ",")
+		expected = temp[0]
+	}
+	got := ""
+	if strings.Contains(dummy, "got=") {
+		temp := strings.Split(dummy, "got=")
+		temp = strings.Split(temp[1], ",")
+		got = temp[0]
+	}
+	field := ""
+	if strings.Contains(dummy, "field=") {
+		temp := strings.Split(dummy, "field=")
+		temp = strings.Split(temp[1], ",")
+		field = temp[0]
+	}
+	if expected != "" && got != "" && field != "" {
+		i.Errors = append(i.Errors, "field "+field+" expected "+expected+" but got "+got+".")
+	} else {
+		i.Errors = append(i.Errors, dummy)
+	}
 }
 
 func (i *ValidationError) Response() (int, interface{}) {

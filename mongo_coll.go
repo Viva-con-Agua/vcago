@@ -67,7 +67,7 @@ func (i *MongoColl) Find(ctx context.Context, filter bson.M, value interface{}) 
 }
 
 //Aggregate provide using aggregations.
-func (i *MongoColl) Aggregate(ctx context.Context, filter bson.D, value interface{}) (err error) {
+func (i *MongoColl) Aggregate(ctx context.Context, filter []bson.D, value interface{}) (err error) {
 	cursor, err := i.Collection.Aggregate(ctx, filter)
 	if err != nil {
 		return NewMongoError(err, value, bson.M{"filter": filter}, i.DatabaseName, i.Name)
