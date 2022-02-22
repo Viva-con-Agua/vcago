@@ -9,30 +9,28 @@ import (
 type (
 	//LinkToken is used for handling link with token
 	LinkToken struct {
-		ID      string `bson:"_id" json:"token_id"`
-		Code    string `bson:"code" json:"code"`
-		Tcase   string `json:"t_case"`
-		Scope   string `json:"scope"`
-		Expired int64  `json:"expired"`
-		Created int64  `json:"created"`
-		ModelID string `json:"model_id" bson:"model_id"`
+		ID        string   `json:"id" bson:"_id"`
+		Code      string   `json:"code" bson:"code"`
+		ExpiresAt int64    `json:"expires_at" bson:"expires_at"`
+		Scope     string   `json:"scope" bson:"scope"`
+		UserID    string   `json:"user_id" bson:"user_id"`
+		Modified  Modified `json:"modified" bson:"modified"`
 	}
 )
 
 //NewLinkToken initial a Token with a 32bit random string Base64 encoded for Web handling. Set expired time max 1 month.
-func NewLinkToken(tCase string, expired time.Duration, modelID string, scope string) (*LinkToken, error) {
+func NewLinkToken(expired time.Duration, userID string, scope string) (*LinkToken, error) {
 	code, err := RandomBase64(32)
 	if err != nil {
 		return nil, err
 	}
 	return &LinkToken{
-		ID:      uuid.New().String(),
-		Code:    code,
-		Tcase:   tCase,
-		Scope:   scope,
-		Expired: time.Now().Add(expired).Unix(),
-		Created: time.Now().Unix(),
-		ModelID: modelID,
+		ID:        uuid.New().String(),
+		Code:      code,
+		ExpiresAt: time.Now().Add(expired).Unix(),
+		Scope:     scope,
+		UserID:    userID,
+		Modified:  NewModified(),
 	}, nil
 }
 
@@ -43,7 +41,6 @@ func (l *LinkToken) NewCode(expired time.Duration) (*LinkToken, error) {
 		return nil, err
 	}
 	l.Code = code
-	l.Expired = time.Now().Add(expired).Unix()
-	l.Created = time.Now().Unix()
+	l.ExpiresAt = time.Now().Add(expired).Unix()
 	return l, nil
 }

@@ -104,7 +104,7 @@ var ErrMongoDelete = errors.New("no delete document")
 func (i *MongoColl) DeleteOne(ctx context.Context, filter bson.M) (err error) {
 	result, err := i.Collection.DeleteOne(
 		ctx,
-		bson.M{"_id": filter},
+		filter,
 	)
 	if err != nil {
 		return NewMongoError(err, nil, filter, i.DatabaseName, i.Name)
