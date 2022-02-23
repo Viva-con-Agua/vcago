@@ -13,7 +13,6 @@ type (
 		Roles         string   `json:"roles" bson:"roles"`
 		Country       string   `bson:"country" json:"country"`
 		PrivacyPolicy bool     `bson:"privacy_policy" json:"privacy_policy"`
-		Modified      Modified `bson:"modified" json:"modified"`
 		WebApps       []string `bson:"web_apps" json:"web_apps"`
 	}
 	//Profile contains the profile information of an user model
