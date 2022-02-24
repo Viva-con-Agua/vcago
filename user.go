@@ -10,7 +10,7 @@ type (
 		ID            string   `json:"id,omitempty" bson:"_id"`
 		Email         string   `json:"email" bson:"email" validate:"required,email"`
 		Profile       Profile  `json:"profile" bson:"profile"`
-		Roles         string   `json:"roles" bson:"roles"`
+		Roles         RoleList `json:"roles" bson:"roles"`
 		Country       string   `bson:"country" json:"country"`
 		PrivacyPolicy bool     `bson:"privacy_policy" json:"privacy_policy"`
 		WebApps       []string `bson:"web_apps" json:"web_apps"`
