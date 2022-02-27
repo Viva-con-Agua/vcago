@@ -1,8 +1,6 @@
 package vcago
 
 import (
-	"encoding/json"
-	"log"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -22,17 +20,12 @@ type (
 //HTTPErrorHandler handles echo.HTTPError and return the correct response.
 func HTTPErrorHandler(err error, c echo.Context) {
 	code := http.StatusInternalServerError
-	response := new(interface{})
-	log.Print(err)
 	if he, ok := err.(*echo.HTTPError); ok {
 		code = he.Code
-		response = &he.Message
 		if he.Code == http.StatusInternalServerError {
 			c.JSON(code, ErrorResponse{Message: "internal_server_error"})
 		} else {
-			res := new(interface{})
-			json.Unmarshal([]byte((*response).(string)), res)
-			c.JSON(code, res)
+			c.JSON(code, err)
 		}
 	} else if resp, ok := err.(*MongoError); ok {
 		c.JSON(resp.Response())

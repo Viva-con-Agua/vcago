@@ -8,6 +8,7 @@ const StatusFAILED = "failed"
 const StatusCREATED = "created"
 const StatusOPEN = "open"
 const StatusINTERNAL = "internal_error"
+const StatusBADREQUEST = "bad_request"
 
 type Status struct {
 	StatusType    string `bson:"status_type" json:"status_type"`
@@ -21,6 +22,13 @@ func NewStatus() *Status {
 func NewStatusInternal(message error) *Status {
 	return &Status{
 		StatusType:    StatusINTERNAL,
+		StatusMessage: message.Error(),
+	}
+}
+
+func NewStatusBadRequest(message error) *Status {
+	return &Status{
+		StatusType:    StatusBADREQUEST,
 		StatusMessage: message.Error(),
 	}
 }
@@ -74,6 +82,8 @@ func (i *Status) Response() (int, interface{}) {
 	switch i.StatusType {
 	case StatusINTERNAL:
 		return InternalServerError()
+	case StatusBADREQUEST:
+		return BadRequest("status", i)
 	default:
 		return BadRequest("status", i)
 	}
