@@ -21,7 +21,7 @@ func (i *MongoPipe) AddModelAt(from string, root string, child string, as string
 			{Key: "foreignField", Value: child},
 			{Key: "as", Value: as},
 		}}}
-	unwind := bson.D{{Key: "$unwind", Value: "$" + as}}
+	unwind := bson.D{{Key: "$unwind", Value: bson.D{{Key: "path", Value: "$" + as}, {Key: "preserveNullAndEmptyArrays", Value: true}}}}
 	i.Pipe = append(i.Pipe, lookup)
 	i.Pipe = append(i.Pipe, unwind)
 }

@@ -2,6 +2,7 @@ package vcago
 
 import (
 	"errors"
+	"time"
 )
 
 type (
@@ -20,6 +21,15 @@ type (
 		LastUpdate    string   `bson:"last_update" json:"last_update"`
 	}
 )
+
+func (i *User) CheckUpdate(lastUpdate string) bool {
+	current, _ := time.Parse(time.RFC3339, i.LastUpdate)
+	last, _ := time.Parse(time.RFC3339, lastUpdate)
+	if current.Unix() > last.Unix() {
+		return true
+	}
+	return false
+}
 
 //Load loads an interface in an vcago.User model
 func (i *User) Load(user interface{}) (err error) {
