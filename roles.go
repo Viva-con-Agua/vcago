@@ -1,11 +1,17 @@
 package vcago
 
-import "strings"
+import (
+	"strings"
+
+	"github.com/google/uuid"
+)
 
 type Role struct {
-	Name  string `json:"name" bson:"name"`
-	Label string `json:"label" bson:"label"`
-	Root  string `json:"root" bson:"root"`
+	ID     string `json:"id" bson:"_id"`
+	Name   string `json:"name" bson:"name"`
+	Label  string `json:"label" bson:"label"`
+	Root   string `json:"root" bson:"root"`
+	UserID string `json:"user_id" bson:"user_id"`
 }
 
 type RoleList []Role
@@ -34,26 +40,32 @@ func (i *RoleList) Append(role *Role) {
 	}
 }
 
-func RoleMember() *Role {
+func RoleMember(userID string) *Role {
 	return &Role{
-		Name:  "member",
-		Label: "Member",
-		Root:  "system",
+		ID:     uuid.NewString(),
+		Name:   "member",
+		Label:  "Member",
+		Root:   "system",
+		UserID: userID,
 	}
 }
 
-func RoleAdmin() *Role {
+func RoleAdmin(userID string) *Role {
 	return &Role{
-		Name:  "admin",
-		Label: "Admin",
-		Root:  "system;admin",
+		ID:     uuid.NewString(),
+		Name:   "admin",
+		Label:  "Admin",
+		Root:   "system;admin",
+		UserID: userID,
 	}
 }
 
-func RoleEmployee() *Role {
+func RoleEmployee(userID string) *Role {
 	return &Role{
-		Name:  "employee",
-		Label: "Employee",
-		Root:  "system;admin;employee",
+		ID:     uuid.NewString(),
+		Name:   "employee",
+		Label:  "Employee",
+		Root:   "system;admin;employee",
+		UserID: userID,
 	}
 }

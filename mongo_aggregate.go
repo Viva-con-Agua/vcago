@@ -25,3 +25,15 @@ func (i *MongoPipe) AddModelAt(from string, root string, child string, as string
 	i.Pipe = append(i.Pipe, lookup)
 	i.Pipe = append(i.Pipe, unwind)
 }
+
+func (i *MongoPipe) AddListAt(from string, root string, child string, as string) {
+	lookup := bson.D{{
+		Key: "$lookup",
+		Value: bson.D{
+			{Key: "from", Value: from},
+			{Key: "localField", Value: root},
+			{Key: "foreignField", Value: child},
+			{Key: "as", Value: as},
+		}}}
+	i.Pipe = append(i.Pipe, lookup)
+}

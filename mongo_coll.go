@@ -31,6 +31,21 @@ func (i *MongoColl) CreateIndex(field string, unique bool) *MongoColl {
 	return i
 }
 
+func (i *MongoColl) CreateMultiIndex(filter bson.D, unique bool) *MongoColl {
+	mod := mongo.IndexModel{
+		Keys:    filter,
+		Options: options.Index().SetUnique(unique),
+	}
+	_, err := i.Collection.Indexes().CreateOne(context.Background(), mod)
+	if err != nil {
+		log.Print("database failed to create index " + i.Name)
+	} else {
+		log.Print("database index created for: " + i.Name)
+	}
+	return i
+
+}
+
 //InsertOne inserts a value and return an MongoError as error.
 func (i *MongoColl) InsertOne(ctx context.Context, value interface{}) (err error) {
 	_, err = i.Collection.InsertOne(ctx, value)
