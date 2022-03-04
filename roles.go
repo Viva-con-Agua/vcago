@@ -25,6 +25,15 @@ func (i *RoleList) In(roles string) bool {
 	return false
 }
 
+func (i *RoleList) Validate(roles string) bool {
+	for n, _ := range *i {
+		if strings.Contains(roles, (*i)[n].Name) {
+			return true
+		}
+	}
+	return false
+}
+
 func (i *RoleList) CheckRoot(role *Role) bool {
 	for n, _ := range *i {
 		if strings.Contains(role.Root, (*i)[n].Name) {

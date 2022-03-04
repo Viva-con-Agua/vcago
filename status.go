@@ -1,6 +1,8 @@
 package vcago
 
-import "encoding/json"
+import (
+	"encoding/json"
+)
 
 const StatusDONE = "done"
 const StatusPROCESS = "process"
@@ -30,6 +32,13 @@ func NewStatusBadRequest(message error) *Status {
 	return &Status{
 		StatusType:    StatusBADREQUEST,
 		StatusMessage: message.Error(),
+	}
+}
+
+func NewStatusPermissionDenied() *Status {
+	return &Status{
+		StatusType:    StatusBADREQUEST,
+		StatusMessage: "permission denied",
 	}
 }
 
