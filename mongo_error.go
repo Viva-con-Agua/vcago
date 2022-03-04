@@ -49,20 +49,26 @@ func (i *MongoError) Error() string {
 	return string(res)
 }
 
+type MongoErrorResponse struct {
+	Filter     interface{} `json:"filter" bson:"filter"`
+	Collection string      `json:"collection" bson:"collection"`
+}
+
 //Response return the ErrorResponse for handling in httpErrorHandler
 func (i *MongoError) Response() (int, interface{}) {
 	if strings.Contains(i.Message, "duplicate key error") {
 		temp := strings.Split(i.Message, "key: {")
 		temp = strings.Split(temp[1], "}")
-		return Conflict("duplicate key error", "key: {"+temp[0]+"}")
+		return Conflict("duplicate key error", MongoErrorResponse{Filter: "key: {" + temp[0] + "}", Collection: i.Collection})
 	}
+
 	switch i.Err {
 	case mongo.ErrNoDocuments:
-		return NotFound("document not found", i.Filter)
+		return NotFound("document not found", MongoErrorResponse{Filter: i.Filter, Collection: i.Collection})
 	case ErrMongoUpdate:
-		return NotFound("document not updated", i.Filter)
+		return NotFound("document not updated", MongoErrorResponse{Filter: i.Filter, Collection: i.Collection})
 	case ErrMongoDelete:
-		return NotFound("document not deleted", i.Filter)
+		return NotFound("document not deleted", MongoErrorResponse{Filter: i.Filter, Collection: i.Collection})
 	default:
 		return InternalServerError()
 	}
