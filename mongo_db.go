@@ -17,11 +17,11 @@ type MongoDB struct {
 }
 
 //NewMongoDB creates a new MongoDB connects to mongoDB and return an Mongo struct.
-func NewMongoDB() (r *MongoDB) {
+func NewMongoDB(name string) (r *MongoDB) {
 	r = new(MongoDB)
 	r.Host = Config.GetEnvString("DB_HOST", "w", "localhost")
 	r.Port = Config.GetEnvString("DB_PORT", "w", "27017")
-	r.Name = Config.GetEnvString("DB_NAME", "w", "default")
+	r.Name = name
 	uri := "mongodb://" + r.Host + ":" + r.Port
 	log.Print("MongoDB connection to " + uri)
 	opts := options.Client()
