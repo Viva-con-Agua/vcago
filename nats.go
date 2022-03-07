@@ -41,6 +41,7 @@ func (i *NatsDAO) Publish(message string, body interface{}) {
 }
 
 func (i *NatsDAO) Subscribe(message string, catch interface{}) {
+
 	_, err := i.connection.Subscribe(message, catch)
 	if err != nil {
 		//TODO: nats logging message
