@@ -117,10 +117,18 @@ var ErrMongoDelete = errors.New("no delete document")
 
 //DeleteOne deletes an element from given collection by the bson.M filter.
 func (i *MongoColl) DeleteOne(ctx context.Context, filter bson.M) (err error) {
-	result, err := i.Collection.DeleteOne(
-		ctx,
-		filter,
-	)
+	result, err := i.Collection.DeleteOne(ctx, filter)
+	if err != nil {
+		return NewMongoError(err, nil, filter, i.DatabaseName, i.Name)
+	}
+	if result.DeletedCount == 0 {
+		return NewMongoError(ErrMongoDelete, nil, filter, i.DatabaseName, i.Name)
+	}
+	return
+}
+
+func (i *MongoColl) DeleteMany(ctx context.Context, filter bson.M) (err error) {
+	result, err := i.Collection.DeleteMany(ctx, filter)
 	if err != nil {
 		return NewMongoError(err, nil, filter, i.DatabaseName, i.Name)
 	}

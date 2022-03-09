@@ -84,3 +84,25 @@ func MongoNoDocuments(err error) bool {
 	}
 	return false
 }
+
+func MongoNoDeleted(err error) bool {
+	merr, ok := err.(*MongoError)
+	if !ok {
+		return false
+	}
+	if merr.Err == ErrMongoDelete {
+		return true
+	}
+	return false
+}
+
+func MongoNoUpdated(err error) bool {
+	merr, ok := err.(*MongoError)
+	if !ok {
+		return false
+	}
+	if merr.Err == ErrMongoUpdate {
+		return true
+	}
+	return false
+}
