@@ -11,6 +11,7 @@ import (
 
 //MongoError represents the struct of an mongo Error type.
 type MongoError struct {
+	ErrorType  string      `json:"error_type" bson:"error_type"`
 	Err        error       `json:"-" bson:"-"`
 	Message    string      `json:"message" bson:"message"`
 	Filter     interface{} `json:"filter" bson:"filter"`
@@ -32,6 +33,7 @@ func NewMongoError(err error, value interface{}, filter bson.M, database string,
 	_, line := f.FileLine(pc[0])
 	file := runtime.FuncForPC(pc[0]).Name()
 	return &MongoError{
+		ErrorType:  "mongo_error",
 		Err:        err,
 		Message:    err.Error(),
 		Filter:     temp,

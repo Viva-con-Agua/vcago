@@ -34,9 +34,16 @@ func (i *LoggingHandler) Write(data []byte) (n int, err error) {
 		}
 		return
 	}
-	temp := new(interface{})
-	json.Unmarshal([]byte(logError.Error.(string)), temp)
-	logError.Error = temp
+	type ErrorType struct {
+		ErrorType string `json:"error_type"`
+	}
+	status := new(ErrorType)
+	json.Unmarshal([]byte(logError.Error.(string)), status)
+	logError.ErrorType = status.ErrorType
+
+	//temp := new(interface{})
+	//json.Unmarshal([]byte(logError.Error.(string)), temp)
+	//logError.Error = temp
 	if logError.Status/100 == 2 {
 		return
 	}
@@ -59,8 +66,8 @@ func (i *LoggingHandler) Log(logError *LogError) {
 }
 
 //Config for echo middleware Logger. Use logger for handle Nats connection.
-func (i *LoggingHandler) Init() echo.MiddlewareFunc {
-	i.service = Config.GetEnvString("SERVICE_NAME", "w", "default")
+func (i *LoggingHandler) Init(service string) echo.MiddlewareFunc {
+	i.service = service
 	i.output = Config.GetEnvString("LOGGING_OUTPUT", "w", "strout")
 	return middleware.LoggerWithConfig(middleware.LoggerConfig{
 		Format: `{"time":"${time_rfc3339_nano}","id":"${id}","remote_ip":"${remote_ip}",` +
@@ -87,5 +94,6 @@ type LogError struct {
 	LatencyHuman string      `json:"latency_human" bson:"latency_human"`
 	ByteIn       string      `json:"byte_in" bson:"byte_in"`
 	ByteOut      string      `json:"byte_out" bson:"byte_out"`
+	ErrorType    string      `json:"error_type" bson:"error_type"`
 	Modified     Modified    `json:"modified" bson:"modified"`
 }

@@ -29,7 +29,8 @@ func (i *Validator) Validate(valid interface{}) error {
 }
 
 type ValidationError struct {
-	Errors []string `json:"errors"`
+	ErrorType string   `json:"error_type"`
+	Errors    []string `json:"errors"`
 }
 
 func (i *ValidationError) Error() string {
@@ -39,7 +40,8 @@ func (i *ValidationError) Error() string {
 
 func NewValidationError(err string) *ValidationError {
 	return &ValidationError{
-		Errors: []string{err},
+		ErrorType: "validation_error",
+		Errors:    []string{err},
 	}
 }
 

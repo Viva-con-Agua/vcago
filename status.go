@@ -13,16 +13,20 @@ const StatusINTERNAL = "internal_error"
 const StatusBADREQUEST = "bad_request"
 
 type Status struct {
+	ErrorType     string `bson:"error_type" json:"error_type"`
 	StatusType    string `bson:"status_type" json:"status_type"`
 	StatusMessage string `bson:"status_message" json:"status_message"`
 }
 
 func NewStatus() *Status {
-	return &Status{}
+	return &Status{
+		ErrorType: "status_error",
+	}
 }
 
 func NewStatusInternal(message error) *Status {
 	return &Status{
+		ErrorType:     "status_error",
 		StatusType:    StatusINTERNAL,
 		StatusMessage: message.Error(),
 	}
@@ -30,6 +34,7 @@ func NewStatusInternal(message error) *Status {
 
 func NewStatusBadRequest(message error) *Status {
 	return &Status{
+		ErrorType:     "status_error",
 		StatusType:    StatusBADREQUEST,
 		StatusMessage: message.Error(),
 	}
@@ -37,6 +42,7 @@ func NewStatusBadRequest(message error) *Status {
 
 func NewStatusPermissionDenied() *Status {
 	return &Status{
+		ErrorType:     "status_error",
 		StatusType:    StatusBADREQUEST,
 		StatusMessage: "permission denied",
 	}
