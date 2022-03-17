@@ -2,16 +2,12 @@ package vcago
 
 import (
 	"log"
-	"net/http"
 	"os"
 	"strconv"
 	"strings"
 
 	"github.com/joho/godotenv"
 )
-
-//HTTPBaseCookie defines the base cookie setup for vcago
-var HTTPBaseCookie http.Cookie
 
 const (
 	colorRed    = "\033[31m"
@@ -27,21 +23,16 @@ const (
 //LoadEnv used for loading environment variables.
 type LoadEnv []bool
 
+//Config represents the global configuration variables.
 var Config = LoadConfig()
 
-//NatsHost is the ip of the nats service.
-var NatsHost string
-
-//NatsPort is the port ot the nats service.
-var NatsPort string
-
-//Env load the environment variables for vcago
-
+//LoadConfig loads the .env file and return an LoadEnv type
 func LoadConfig() *LoadEnv {
 	godotenv.Load(".env")
 	return new(LoadEnv)
 }
 
+//envLogError print all warnings and errors.
 func envLogError(key string, e string, lvl string, dVal interface{}) bool {
 	if lvl == "n" {
 		return true
