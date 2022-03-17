@@ -14,7 +14,35 @@ type Role struct {
 	UserID string `json:"user_id" bson:"user_id"`
 }
 
+type RoleListCookie []string
+
 type RoleList []Role
+
+func (i *RoleList) Cookie() (r *RoleListCookie) {
+	r = new(RoleListCookie)
+	for n, _ := range *i {
+		*r = append(*r, (*i)[n].Name)
+	}
+	return
+}
+
+func (i *RoleListCookie) CheckRoot(role *Role) bool {
+	for n, _ := range *i {
+		if strings.Contains(role.Root, (*i)[n]) {
+			return true
+		}
+	}
+	return false
+}
+
+func (i *RoleListCookie) Validate(roles string) bool {
+	for n, _ := range *i {
+		if strings.Contains(roles, (*i)[n]) {
+			return true
+		}
+	}
+	return false
+}
 
 func (i *RoleList) In(roles string) bool {
 	for n, _ := range *i {
@@ -25,6 +53,7 @@ func (i *RoleList) In(roles string) bool {
 	return false
 }
 
+/*
 func (i *RoleList) Validate(roles string) bool {
 	for n, _ := range *i {
 		if strings.Contains(roles, (*i)[n].Name) {
@@ -42,7 +71,7 @@ func (i *RoleList) CheckRoot(role *Role) bool {
 	}
 	return false
 }
-
+*/
 func (i *RoleList) Append(role *Role) {
 	if !i.In(role.Name) {
 		*i = append(*i, *role)
