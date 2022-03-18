@@ -1,8 +1,6 @@
 package vcago
 
 import (
-	"log"
-
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -43,7 +41,6 @@ func (i *MongoPipe) AddListAt(from string, root string, child string, as string)
 }
 
 func (i *MongoPipe) AddMatch(m *MongoMatch) {
-	log.Print(*m)
 	if *m != nil {
 		match := bson.D{{
 			Key:   "$match",
