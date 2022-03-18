@@ -1,6 +1,10 @@
 package vcago
 
-import "go.mongodb.org/mongo-driver/bson"
+import (
+	"log"
+
+	"go.mongodb.org/mongo-driver/bson"
+)
 
 type MongoPipe struct {
 	Pipe []bson.D
@@ -36,4 +40,15 @@ func (i *MongoPipe) AddListAt(from string, root string, child string, as string)
 			{Key: "as", Value: as},
 		}}}
 	i.Pipe = append(i.Pipe, lookup)
+}
+
+func (i *MongoPipe) AddMatch(m *MongoMatch) {
+	log.Print(*m)
+	if *m != nil {
+		match := bson.D{{
+			Key:   "$match",
+			Value: *m,
+		}}
+		i.Pipe = append(i.Pipe, match)
+	}
 }
