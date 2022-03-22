@@ -12,6 +12,14 @@ type MongoFilterM struct {
 	Filter bson.M
 }
 
+func CreateUpdateManyFilter(key string, values []string) (r *bson.A) {
+	r = new(bson.A)
+	for n, _ := range values {
+		*r = append(*r, bson.D{{Key: key, Value: values[n]}})
+	}
+	return
+}
+
 func NewMongoFilterM() *MongoFilterM {
 	return &MongoFilterM{
 		Filter: bson.M{},

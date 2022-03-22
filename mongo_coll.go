@@ -55,6 +55,15 @@ func (i *MongoColl) InsertOne(ctx context.Context, value interface{}) (err error
 	return
 }
 
+//InsertMany inserts a list of value and return an MongoError as error.
+func (i *MongoColl) InsertMany(ctx context.Context, value []interface{}) (err error) {
+	_, err = i.Collection.InsertMany(ctx, value)
+	if err != nil {
+		return NewMongoError(err, value, bson.M{}, i.DatabaseName, i.Name)
+	}
+	return
+}
+
 //FindOne select an element form database by using a given filter.
 //The element will bind to the value interface{}.
 //In error case it return an MongoError as error.
@@ -97,11 +106,11 @@ func (i *MongoColl) Aggregate(ctx context.Context, filter []bson.D, value interf
 var ErrMongoUpdate = errors.New("no updated document")
 
 //UpdateOne updates a value via "$set" and the given bson.M filter. Return an MongoError in case that no element has updated.
-func (i *MongoColl) UpdateOne(ctx context.Context, filter bson.M, value interface{}) (err error) {
+func (i *MongoColl) UpdateOne(ctx context.Context, filter bson.M, value bson.M) (err error) {
 	result, err := i.Collection.UpdateOne(
 		ctx,
 		filter,
-		bson.M{"$set": value},
+		value,
 	)
 	if err != nil {
 		return NewMongoError(err, value, filter, i.DatabaseName, i.Name)
@@ -110,6 +119,38 @@ func (i *MongoColl) UpdateOne(ctx context.Context, filter bson.M, value interfac
 		return NewMongoError(ErrMongoUpdate, value, filter, i.DatabaseName, i.Name)
 	}
 	return
+}
+
+//Update updates a value via "$set" and the given bson.M filter. Return an MongoError in case that no element has updated.
+func (i *MongoColl) Update(ctx context.Context, filter bson.M, value bson.M) (err error) {
+	result, err := i.Collection.UpdateMany(
+		ctx,
+		filter,
+		value,
+	)
+	if err != nil {
+		return NewMongoError(err, value, filter, i.DatabaseName, i.Name)
+	}
+	if result.MatchedCount == 0 {
+		return NewMongoError(ErrMongoUpdate, value, filter, i.DatabaseName, i.Name)
+	}
+	return
+}
+
+func (i *MongoColl) UpdateMany(ctx context.Context, filter bson.A, value bson.M) (err error) {
+	result, err := i.Collection.UpdateMany(
+		ctx,
+		filter,
+		value,
+	)
+	if err != nil {
+		return NewMongoError(err, value, bson.M{"filter": filter}, i.DatabaseName, i.Name)
+	}
+	if result.MatchedCount == 0 {
+		return NewMongoError(ErrMongoUpdate, value, bson.M{"filter": filter}, i.DatabaseName, i.Name)
+	}
+	return
+
 }
 
 //ErrMongoDelete represents an delete error in mongo case

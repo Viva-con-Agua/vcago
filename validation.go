@@ -40,8 +40,7 @@ func (i *ValidationError) Error() string {
 
 func NewValidationError(err string) *ValidationError {
 	return &ValidationError{
-		ErrorType: "validation_error",
-		Errors:    []string{err},
+		Errors: []string{err},
 	}
 }
 
@@ -93,11 +92,11 @@ func BindAndValidate(c echo.Context, i interface{}) error {
 	vErr := new(ValidationError)
 	if err := c.Bind(i); err != nil {
 		vErr.Bind(err)
-		return vErr
+		return NewBadRequest("validation_error", vErr)
 	}
 	if err := c.Validate(i); err != nil {
 		vErr.Valid(err)
-		return vErr
+		return NewBadRequest("validation_error", vErr)
 	}
 	return nil
 }

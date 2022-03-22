@@ -4,6 +4,7 @@ package vcago
 import (
 	"encoding/json"
 	"fmt"
+	"time"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -22,6 +23,16 @@ type LoggingHandler struct {
 //NewLogger creates a new Logger.
 
 var Logger = new(LoggingHandler)
+
+func (i *LoggingHandler) New(method string, uri string, err error) *LogError {
+	return &LogError{
+		Service: i.service,
+		Time:    time.Now().Format(time.RFC3339Nano),
+		Error:   err,
+		Method:  method,
+		Uri:     uri,
+	}
+}
 
 //Write is an IOWriter for handling the middleware Logger output.
 func (i *LoggingHandler) Write(data []byte) (n int, err error) {
@@ -78,12 +89,19 @@ func (i *LoggingHandler) Init(service string) echo.MiddlewareFunc {
 	})
 }
 
+func NewLoggingHandler(service string) *LoggingHandler {
+	return &LoggingHandler{
+		service: service,
+		output:  Config.GetEnvString("LOGGING_OUTPUT", "w", "strout"),
+	}
+}
+
 //LogError represents the an LogError for handling via nats and store into mongo databases. The struct matches the Config Format string as json.
 type LogError struct {
 	ID           string      `json:"id" bson:"_id"`
 	Service      string      `json:"service" bson:"service"`
 	Time         string      `json:"time" bson:"time"`
-	RemoteIP     string      `json:"remote_ip" bson:"remote_io"`
+	RemoteIP     string      `json:"remote_ip" bson:"remote_ip"`
 	Host         string      `json:"host" bson:"host"`
 	Method       string      `json:"method" bson:"method"`
 	Uri          string      `json:"uri" bson:"uri"`
