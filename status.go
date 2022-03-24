@@ -96,10 +96,10 @@ func (i *Status) Error() string {
 func (i *Status) Response() (int, interface{}) {
 	switch i.StatusType {
 	case StatusINTERNAL:
-		return InternalServerError()
+		return NewInternalServerError("-").Response()
 	case StatusBADREQUEST:
-		return BadRequest("status", i)
+		return NewBadRequest("status", "status", i).Response()
 	default:
-		return BadRequest("status", i)
+		return NewBadRequest("status", "status", i).Response()
 	}
 }
