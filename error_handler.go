@@ -9,10 +9,12 @@ import (
 //HTTPErrorHandler handles echo.HTTPError and return the correct response.
 func HTTPErrorHandler(err error, c echo.Context) {
 	code := http.StatusInternalServerError
-	if he, ok := err.(*echo.HTTPError); ok {
+	if resp, ok := err.(*Response); ok {
+		c.JSON(resp.Response())
+	} else if he, ok := err.(*echo.HTTPError); ok {
 		code = he.Code
 		if he.Code == http.StatusInternalServerError {
-			c.JSON(code, ErrorResponse{Message: "internal_server_error"})
+			c.JSON(NewInternalServerError("-").Response())
 		} else {
 			c.JSON(code, err)
 		}
@@ -22,9 +24,7 @@ func HTTPErrorHandler(err error, c echo.Context) {
 		c.JSON(resp.Response())
 	} else if resp, ok := err.(*Status); ok {
 		c.JSON(resp.Response())
-	} else if resp, ok := err.(*ErrorResponse); ok {
-		c.JSON(resp.Response())
 	} else {
-		c.JSON(code, ErrorResponse{Message: "internal_server_error"})
+		c.JSON(NewInternalServerError("-").Response())
 	}
 }

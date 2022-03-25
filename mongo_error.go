@@ -2,6 +2,7 @@ package vcago
 
 import (
 	"encoding/json"
+	"net/http"
 	"runtime"
 	"strings"
 
@@ -51,9 +52,8 @@ func (i *MongoError) Error() string {
 	return string(res)
 }
 
-type MongoErrorResponse struct {
-	Filter     interface{} `json:"filter" bson:"filter"`
-	Collection string      `json:"collection" bson:"collection"`
+type MongoConfictError struct {
+	Key string `json:"key" bson:"value"`
 }
 
 //Response return the ErrorResponse for handling in httpErrorHandler
@@ -61,18 +61,18 @@ func (i *MongoError) Response() (int, interface{}) {
 	if strings.Contains(i.Message, "duplicate key error") {
 		temp := strings.Split(i.Message, "key: {")
 		temp = strings.Split(temp[1], "}")
-		return Conflict("duplicate key error", MongoErrorResponse{Filter: "key: {" + temp[0] + "}", Collection: i.Collection})
+		return NewResp(http.StatusConflict, "error", "duplicate key error", i.Collection, MongoConfictError{Key: temp[0]}).Response()
 	}
 
 	switch i.Err {
 	case mongo.ErrNoDocuments:
-		return NotFound("document not found", MongoErrorResponse{Filter: i.Filter, Collection: i.Collection})
+		return NewResp(http.StatusNotFound, "error", "document not found", i.Collection, i.Filter).Response()
 	case ErrMongoUpdate:
-		return NotFound("document not updated", MongoErrorResponse{Filter: i.Filter, Collection: i.Collection})
+		return NewResp(http.StatusNotFound, "error", "document not updated", i.Collection, i.Filter).Response()
 	case ErrMongoDelete:
-		return NotFound("document not deleted", MongoErrorResponse{Filter: i.Filter, Collection: i.Collection})
+		return NewResp(http.StatusNotFound, "error", "document not deleted", i.Collection, i.Filter).Response()
 	default:
-		return InternalServerError()
+		return NewInternalServerError(i.Collection).Response()
 	}
 }
 

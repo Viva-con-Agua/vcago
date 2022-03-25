@@ -85,18 +85,18 @@ func (i *ValidationError) Bind(err error) {
 }
 
 func (i *ValidationError) Response() (int, interface{}) {
-	return NewResponse("validation error", i).BadRequest()
+	return NewBadRequest("-", "validation error", i).Response()
 }
 
 func BindAndValidate(c echo.Context, i interface{}) error {
 	vErr := new(ValidationError)
 	if err := c.Bind(i); err != nil {
 		vErr.Bind(err)
-		return NewBadRequest("validation_error", vErr)
+		return vErr
 	}
 	if err := c.Validate(i); err != nil {
 		vErr.Valid(err)
-		return NewBadRequest("validation_error", vErr)
+		return vErr
 	}
 	return nil
 }
