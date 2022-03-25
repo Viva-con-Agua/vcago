@@ -50,18 +50,18 @@ func (i *HydraClient) Callback(ctx context.Context, callback *Callback) (r *User
 	oauth2Token := new(oauth2.Token)
 	oauth2Token, err = i.Oauth2Config.Exchange(ctx, callback.Code)
 	if err != nil {
-		return nil, NewStatusInternal(err)
+		return
 	}
 	// Extract the ID Token from OAuth2 token.
 	rawIDToken, ok := oauth2Token.Extra("id_token").(string)
 	if !ok {
-		return nil, NewStatusInternal(errors.New("hydra token is missing"))
+		return nil, errors.New("hydra token is missing")
 	}
 	// Parse and verify ID Token payload.
 	idToken := new(oidc.IDToken)
 	idToken, err = i.Verifier.Verify(ctx, rawIDToken)
 	if err != nil {
-		return nil, NewStatusInternal(err)
+		return
 	}
 	resp := struct {
 		OAuth2Token   *oauth2.Token

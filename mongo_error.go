@@ -2,9 +2,7 @@ package vcago
 
 import (
 	"encoding/json"
-	"net/http"
 	"runtime"
-	"strings"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -54,26 +52,6 @@ func (i *MongoError) Error() string {
 
 type MongoConfictError struct {
 	Key string `json:"key" bson:"value"`
-}
-
-//Response return the ErrorResponse for handling in httpErrorHandler
-func (i *MongoError) Response() (int, interface{}) {
-	if strings.Contains(i.Message, "duplicate key error") {
-		temp := strings.Split(i.Message, "key: {")
-		temp = strings.Split(temp[1], "}")
-		return NewResp(http.StatusConflict, "error", "duplicate key error", i.Collection, MongoConfictError{Key: temp[0]}).Response()
-	}
-
-	switch i.Err {
-	case mongo.ErrNoDocuments:
-		return NewResp(http.StatusNotFound, "error", "document not found", i.Collection, i.Filter).Response()
-	case ErrMongoUpdate:
-		return NewResp(http.StatusNotFound, "error", "document not updated", i.Collection, i.Filter).Response()
-	case ErrMongoDelete:
-		return NewResp(http.StatusNotFound, "error", "document not deleted", i.Collection, i.Filter).Response()
-	default:
-		return NewInternalServerError(i.Collection).Response()
-	}
 }
 
 func MongoNoDocuments(err error) bool {

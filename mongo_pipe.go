@@ -14,7 +14,7 @@ func NewMongoPipe() *MongoPipe {
 	}
 }
 
-func (i *MongoPipe) AddModelAt(from string, root string, child string, as string) {
+func (i *MongoPipe) LookupUnwind(from string, root string, child string, as string) {
 	lookup := bson.D{{
 		Key: "$lookup",
 		Value: bson.D{
@@ -28,7 +28,7 @@ func (i *MongoPipe) AddModelAt(from string, root string, child string, as string
 	i.Pipe = append(i.Pipe, unwind)
 }
 
-func (i *MongoPipe) AddListAt(from string, root string, child string, as string) {
+func (i *MongoPipe) Lookup(from string, root string, child string, as string) {
 	lookup := bson.D{{
 		Key: "$lookup",
 		Value: bson.D{
@@ -40,7 +40,7 @@ func (i *MongoPipe) AddListAt(from string, root string, child string, as string)
 	i.Pipe = append(i.Pipe, lookup)
 }
 
-func (i *MongoPipe) AddMatch(m *MongoMatch) {
+func (i *MongoPipe) Match(m *MongoMatch) {
 	if *m != nil {
 		match := bson.D{{
 			Key:   "$match",

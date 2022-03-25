@@ -35,7 +35,7 @@ func (i *User) CheckUpdate(lastUpdate string) bool {
 func (i *User) Load(user interface{}) (err error) {
 	var ok bool
 	if i, ok = user.(*User); !ok {
-		return NewStatusInternal(errors.New("not an vcago.User"))
+		return errors.New("not an vcago.User")
 	}
 	return
 }

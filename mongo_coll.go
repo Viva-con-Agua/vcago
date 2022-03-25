@@ -205,7 +205,7 @@ func (i *MongoColl) Permission(ctx context.Context, filter bson.M, value interfa
 		filter,
 	).Decode(value)
 	if err == mongo.ErrNoDocuments {
-		return NewStatusPermissionDenied()
+		return NewPermissionDenied(i.Name)
 	}
 	if err != nil {
 		return NewMongoError(err, value, filter, i.DatabaseName, i.Name)

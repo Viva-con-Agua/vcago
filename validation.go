@@ -15,8 +15,6 @@ type Validator struct {
 
 var JSONValidator = NewValidator()
 
-//Validate extend JSONValidator with Validate function.
-
 func NewValidator() (r *Validator) {
 	r = new(Validator)
 	v := validator.New()
@@ -82,10 +80,6 @@ func (i *ValidationError) Bind(err error) {
 	} else {
 		i.Errors = append(i.Errors, dummy)
 	}
-}
-
-func (i *ValidationError) Response() (int, interface{}) {
-	return NewBadRequest("-", "validation error", i).Response()
 }
 
 func BindAndValidate(c echo.Context, i interface{}) error {
