@@ -105,7 +105,7 @@ func (i *MongoColl) Aggregate(ctx context.Context, filter []bson.D, value interf
 //ErrMongoUpdate represents an update error in mongo case
 var ErrMongoUpdate = errors.New("no updated document")
 
-//UpdateOne updates a value via "$set" and the given bson.M filter. Return an MongoError in case that no element has updated.
+//UpdateOne updates a value via bson.M and the given bson.M filter. Return an MongoError in case that no element has updated.
 func (i *MongoColl) UpdateOne(ctx context.Context, filter bson.M, value bson.M) (err error) {
 	result, err := i.Collection.UpdateOne(
 		ctx,
@@ -120,6 +120,25 @@ func (i *MongoColl) UpdateOne(ctx context.Context, filter bson.M, value bson.M) 
 	}
 	return
 }
+
+//UpdateOneSet updates a value via "$set" and the given bson.M filter. Return an MongoError in case that no element has updated.
+func (i *MongoColl) UpdateOneSet(ctx context.Context, filter bson.M, value bson.M) (err error) {
+	update := bson.M{"$set": value}
+	result, err := i.Collection.UpdateOne(
+		ctx,
+		filter,
+		update,
+	)
+	if err != nil {
+		return NewMongoError(err, value, filter, i.DatabaseName, i.Name)
+	}
+	if result.MatchedCount == 0 {
+		return NewMongoError(ErrMongoUpdate, value, filter, i.DatabaseName, i.Name)
+	}
+	return
+}
+
+//
 
 //Update updates a value via "$set" and the given bson.M filter. Return an MongoError in case that no element has updated.
 func (i *MongoColl) Update(ctx context.Context, filter bson.M, value bson.M) (err error) {
