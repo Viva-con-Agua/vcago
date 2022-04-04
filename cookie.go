@@ -1,6 +1,12 @@
 package vcago
 
-import "net/http"
+import (
+	"net/http"
+
+	"github.com/golang-jwt/jwt"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
+)
 
 //CookieConfig represents the cookie parameters
 type CookieConfig struct {
@@ -41,4 +47,28 @@ func (i *CookieConfig) Cookie(name string, value string) *http.Cookie {
 		Name:     name,
 		Value:    value,
 	}
+}
+
+//AccessCookieConfig can with echo for middleware.JWTWithConfig(vmod.AccessConfig) to handling access controll
+//The token is reachable with c.Get("token")
+func AccessCookieMiddleware(i jwt.Claims) echo.MiddlewareFunc {
+	return middleware.JWTWithConfig(
+		middleware.JWTConfig{
+			Claims:      i,
+			ContextKey:  "token",
+			TokenLookup: "cookie:access_token",
+			SigningKey:  []byte(jwtSecret),
+		})
+}
+
+//RefreshCookieConfig can with echo for middleware.JWTWithConfig(vmod.AccessConfig) to handling access controll
+//The token is reachable with c.Get("token")
+func RefreshCookieMiddleware(i jwt.Claims) echo.MiddlewareFunc {
+	return middleware.JWTWithConfig(
+		middleware.JWTConfig{
+			Claims:      i,
+			ContextKey:  "token",
+			TokenLookup: "cookie:refresh_token",
+			SigningKey:  []byte(jwtSecret),
+		})
 }

@@ -51,6 +51,7 @@ func (i *AccessToken) SignedString(secret string) (string, error) {
 //AccessCookieConfig can with echo for middleware.JWTWithConfig(vmod.AccessConfig) to handling access controll
 //The token is reachable with c.Get("token")
 func AccessCookieConfig() echo.MiddlewareFunc {
+	//Deprecated: AccessCookieConfig not longer supported, use AccessCookieMiddleware
 	return middleware.JWTWithConfig(
 		middleware.JWTConfig{
 			Claims:      &AccessToken{},
