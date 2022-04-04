@@ -8,6 +8,33 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+type Filter struct {
+	Filter bson.M
+}
+
+func NewFilter() *Filter {
+	return &Filter{
+		Filter: bson.M{},
+	}
+}
+
+func (i *Filter) In(key string, list []string) *Filter {
+	if list == nil {
+		list = []string{""}
+	}
+	(*i).Filter[key] = bson.M{"$in": list}
+	return i
+}
+
+func (i *Filter) Equal(key string, value string) *Filter {
+	(*i).Filter[key] = value
+	return i
+}
+
+func (i *Filter) Bson() bson.M {
+	return i.Filter
+}
+
 type MongoFilter struct {
 	Filter bson.M
 }
@@ -26,10 +53,11 @@ func NewMongoFilter() *MongoFilter {
 	}
 }
 
-func (i *MongoFilter) Equal(key string, value string) {
+func (i *MongoFilter) Equal(key string, value string) *MongoFilter {
 	if value != "" {
 		i.Filter[key] = value
 	}
+	return i
 }
 
 func (i *MongoFilter) EqualInt(key string, value string) {
