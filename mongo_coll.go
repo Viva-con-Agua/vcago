@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"log"
+	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -122,8 +123,8 @@ func (i *MongoColl) UpdateOne(ctx context.Context, filter bson.M, value bson.M) 
 }
 
 //UpdateOneSet updates a value via "$set" and the given bson.M filter. Return an MongoError in case that no element has updated.
-func (i *MongoColl) UpdateOneSet(ctx context.Context, filter bson.M, value bson.M) (err error) {
-	update := bson.M{"$set": value}
+func (i *MongoColl) UpdateOneSet(ctx context.Context, filter bson.M, value interface{}) (err error) {
+	update := bson.D{{Key: "$set", Value: value}, {Key: "$set", Value: bson.D{{Key: "modified.updated", Value: time.Now().Unix()}}}}
 	result, err := i.Collection.UpdateOne(
 		ctx,
 		filter,

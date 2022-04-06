@@ -6,4 +6,4 @@ type MongoUpdate struct {
 	Update bson.M
 }
 
-func (i *MongoUpdate) Set(value interface)
+//func (i *MongoUpdate) Set(value interface)
