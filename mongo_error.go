@@ -3,6 +3,7 @@ package vcago
 import (
 	"encoding/json"
 	"runtime"
+	"strings"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -82,6 +83,17 @@ func MongoNoUpdated(err error) bool {
 		return false
 	}
 	if merr.Err == ErrMongoUpdate {
+		return true
+	}
+	return false
+}
+
+func MongoConfict(err error) bool {
+	merr, ok := err.(*MongoError)
+	if !ok {
+		return false
+	}
+	if strings.Contains(merr.Error(), "duplicate key error") {
 		return true
 	}
 	return false
