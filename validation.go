@@ -2,6 +2,7 @@ package vcago
 
 import (
 	"encoding/json"
+	"log"
 	"regexp"
 	"strings"
 
@@ -46,6 +47,7 @@ func (i *ValidationError) Valid(err error) {
 	var matchFirstCap = regexp.MustCompile("(.)([A-Z][a-z]+)")
 	var matchAllCap = regexp.MustCompile("([a-z0-9])([A-Z])")
 	list := strings.Split(err.Error(), "\n")
+	log.Print(err)
 	for _, val := range list {
 		temp := strings.Split(val, "Key: ")
 		temp = strings.Split(temp[1], " Error:")
