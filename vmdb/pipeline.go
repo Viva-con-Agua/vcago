@@ -1,21 +1,29 @@
-package vcago
+package vmdb
 
-import (
-	"go.mongodb.org/mongo-driver/bson"
-)
+import "go.mongodb.org/mongo-driver/bson"
 
-type MongoPipe struct {
+type Pipeline struct {
 	Pipe []bson.D
 }
 
-func NewMongoPipe() *MongoPipe {
-	print("vcago.MongoPipe will be deleted soon. Use vmdb.Pipeline")
-	return &MongoPipe{
+func NewPipeline() *Pipeline {
+	return &Pipeline{
 		Pipe: []bson.D{},
 	}
 }
 
-func (i *MongoPipe) LookupUnwind(from string, root string, child string, as string) {
+func (i *Pipeline) Match(m *Match) *Pipeline {
+	if *m != nil {
+		match := bson.D{{
+			Key:   "$match",
+			Value: *m,
+		}}
+		i.Pipe = append(i.Pipe, match)
+	}
+	return i
+}
+
+func (i *Pipeline) LookupUnwind(from string, root string, child string, as string) {
 	lookup := bson.D{{
 		Key: "$lookup",
 		Value: bson.D{
@@ -29,7 +37,7 @@ func (i *MongoPipe) LookupUnwind(from string, root string, child string, as stri
 	i.Pipe = append(i.Pipe, unwind)
 }
 
-func (i *MongoPipe) Lookup(from string, root string, child string, as string) {
+func (i *Pipeline) Lookup(from string, root string, child string, as string) {
 	lookup := bson.D{{
 		Key: "$lookup",
 		Value: bson.D{
@@ -39,14 +47,4 @@ func (i *MongoPipe) Lookup(from string, root string, child string, as string) {
 			{Key: "as", Value: as},
 		}}}
 	i.Pipe = append(i.Pipe, lookup)
-}
-
-func (i *MongoPipe) Match(m *MongoMatch) {
-	if *m != nil {
-		match := bson.D{{
-			Key:   "$match",
-			Value: *m,
-		}}
-		i.Pipe = append(i.Pipe, match)
-	}
 }

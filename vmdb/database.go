@@ -4,7 +4,6 @@ import (
 	"context"
 	"log"
 
-	"github.com/Viva-con-Agua/vcago"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -18,12 +17,10 @@ type Database struct {
 }
 
 //NewMongoDB creates a new MongoDB connects to mongoDB and return an Mongo struct.
-func NewDatabase(name string) (r *Database) {
+func NewDatabase(name string, host string, port string) (r *Database) {
 	r = new(Database)
-	r.Host = vcago.Config.GetEnvString("DB_HOST", "w", "localhost")
-	r.Port = vcago.Config.GetEnvString("DB_PORT", "w", "27017")
 	r.Name = name
-	uri := "mongodb://" + r.Host + ":" + r.Port
+	uri := "mongodb://" + host + ":" + port
 	log.Print("MongoDB connection to " + uri)
 	opts := options.Client()
 	opts.ApplyURI(uri)
