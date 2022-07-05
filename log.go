@@ -26,11 +26,10 @@ var Logger = new(LoggingHandler)
 
 func (i *LoggingHandler) New(method string, uri string, err error) *LogError {
 	return &LogError{
-		Service: i.service,
-		Time:    time.Now().Format(time.RFC3339Nano),
-		Error:   err,
-		Method:  method,
-		Uri:     uri,
+		Time:   time.Now().Format(time.RFC3339Nano),
+		Error:  err,
+		Method: method,
+		Uri:    uri,
 	}
 }
 
@@ -38,20 +37,12 @@ func (i *LoggingHandler) New(method string, uri string, err error) *LogError {
 func (i *LoggingHandler) Write(data []byte) (n int, err error) {
 	n = len(data)
 	logError := new(LogError)
-	logError.Modified = NewModified()
 	if err = json.Unmarshal(data, logError); err != nil {
 		if data != nil {
 			fmt.Print(string(data) + "\n")
 		}
 		return
 	}
-	type ErrorType struct {
-		ErrorType string `json:"error_type"`
-	}
-	status := new(ErrorType)
-	json.Unmarshal([]byte(logError.Error.(string)), status)
-	logError.ErrorType = status.ErrorType
-
 	//temp := new(interface{})
 	//json.Unmarshal([]byte(logError.Error.(string)), temp)
 	//logError.Error = temp
@@ -72,7 +63,6 @@ func (i *LoggingHandler) Write(data []byte) (n int, err error) {
 
 //Log publish the LogError to nats route "logger.log".
 func (i *LoggingHandler) Log(logError *LogError) {
-	logError.Service = i.service
 	Nats.Publish("logger.log", logError)
 }
 
@@ -99,7 +89,6 @@ func NewLoggingHandler(service string) *LoggingHandler {
 //LogError represents the an LogError for handling via nats and store into mongo databases. The struct matches the Config Format string as json.
 type LogError struct {
 	ID           string      `json:"id" bson:"_id"`
-	Service      string      `json:"service" bson:"service"`
 	Time         string      `json:"time" bson:"time"`
 	RemoteIP     string      `json:"remote_ip" bson:"remote_ip"`
 	Host         string      `json:"host" bson:"host"`
@@ -110,8 +99,4 @@ type LogError struct {
 	Error        interface{} `json:"error" bson:"error"`
 	Latency      int64       `json:"latency" bson:"latency"`
 	LatencyHuman string      `json:"latency_human" bson:"latency_human"`
-	ByteIn       string      `json:"byte_in" bson:"byte_in"`
-	ByteOut      string      `json:"byte_out" bson:"byte_out"`
-	ErrorType    string      `json:"error_type" bson:"error_type"`
-	Modified     Modified    `json:"modified" bson:"modified"`
 }

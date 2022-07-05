@@ -16,6 +16,10 @@ func NewMatch() *Match {
 	return &Match{}
 }
 
+func (i *Match) Bson() bson.D {
+	return bson.D(*i)
+}
+
 //EqualString match if the value is equal to the value of the key in a database collection.
 func (i *Match) EqualString(key string, value string) {
 	if value != "" {

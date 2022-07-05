@@ -10,9 +10,9 @@ func NewEchoServer(service string) (r *echo.Echo) {
 	Settings.Bool("DEBUG", "w", true)
 	r = echo.New()
 	r.Debug = true
-	r.Use(Logger.Init(service))
 	r.Use(CORS.Init())
 	r.HTTPErrorHandler = HTTPErrorHandler
+	r.Use(Logger.Init(service))
 	r.Validator = JSONValidator
 	r.Use(middleware.RequestIDWithConfig(middleware.RequestIDConfig{
 		Generator: func() string {

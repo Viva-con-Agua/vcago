@@ -28,14 +28,11 @@ func (i *Context) Ctx() context.Context {
 //Define json:"" for bind the request body as json in a struct.
 //Define query:"" for bind the query parameters in a struct.
 func (i *Context) BindAndValidate(body interface{}) error {
-	vErr := new(ValidationError)
 	if err := i.Bind(body); err != nil {
-		vErr.Bind(err)
-		return vErr
+		return NewErrorLog(err, "DEBUG", "bind").AddModel(i.Model)
 	}
 	if err := i.Validate(body); err != nil {
-		vErr.Valid(err)
-		return vErr
+		return NewErrorLog(err, "DEBUG", "validate").AddModel(i.Model)
 	}
 	return nil
 }
@@ -51,7 +48,7 @@ func (i *Context) AccessToken(token interface{}) (err error) {
 		return errors.New("no jwt.Token type")
 	}
 	bytes, _ := json.Marshal(temp.Claims)
-	_ = json.Unmarshal(bytes, &token)
+	err = json.Unmarshal(bytes, &token)
 	return
 }
 
@@ -73,11 +70,18 @@ func (i *Context) ErrorResponse(err error) error {
 
 //Log return a function call for handling Debug and Error logs.
 //Usage: c.Log(err)(err)
-func (i *Context) Log(err error) func(i ...interface{}) {
-	if err == mongo.ErrNoDocuments {
-		return i.Logger().Debug
+func (i *Context) Log(err error) {
+	id := i.Request().Header.Get(echo.HeaderXRequestID)
+	if id == "" {
+		id = i.Response().Header().Get(echo.HeaderXRequestID)
 	}
-	return i.Logger().Error
+	var output *Error
+	if err == mongo.ErrNoDocuments || strings.Contains(err.Error(), "duplicate key error") {
+		output = NewErrorLog(err, "DEBUG", "")
+	} else {
+		output = NewErrorLog(err, "ERROR", "")
+	}
+	output.Print(id)
 }
 
 //Created returns an Created response.
