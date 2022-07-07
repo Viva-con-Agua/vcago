@@ -139,6 +139,26 @@ func (i *Collection) UpdateOne(ctx context.Context, filter bson.D, value interfa
 	return
 }
 
+func (i *Collection) UpdateOneAggregate(ctx context.Context, filter bson.D, value interface{}, result interface{}, pipeline mongo.Pipeline) (err error) {
+	updateResult, err := i.Collection.UpdateOne(
+		ctx,
+		filter,
+		value,
+	)
+	if err != nil {
+		return i.log(err)
+	}
+	if updateResult.MatchedCount == 0 {
+		return i.log(mongo.ErrNoDocuments)
+	}
+	if result != nil {
+		if err = i.AggregateOne(ctx, pipeline, result); err != nil {
+			return
+		}
+	}
+	return
+}
+
 func (i *Collection) TryUpdateOne(ctx context.Context, filter bson.D, value interface{}) (err error) {
 	_, err = i.Collection.UpdateOne(
 		ctx,

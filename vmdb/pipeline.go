@@ -56,7 +56,7 @@ func (i *Pipeline) LookupUnwindMatch(from string, root string, child string, as 
 			{Key: "from", Value: from},
 			{Key: "localField", Value: root},
 			{Key: "foreignField", Value: child},
-			{Key: "pipeline", Value: []bson.D{match}},
+			{Key: "pipeline", Value: append([]bson.D{}, bson.D{{Key: "$match", Value: match}})},
 			{Key: "as", Value: as},
 		}}}
 	unwind := bson.D{{Key: "$unwind", Value: bson.D{{Key: "path", Value: "$" + as}, {Key: "preserveNullAndEmptyArrays", Value: true}}}}
@@ -71,8 +71,27 @@ func (i *Pipeline) LookupMatch(from string, root string, child string, as string
 			{Key: "from", Value: from},
 			{Key: "localField", Value: root},
 			{Key: "foreignField", Value: child},
-			{Key: "pipeline", Value: []bson.D{match}},
+			{Key: "pipeline", Value: append([]bson.D{}, bson.D{{Key: "$match", Value: match}})},
 			{Key: "as", Value: as},
 		}}}
+	i.Pipe = append(i.Pipe, lookup)
+}
+
+func (i *Pipeline) LookupList(from string, root string, child string, as string) {
+	lookup := bson.D{{
+		Key: "$lookup",
+		Value: bson.D{
+			{Key: "from", Value: from},
+			{Key: "let", Value: bson.D{{Key: root, Value: "$" + root}}},
+			{Key: "pipeline", Value: bson.A{
+				bson.D{
+					{Key: "$match", Value: bson.D{{
+						Key: "$expr", Value: bson.D{{Key: "$in", Value: bson.A{"$" + child, "$$" + root}}},
+					}}},
+				},
+			}},
+			{Key: "as", Value: as},
+		},
+	}}
 	i.Pipe = append(i.Pipe, lookup)
 }
