@@ -264,9 +264,12 @@ func (i *Collection) log(err error) error {
 }
 
 func ErrNoDocuments(err error) bool {
-	e := err.(*vcago.Error)
-	if e.Err == mongo.ErrNoDocuments {
-		return true
+	if err != nil {
+		e := err.(*vcago.Error)
+		if e.Err == mongo.ErrNoDocuments {
+			return true
+		}
+		return false
 	}
 	return false
 }
