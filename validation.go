@@ -127,10 +127,10 @@ func formatBindError(err error) error {
 
 func BindAndValidate(c echo.Context, i interface{}) error {
 	if err := c.Bind(i); err != nil {
-		return NewErrorLog(err, "DEBUG", "bind")
+		return NewError(err, "DEBUG", "bind")
 	}
 	if err := c.Validate(i); err != nil {
-		return NewErrorLog(err, "DEBUG", "validation")
+		return NewError(err, "DEBUG", "validation")
 	}
 	return nil
 }

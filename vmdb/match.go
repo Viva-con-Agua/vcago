@@ -30,7 +30,7 @@ func (i *Match) EqualString(key string, value string) {
 func (i *Match) EqualStringList(key string, value []string) {
 	if value != nil {
 		filter := bson.A{}
-		for n, _ := range value {
+		for n := range value {
 			filter = append(filter, bson.D{{Key: key, Value: value[n]}})
 		}
 		*i = append(*i, bson.E{Key: "$or", Value: filter})
@@ -81,7 +81,7 @@ func (i *Match) ElemMatch(list string, key string, value string) {
 func (i *Match) ElemMatchList(list string, key string, value []string) {
 	if value != nil {
 		filter := bson.A{}
-		for n, _ := range value {
+		for n := range value {
 			filter = append(filter, bson.D{{Key: key, Value: value[n]}})
 		}
 		*i = append(*i, bson.E{Key: list, Value: bson.D{

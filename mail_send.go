@@ -16,9 +16,9 @@ type MailSend struct {
 
 func NewMailSend() *MailSend {
 	return &MailSend{
-		URL:  Config.GetEnvString("MAIL_URL", "w", "http://factory-api.localhost"),
-		Key:  Config.GetEnvString("MAIL_API_KEY", "w", "secret"),
-		Mode: Config.GetEnvString("MAIL_MODE", "w", "local"),
+		URL:  Settings.String("MAIL_URL", "w", "http://factory-api.localhost"),
+		Key:  Settings.String("MAIL_API_KEY", "w", "secret"),
+		Mode: Settings.String("MAIL_MODE", "w", "local"),
 	}
 }
 

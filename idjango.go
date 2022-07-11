@@ -9,7 +9,7 @@ import (
 )
 
 //Mongo represents the initial struct for an Mongo connection.
-type IDjango struct {
+type IDjangoHandler struct {
 	URL    string
 	Key    string
 	Export bool
@@ -18,13 +18,15 @@ type IDjango struct {
 //LoadEnv loads the Host and Port From .env file.
 //Host can be set via NATS_HOST
 //Port can be set via NATS_PORT
-func (i *IDjango) LoadEnv() {
-	i.URL = Config.GetEnvString("IDJANGO_URL", "w", "https://idjangostage.vivaconagua.org")
-	i.Key = Config.GetEnvString("IDJANGO_KEY", "w", "")
-	i.Export = Config.GetEnvBool("IDJANGO_EXPORT", "w", false)
+func NewIDjangoHandler() *IDjangoHandler {
+	return &IDjangoHandler{
+		URL:    Settings.String("IDJANGO_URL", "w", "https://idjangostage.vivaconagua.org"),
+		Key:    Settings.String("IDJANGO_KEY", "w", ""),
+		Export: Settings.Bool("IDJANGO_EXPORT", "w", false),
+	}
 }
 
-func (i *IDjango) Post(data interface{}, path string) (err error) {
+func (i *IDjangoHandler) Post(data interface{}, path string) (err error) {
 	if i.Export {
 		var jsonData []byte
 		if jsonData, err = json.Marshal(data); err != nil {
@@ -87,6 +89,10 @@ type IDjangoError struct {
 }
 
 func (i *IDjangoError) Error() string {
+	return i.Message
+}
+
+func (i *IDjangoError) Log() string {
 	res, _ := json.Marshal(i)
 	return string(res)
 }

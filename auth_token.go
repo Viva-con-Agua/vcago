@@ -4,7 +4,7 @@ import (
 	"net/http"
 )
 
-var jwtSecret = Config.GetEnvString("JWT_SECRET", "w", "secret")
+var jwtSecret = Settings.String("JWT_SECRET", "w", "secret")
 
 var authCookie = NewCookieConfig()
 

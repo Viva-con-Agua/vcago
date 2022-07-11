@@ -13,7 +13,7 @@ var CORS = new(CORSConfig)
 
 //NewCORSConfig create a echo middleware for cors handling.
 func (i *CORSConfig) Init() echo.MiddlewareFunc {
-	allowOrigins := Config.GetEnvStringList("ALLOW_ORIGINS", "w", []string{"localhost:8080"})
+	allowOrigins := Settings.StringList("ALLOW_ORIGINS", "w", []string{"localhost:8080"})
 	return middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins:     allowOrigins,
 		AllowHeaders:     []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderAuthorization, echo.HeaderXRequestedWith},

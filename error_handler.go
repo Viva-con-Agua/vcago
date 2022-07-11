@@ -9,9 +9,12 @@ import (
 
 //HTTPErrorHandler handles echo.HTTPError and return the correct response.
 func HTTPErrorHandler(err error, c echo.Context) {
+	//set default error code
 	code := http.StatusInternalServerError
+	//check if the err is an normal response
 	if resp, ok := err.(*Response); ok {
 		c.JSON(resp.Response())
+		//check if error is normal error
 	} else if resp, ok := err.(*Error); ok {
 		id := c.Request().Header.Get(echo.HeaderXRequestID)
 		if id == "" {
@@ -39,23 +42,3 @@ func HTTPErrorHandler(err error, c echo.Context) {
 func ValidationErrorResponseHandler(i *ValidationError) (int, interface{}) {
 	return NewBadRequest("-", "validation error", i).Response()
 }
-
-/*
-//MongoErrorResponseHandler handles the response for the MongoError type.
-func MongoErrorResponseHandler(i error) (int, interface{}) {
-	if strings.Contains(i.Error(), "duplicate key error") {
-		temp := strings.Split(i.Error(), "key: {")
-		temp = strings.Split(temp[1], "}")
-		return NewResp(http.StatusConflict, "error", "duplicate key error", i.Collection, temp[0]).Response()
-	}
-	switch i {
-	case mongo.ErrNoDocuments:
-		return NewResp(http.StatusNotFound, "error", "document not found", i.Collection, i.Filter).Response()
-	case ErrMongoUpdate:
-		return NewResp(http.StatusNotFound, "error", "document not updated", i.Collection, i.Filter).Response()
-	case ErrMongoDelete:
-		return NewResp(http.StatusNotFound, "error", "document not deleted", i.Collection, i.Filter).Response()
-	default:
-		return NewInternalServerError(i.Collection).Response()
-	}
-}*/
