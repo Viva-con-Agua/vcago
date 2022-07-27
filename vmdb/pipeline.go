@@ -12,24 +12,24 @@ func NewPipeline() *Pipeline {
 	}
 }
 
-func (i *Pipeline) Match(m *Match) *Pipeline {
-	if *m != nil {
+func (i *Pipeline) Match(filter bson.D) *Pipeline {
+	if filter != nil {
 		match := bson.D{{
 			Key:   "$match",
-			Value: *m,
+			Value: filter,
 		}}
 		i.Pipe = append(i.Pipe, match)
 	}
 	return i
 }
 
-func (i *Pipeline) LookupUnwind(from string, root string, child string, as string) {
+func (i *Pipeline) LookupUnwind(from string, localField string, foreignField string, as string) {
 	lookup := bson.D{{
 		Key: "$lookup",
 		Value: bson.D{
 			{Key: "from", Value: from},
-			{Key: "localField", Value: root},
-			{Key: "foreignField", Value: child},
+			{Key: "localField", Value: localField},
+			{Key: "foreignField", Value: foreignField},
 			{Key: "as", Value: as},
 		}}}
 	unwind := bson.D{{Key: "$unwind", Value: bson.D{{Key: "path", Value: "$" + as}, {Key: "preserveNullAndEmptyArrays", Value: true}}}}

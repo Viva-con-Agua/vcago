@@ -1,4 +1,4 @@
-package vcago
+package vmod
 
 import "time"
 

@@ -3,18 +3,19 @@ package vcago
 import (
 	"time"
 
+	"github.com/Viva-con-Agua/vcago/vmod"
 	"github.com/google/uuid"
 )
 
 type (
 	//LinkToken is used for handling link with token
 	LinkToken struct {
-		ID        string   `json:"id" bson:"_id"`
-		Code      string   `json:"code" bson:"code"`
-		ExpiresAt int64    `json:"expires_at" bson:"expires_at"`
-		Scope     string   `json:"scope" bson:"scope"`
-		UserID    string   `json:"user_id" bson:"user_id"`
-		Modified  Modified `json:"modified" bson:"modified"`
+		ID        string        `json:"id" bson:"_id"`
+		Code      string        `json:"code" bson:"code"`
+		ExpiresAt int64         `json:"expires_at" bson:"expires_at"`
+		Scope     string        `json:"scope" bson:"scope"`
+		UserID    string        `json:"user_id" bson:"user_id"`
+		Modified  vmod.Modified `json:"modified" bson:"modified"`
 	}
 )
 
@@ -30,7 +31,7 @@ func NewLinkToken(expired time.Duration, userID string, scope string) (*LinkToke
 		ExpiresAt: time.Now().Add(expired).Unix(),
 		Scope:     scope,
 		UserID:    userID,
-		Modified:  NewModified(),
+		Modified:  vmod.NewModified(),
 	}, nil
 }
 

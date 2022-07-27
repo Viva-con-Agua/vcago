@@ -1,4 +1,4 @@
-package vcago
+package vmod
 
 type Position struct {
 	Lat float64 `json:"lat" bson:"lat"`

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"log"
 
+	"github.com/Viva-con-Agua/vcago/vmod"
 	"github.com/coreos/go-oidc/v3/oidc"
 	"golang.org/x/oauth2"
 )
@@ -43,10 +44,10 @@ type Callback struct {
 }
 
 type UserClaims struct {
-	User User `json:"user"`
+	User vmod.User `json:"user"`
 }
 
-func (i *HydraClient) Callback(ctx context.Context, callback *Callback) (r *User, err error) {
+func (i *HydraClient) Callback(ctx context.Context, callback *Callback) (r *vmod.User, err error) {
 	oauth2Token := new(oauth2.Token)
 	oauth2Token, err = i.Oauth2Config.Exchange(ctx, callback.Code)
 	if err != nil {
