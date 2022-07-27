@@ -4,27 +4,28 @@ import (
 	"errors"
 	"time"
 
+	"github.com/Viva-con-Agua/vcago/vmod"
 	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
 
 type AccessToken struct {
-	ID            string         `json:"id,omitempty" bson:"_id"`
-	Email         string         `json:"email" bson:"email" validate:"required,email"`
-	FirstName     string         `json:"first_name" validate:"required"`
-	LastName      string         `json:"last_name" validate:"required"`
-	FullName      string         `json:"full_name"`
-	DisplayName   string         `json:"display_name"`
-	Roles         RoleListCookie `json:"system_roles"`
-	Country       string         `json:"country"`
-	PrivacyPolicy bool           `json:"privacy_policy"`
-	Confirmed     bool           `json:"confirmed"`
-	LastUpdate    string         `json:"last_update"`
+	ID            string              `json:"id,omitempty" bson:"_id"`
+	Email         string              `json:"email" bson:"email" validate:"required,email"`
+	FirstName     string              `json:"first_name" validate:"required"`
+	LastName      string              `json:"last_name" validate:"required"`
+	FullName      string              `json:"full_name"`
+	DisplayName   string              `json:"display_name"`
+	Roles         vmod.RoleListCookie `json:"system_roles"`
+	Country       string              `json:"country"`
+	PrivacyPolicy bool                `json:"privacy_policy"`
+	Confirmed     bool                `json:"confirmed"`
+	LastUpdate    string              `json:"last_update"`
 	jwt.StandardClaims
 }
 
-func NewAccessToken(user *User) *AccessToken {
+func NewAccessToken(user *vmod.User) *AccessToken {
 	return &AccessToken{
 		user.ID,
 		user.Email,

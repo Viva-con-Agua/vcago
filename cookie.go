@@ -17,7 +17,7 @@ type CookieConfig struct {
 
 //NewCookieConfig loads the cookie parameters from the .env file and return a new CookieConfig.
 func NewCookieConfig() *CookieConfig {
-	cookieSameSite := Config.GetEnvString("COOKIE_SAME_SITE", "w", "strict")
+	cookieSameSite := Settings.String("COOKIE_SAME_SITE", "w", "strict")
 	sameSite := http.SameSiteStrictMode
 	if cookieSameSite == "lax" {
 		sameSite = http.SameSiteLaxMode
@@ -30,8 +30,8 @@ func NewCookieConfig() *CookieConfig {
 	}
 	return &CookieConfig{
 		SameSite: sameSite,
-		Secure:   Config.GetEnvBool("COOKIE_SECURE", "w", true),
-		HttpOnly: Config.GetEnvBool("COOKIE_HTTP_ONLY", "w", true),
+		Secure:   Settings.Bool("COOKIE_SECURE", "w", true),
+		HttpOnly: Settings.Bool("COOKIE_HTTP_ONLY", "w", true),
 	}
 }
 

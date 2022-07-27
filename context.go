@@ -29,10 +29,10 @@ func (i *Context) Ctx() context.Context {
 //Define query:"" for bind the query parameters in a struct.
 func (i *Context) BindAndValidate(body interface{}) error {
 	if err := i.Bind(body); err != nil {
-		return NewErrorLog(err, "DEBUG", "bind").AddModel(i.Model)
+		return NewError(err, "DEBUG", "bind").AddModel(i.Model)
 	}
 	if err := i.Validate(body); err != nil {
-		return NewErrorLog(err, "DEBUG", "validate").AddModel(i.Model)
+		return NewError(err, "DEBUG", "validate").AddModel(i.Model)
 	}
 	return nil
 }
@@ -77,9 +77,9 @@ func (i *Context) Log(err error) {
 	}
 	var output *Error
 	if err == mongo.ErrNoDocuments || strings.Contains(err.Error(), "duplicate key error") {
-		output = NewErrorLog(err, "DEBUG", "")
+		output = NewError(err, "DEBUG", "")
 	} else {
-		output = NewErrorLog(err, "ERROR", "")
+		output = NewError(err, "ERROR", "")
 	}
 	output.Print(id)
 }

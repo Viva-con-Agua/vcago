@@ -1,14 +1,11 @@
-package vcago
-
-import (
-	"strings"
-)
+package vmod
 
 type Money struct {
 	Amount   int64  `bson:"amount" json:"amount" validate:"required"`
 	Currency string `bson:"currency" json:"currency" validate:"required"`
 }
 
+/*
 func (i *Money) ValidateAmount(minAmount int64) (err error) {
 	vErr := new(ValidationError)
 	if i.Amount < minAmount {
@@ -25,4 +22,4 @@ func (i *Money) ValidateCurrency(currency string) (err error) {
 		return vErr
 	}
 	return nil
-}
+}*/

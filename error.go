@@ -34,7 +34,7 @@ func (i *Error) Error() string {
 	return i.Err.Error()
 }
 
-func NewErrorLog(err error, lvl string, t string) *Error {
+func NewError(err error, lvl string, t string) *Error {
 	pc := make([]uintptr, 10)
 	runtime.Callers(3, pc)
 	f := runtime.FuncForPC(pc[0])

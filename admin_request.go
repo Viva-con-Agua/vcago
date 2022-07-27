@@ -16,7 +16,7 @@ type AdminRequest struct {
 
 func NewAdminRequest() *AdminRequest {
 	return &AdminRequest{
-		URL: Config.GetEnvString("ADMIN_URL", "n", "http://172.4.5.3"),
+		URL: Settings.String("ADMIN_URL", "n", "http://172.4.5.3"),
 	}
 }
 

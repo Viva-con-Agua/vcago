@@ -3,6 +3,8 @@ package vcago
 import (
 	"encoding/json"
 	"log"
+
+	"github.com/Viva-con-Agua/vcago/vmod"
 )
 
 type MailData struct {
@@ -10,7 +12,7 @@ type MailData struct {
 	Service     string    `json:"service" bson:"service"`
 	Scope       string    `json:"scope" bson:"scope"`
 	Lang        string    `json:"lang" bson:"lang"`
-	User        User      `json:"user" bson:"user"`
+	User        vmod.User `json:"user" bson:"user"`
 	LinkToken   LinkToken `json:"link_token" bson:"link_token"`
 	CurrentUser MailUser  `json:"current_user" bson:"current_user"`
 	ContactUser MailUser  `json:"contact_user" bson:"contact_user"`
@@ -32,7 +34,7 @@ func NewMailData(to string, service string, scope string, lang string) *MailData
 }
 
 func (i *MailData) Send() (err error) {
-	mode := Config.GetEnvString("MAIL_MODE", "w", "local")
+	mode := Settings.String("MAIL_MODE", "w", "local")
 	if mode == "local" {
 		output, _ := json.MarshalIndent(i, "", "\t")
 		log.Print(string(output))
@@ -40,7 +42,7 @@ func (i *MailData) Send() (err error) {
 	return
 }
 
-func (i *MailData) AddUser(user *User) {
+func (i *MailData) AddUser(user *vmod.User) {
 	i.User = *user
 }
 

@@ -6,7 +6,7 @@ import (
 )
 
 //APIKey represents the api Bearer token
-var APIKey = Config.GetEnvString("API_KEY", "w", "secret")
+var APIKey = Settings.String("API_KEY", "w", "secret")
 
 //KeyAuthMiddleware middleware function for handling authentication via key.
 func KeyAuthMiddleware() echo.MiddlewareFunc {

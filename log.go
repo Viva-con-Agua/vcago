@@ -69,7 +69,7 @@ func (i *LoggingHandler) Log(logError *LogError) {
 //Config for echo middleware Logger. Use logger for handle Nats connection.
 func (i *LoggingHandler) Init(service string) echo.MiddlewareFunc {
 	i.service = service
-	i.output = Config.GetEnvString("LOGGING_OUTPUT", "w", "strout")
+	i.output = Settings.String("LOGGING_OUTPUT", "w", "strout")
 	return middleware.LoggerWithConfig(middleware.LoggerConfig{
 		Format: `{"time":"${time_rfc3339_nano}","id":"${id}","remote_ip":"${remote_ip}",` +
 			`"host":"${host}","method":"${method}","uri":"${uri}","user_agent":"${user_agent}",` +
@@ -82,7 +82,7 @@ func (i *LoggingHandler) Init(service string) echo.MiddlewareFunc {
 func NewLoggingHandler(service string) *LoggingHandler {
 	return &LoggingHandler{
 		service: service,
-		output:  Config.GetEnvString("LOGGING_OUTPUT", "w", "strout"),
+		output:  Settings.String("LOGGING_OUTPUT", "w", "strout"),
 	}
 }
 

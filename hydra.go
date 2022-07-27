@@ -5,6 +5,7 @@ import (
 	"errors"
 	"log"
 
+	"github.com/Viva-con-Agua/vcago/vmod"
 	"github.com/coreos/go-oidc/v3/oidc"
 	"golang.org/x/oauth2"
 )
@@ -17,15 +18,15 @@ type HydraClient struct {
 func NewHydraClient() (r *HydraClient) {
 	ctx := context.Background()
 	r = new(HydraClient)
-	provider, err := oidc.NewProvider(ctx, Config.GetEnvString("OIDC_HOST", "w", "http://hydra.localhost/"))
+	provider, err := oidc.NewProvider(ctx, Settings.String("OIDC_HOST", "w", "http://hydra.localhost/"))
 	if err != nil {
 		log.Print(err)
 	}
 	// Configure an OpenID Connect aware OAuth2 client.
 	r.Oauth2Config = oauth2.Config{
-		ClientID:     Config.GetEnvString("OIDC_CLIENT_ID", "w", "test"),
-		ClientSecret: Config.GetEnvString("OIDC_CLIENT_SECRET", "w", "secret"),
-		RedirectURL:  Config.GetEnvString("OIDC_REDIRECT_URL", "w", "http://localhost:8081/callback"),
+		ClientID:     Settings.String("OIDC_CLIENT_ID", "w", "test"),
+		ClientSecret: Settings.String("OIDC_CLIENT_SECRET", "w", "secret"),
+		RedirectURL:  Settings.String("OIDC_REDIRECT_URL", "w", "http://localhost:8081/callback"),
 
 		// Discovery returns the OAuth2 endpoints.
 		Endpoint: provider.Endpoint(),
@@ -43,10 +44,10 @@ type Callback struct {
 }
 
 type UserClaims struct {
-	User User `json:"user"`
+	User vmod.User `json:"user"`
 }
 
-func (i *HydraClient) Callback(ctx context.Context, callback *Callback) (r *User, err error) {
+func (i *HydraClient) Callback(ctx context.Context, callback *Callback) (r *vmod.User, err error) {
 	oauth2Token := new(oauth2.Token)
 	oauth2Token, err = i.Oauth2Config.Exchange(ctx, callback.Code)
 	if err != nil {

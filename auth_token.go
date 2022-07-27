@@ -2,9 +2,11 @@ package vcago
 
 import (
 	"net/http"
+
+	"github.com/Viva-con-Agua/vcago/vmod"
 )
 
-var jwtSecret = Config.GetEnvString("JWT_SECRET", "w", "secret")
+var jwtSecret = Settings.String("JWT_SECRET", "w", "secret")
 
 var authCookie = NewCookieConfig()
 
@@ -16,7 +18,7 @@ type AuthToken struct {
 }
 
 //NewAuthToken creates an new access and refresh token for the given user.
-func NewAuthToken(user *User) (r *AuthToken, err error) {
+func NewAuthToken(user *vmod.User) (r *AuthToken, err error) {
 	r = new(AuthToken)
 	if r.AccessToken, err = NewAccessToken(user).SignedString(jwtSecret); err != nil {
 		return

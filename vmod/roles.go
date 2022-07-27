@@ -1,4 +1,4 @@
-package vcago
+package vmod
 
 import (
 	"strings"
@@ -20,14 +20,14 @@ type RoleList []Role
 
 func (i *RoleList) Cookie() (r *RoleListCookie) {
 	r = new(RoleListCookie)
-	for n, _ := range *i {
+	for n := range *i {
 		*r = append(*r, (*i)[n].Name)
 	}
 	return
 }
 
 func (i *RoleListCookie) CheckRoot(role *Role) bool {
-	for n, _ := range *i {
+	for n := range *i {
 		if strings.Contains(role.Root, (*i)[n]) {
 			return true
 		}
@@ -36,7 +36,7 @@ func (i *RoleListCookie) CheckRoot(role *Role) bool {
 }
 
 func (i *RoleListCookie) Validate(roles string) bool {
-	for n, _ := range *i {
+	for n := range *i {
 		if strings.Contains(roles, (*i)[n]) {
 			return true
 		}
@@ -45,7 +45,7 @@ func (i *RoleListCookie) Validate(roles string) bool {
 }
 
 func (i *RoleList) In(roles string) bool {
-	for n, _ := range *i {
+	for n := range *i {
 		if (*i)[n].Name == roles {
 			return true
 		}

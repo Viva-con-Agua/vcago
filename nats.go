@@ -8,8 +8,7 @@ import (
 
 //Nats represents the config struct for Nats service.
 type NatsDAO struct {
-	host       string
-	port       string
+	url        string
 	skip       bool
 	connection *nats.EncodedConn
 }
@@ -18,16 +17,14 @@ type NatsDAO struct {
 var Nats = new(NatsDAO)
 
 func (i *NatsDAO) Connect() {
-	i.skip = Config.GetEnvBool("NATS_SKIP", "n", false)
+	i.skip = Settings.Bool("NATS_SKIP", "n", false)
 	if i.skip {
 		return
 	}
-	i.host = Config.GetEnvString("NATS_HOST", "w", "localhost")
-	i.port = Config.GetEnvString("NATS_PORT", "w", "4222")
-	natsUrl := "nats://" + i.host + ":" + i.port
-	nc, err := nats.Connect(natsUrl)
+	i.url = Settings.String("NATS_URL", "w", "localhost")
+	nc, err := nats.Connect(i.url)
 	if err != nil {
-		log.Fatal(err, " ", "NatsUrl: ", natsUrl)
+		log.Fatal(err, " ", "NatsUrl: ", i.url)
 	}
 	i.connection, err = nats.NewEncodedConn(nc, nats.JSON_ENCODER)
 	if err != nil {
