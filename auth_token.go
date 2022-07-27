@@ -3,7 +3,7 @@ package vcago
 import (
 	"net/http"
 
-	"github.com/Viva-con-Agua/vcago/vmod"
+	"github.com/golang-jwt/jwt"
 )
 
 var jwtSecret = Settings.String("JWT_SECRET", "w", "secret")
@@ -18,13 +18,18 @@ type AuthToken struct {
 }
 
 //NewAuthToken creates an new access and refresh token for the given user.
-func NewAuthToken(user *vmod.User) (r *AuthToken, err error) {
+func NewAuthToken(accessToken jwt.Claims, refreshToken jwt.Claims) (r *AuthToken, err error) {
 	r = new(AuthToken)
-	if r.AccessToken, err = NewAccessToken(user).SignedString(jwtSecret); err != nil {
+	if r.AccessToken, err = SignedString(accessToken); err != nil {
 		return
 	}
-	r.RefreshToken, err = NewRefreshToken(user.ID).SignedString(jwtSecret)
+	r.RefreshToken, err = SignedString(refreshToken)
 	return
+}
+
+func SignedString(token jwt.Claims) (string, error) {
+	temp := jwt.NewWithClaims(jwt.SigningMethodHS256, token)
+	return temp.SignedString([]byte(jwtSecret))
 }
 
 //AccessCookie return an cookie conains the access_token.

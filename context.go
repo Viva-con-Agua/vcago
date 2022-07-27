@@ -52,6 +52,14 @@ func (i *Context) AccessToken(token interface{}) (err error) {
 	return
 }
 
+func (i *Context) RefreshTokenID() (string, error) {
+	token := i.Get("token").(*jwt.Token)
+	if token == nil {
+		return "", errors.New("No user in Conext")
+	}
+	return token.Claims.(*RefreshToken).UserID, nil
+}
+
 //ErrorResonse return an http error for an given error.
 func (i *Context) ErrorResponse(err error) error {
 	if mongo.IsDuplicateKeyError(err) {

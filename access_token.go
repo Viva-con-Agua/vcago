@@ -1,13 +1,10 @@
 package vcago
 
 import (
-	"errors"
 	"time"
 
 	"github.com/Viva-con-Agua/vcago/vmod"
 	"github.com/golang-jwt/jwt"
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 )
 
 type AccessToken struct {
@@ -47,26 +44,4 @@ func NewAccessToken(user *vmod.User) *AccessToken {
 func (i *AccessToken) SignedString(secret string) (string, error) {
 	temp := jwt.NewWithClaims(jwt.SigningMethodHS256, i)
 	return temp.SignedString([]byte(secret))
-}
-
-//AccessCookieConfig can with echo for middleware.JWTWithConfig(vmod.AccessConfig) to handling access controll
-//The token is reachable with c.Get("token")
-func AccessCookieConfig() echo.MiddlewareFunc {
-	//Deprecated: AccessCookieConfig not longer supported, use AccessCookieMiddleware
-	return middleware.JWTWithConfig(
-		middleware.JWTConfig{
-			Claims:      &AccessToken{},
-			ContextKey:  "token",
-			TokenLookup: "cookie:access_token",
-			SigningKey:  []byte(jwtSecret),
-		})
-}
-
-func AccessCookieUser(c echo.Context) (r *AccessToken, err error) {
-	token := c.Get("token").(*jwt.Token)
-	if token == nil {
-		return nil, errors.New("No user in Conext")
-	}
-	r = token.Claims.(*AccessToken)
-	return
 }

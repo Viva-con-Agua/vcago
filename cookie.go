@@ -63,10 +63,10 @@ func AccessCookieMiddleware(i jwt.Claims) echo.MiddlewareFunc {
 
 //RefreshCookieConfig can with echo for middleware.JWTWithConfig(vmod.AccessConfig) to handling access controll
 //The token is reachable with c.Get("token")
-func RefreshCookieMiddleware(i jwt.Claims) echo.MiddlewareFunc {
+func RefreshCookieMiddleware() echo.MiddlewareFunc {
 	return middleware.JWTWithConfig(
 		middleware.JWTConfig{
-			Claims:      i,
+			Claims:      &RefreshToken{},
 			ContextKey:  "token",
 			TokenLookup: "cookie:refresh_token",
 			SigningKey:  []byte(jwtSecret),
