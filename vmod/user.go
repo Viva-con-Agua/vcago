@@ -6,7 +6,7 @@ import (
 )
 
 type (
-	//User represents the user model
+	//User represents the user default user information they are shared with all viva con agua services.
 	User struct {
 		ID            string   `json:"id,omitempty" bson:"_id"`
 		Email         string   `json:"email" bson:"email"`
@@ -22,6 +22,8 @@ type (
 	}
 )
 
+//CheckUpdate checks if the lastUpdate time string is older as the users LastUpdate param.
+//If the function return true, the user needs to be updated in this service.
 func (i *User) CheckUpdate(lastUpdate string) bool {
 	current, _ := time.Parse(time.RFC3339, i.LastUpdate)
 	last, _ := time.Parse(time.RFC3339, lastUpdate)

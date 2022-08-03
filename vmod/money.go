@@ -1,5 +1,6 @@
 package vmod
 
+//Money represent the simple Money object. The Amount is a cent representation.
 type Money struct {
 	Amount   int64  `bson:"amount" json:"amount" validate:"required"`
 	Currency string `bson:"currency" json:"currency" validate:"required"`

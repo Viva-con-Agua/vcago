@@ -11,15 +11,20 @@ import (
 )
 
 //Settings represents the global SettingType variable and can be used for load config parameters.
-var Settings = SettingTypeLoad()
+var Settings = SettingHandlerLoad()
 
-type SettingType struct {
-	Error []bool
+//SettingHandler represents and handler for load Settings via flag or environment variable.
+type SettingHandler struct {
+	Error  []bool
+	Config map[string]interface{}
 }
 
-func SettingTypeLoad() *SettingType {
+//SettingHandlerLoad loads all variables form an .env file and return an SettingHandler.
+func SettingHandlerLoad() *SettingHandler {
 	godotenv.Load(".env")
-	return new(SettingType)
+	settings := new(SettingHandler)
+	settings.Config = make(map[string]interface{})
+	return settings
 }
 
 const (
@@ -67,7 +72,8 @@ func settingsLogError(key string, e string, lvl string, dVal interface{}) bool {
 	return false
 }
 
-func (i *SettingType) stringEnv(key string, lvl string, dVal string) string {
+//stringEnv used to load an string variable from environment variables.
+func (i *SettingHandler) stringEnv(key string, lvl string, dVal string) string {
 	val, ok := os.LookupEnv(key)
 	if !ok {
 		i.Error = append(i.Error, envLogError(key, notSet, lvl, dVal))
@@ -77,7 +83,8 @@ func (i *SettingType) stringEnv(key string, lvl string, dVal string) string {
 	return val
 }
 
-func (i *SettingType) intEnv(key string, lvl string, dVal int) int {
+//intEnv used to load an int variable from environment variables.
+func (i *SettingHandler) intEnv(key string, lvl string, dVal int) int {
 	val, ok := os.LookupEnv(key)
 	if !ok {
 		i.Error = append(i.Error, envLogError(key, notSet, lvl, dVal))
@@ -93,8 +100,8 @@ func (i *SettingType) intEnv(key string, lvl string, dVal int) int {
 
 }
 
-//GetEnvStringList as
-func (i *SettingType) stringListEnv(key string, lvl string, dVal []string) []string {
+//stringListEnv used to load an int variable from environment variables.
+func (i *SettingHandler) stringListEnv(key string, lvl string, dVal []string) []string {
 	val, ok := os.LookupEnv(key)
 	if !ok {
 		i.Error = append(i.Error, envLogError(key, notSet, lvl, dVal))
@@ -111,8 +118,8 @@ func (i *SettingType) stringListEnv(key string, lvl string, dVal []string) []str
 	return valList
 }
 
-//GetEnvBool load a key from environment variables as bool.
-func (i *SettingType) boolEnv(key string, lvl string, dVal bool) bool {
+//boolEnv load a key from environment variables as bool.
+func (i *SettingHandler) boolEnv(key string, lvl string, dVal bool) bool {
 	val, ok := os.LookupEnv(key)
 	if !ok {
 		i.Error = append(i.Error, envLogError(key, notSet, lvl, dVal))
@@ -130,31 +137,29 @@ func (i *SettingType) boolEnv(key string, lvl string, dVal bool) bool {
 	return dVal
 }
 
-func (i *SettingType) String(key string, lvl string, dVal string) string {
+//String loads an string config variable.
+//The function will first looking for an flag, than the environment variables and as default dVal.
+func (i *SettingHandler) String(key string, lvl string, dVal string) string {
 	val := flag.String(key, i.stringEnv(key, lvl, dVal), "")
-	flag.Parse()
 	return *val
 }
 
-func (i *SettingType) Bool(key string, lvl string, dVal bool) bool {
+func (i *SettingHandler) Bool(key string, lvl string, dVal bool) bool {
 	val := flag.Bool(key, i.boolEnv(key, lvl, dVal), "")
-	flag.Parse()
 	return *val
 }
 
-func (i *SettingType) Int(key string, lvl string, dVal int) int {
+func (i *SettingHandler) Int(key string, lvl string, dVal int) int {
 	val := flag.Int(key, i.intEnv(key, lvl, dVal), "")
-	flag.Parse()
 	return *val
 }
 
-func (i *SettingType) StringList(key string, lvl string, dVal []string) []string {
+func (i *SettingHandler) StringList(key string, lvl string, dVal []string) []string {
 	ddVal := ""
 	for n := range dVal {
 		ddVal = ddVal + dVal[n] + ","
 	}
 	val := flag.String(key, i.stringEnv(key, lvl, ddVal), "")
-	flag.Parse()
 	valList := strings.Split(*val, ",")
 	if valList == nil {
 		i.Error = append(i.Error, envLogError(key, notSet, lvl, dVal))
@@ -162,4 +167,8 @@ func (i *SettingType) StringList(key string, lvl string, dVal []string) []string
 
 	}
 	return valList
+}
+
+func (i *SettingHandler) Load() {
+	flag.Parse()
 }

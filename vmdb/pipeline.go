@@ -1,17 +1,24 @@
+//Package vmdb
 package vmdb
 
 import "go.mongodb.org/mongo-driver/bson"
 
+//Pipeline represents an helper for handling mongodb pipeline. The Pipe param contains an []bson.D that represents an mongo pipeline.
 type Pipeline struct {
 	Pipe []bson.D
 }
 
+//NewPipeline creates an new Pipeline struct.
 func NewPipeline() *Pipeline {
 	return &Pipeline{
 		Pipe: []bson.D{},
 	}
 }
 
+//Match adds the filter param as $match to the end of the Pipeline struct.
+//
+//MongoDB:
+//	{"$match": filter}
 func (i *Pipeline) Match(filter bson.D) *Pipeline {
 	if filter != nil {
 		match := bson.D{{
@@ -23,6 +30,21 @@ func (i *Pipeline) Match(filter bson.D) *Pipeline {
 	return i
 }
 
+//LockupUnwind represents the lookup and unwind combination to join an element from a second collection to the result.
+//
+//MongoDB:
+//	{
+//		"$lookup":{
+//			"from": from,
+//			"localField": localField,
+//			"foreignField" foreignField,
+//			"as": as
+//		},
+//		"$unwind": {
+// 			"path": "$as",
+// 			"preserveNullAndEmptyArrays": true
+//		}
+//	}
 func (i *Pipeline) LookupUnwind(from string, localField string, foreignField string, as string) {
 	lookup := bson.D{{
 		Key: "$lookup",
@@ -37,25 +59,53 @@ func (i *Pipeline) LookupUnwind(from string, localField string, foreignField str
 	i.Pipe = append(i.Pipe, unwind)
 }
 
-func (i *Pipeline) Lookup(from string, root string, child string, as string) {
+//Lookup represents an lookup to join an list of elements from a second collection to the result.
+//
+//MongoDB:
+//	{
+//		"$lookup":{
+//			"from": from,
+//			"localField": localField,
+//			"foreignField" foreignField,
+//			"as": as
+//		}
+//	}
+func (i *Pipeline) Lookup(from string, localField string, foreignField string, as string) {
 	lookup := bson.D{{
 		Key: "$lookup",
 		Value: bson.D{
 			{Key: "from", Value: from},
-			{Key: "localField", Value: root},
-			{Key: "foreignField", Value: child},
+			{Key: "localField", Value: localField},
+			{Key: "foreignField", Value: foreignField},
 			{Key: "as", Value: as},
 		}}}
 	i.Pipe = append(i.Pipe, lookup)
 }
 
-func (i *Pipeline) LookupUnwindMatch(from string, root string, child string, as string, match bson.D) {
+//LookupUnwindMatch represents the lookup and unwind combination to join an element from a second collection to the result.
+//The joined element can be filtered by the match param.
+//
+//MongoDB:
+//	{
+//		"$lookup":{
+//			"from": from,
+//			"localField": localField,
+//			"foreignField" foreignField,
+//			"pipeline": [{"$match": match}]
+//			"as": as
+//		},
+//		"$unwind": {
+// 			"path": "$as",
+// 			"preserveNullAndEmptyArrays": true
+//		}
+//	}
+func (i *Pipeline) LookupUnwindMatch(from string, localField string, foreignField string, as string, match bson.D) {
 	lookup := bson.D{{
 		Key: "$lookup",
 		Value: bson.D{
 			{Key: "from", Value: from},
-			{Key: "localField", Value: root},
-			{Key: "foreignField", Value: child},
+			{Key: "localField", Value: localField},
+			{Key: "foreignField", Value: foreignField},
 			{Key: "pipeline", Value: append([]bson.D{}, bson.D{{Key: "$match", Value: match}})},
 			{Key: "as", Value: as},
 		}}}
@@ -64,29 +114,59 @@ func (i *Pipeline) LookupUnwindMatch(from string, root string, child string, as 
 	i.Pipe = append(i.Pipe, unwind)
 }
 
-func (i *Pipeline) LookupMatch(from string, root string, child string, as string, match bson.D) {
+//LookupMatch represents an lookup to join an list of elements from a second collection to the result.
+//The joined elements can be filtered by the match param.
+//
+//MongoDB:
+//	{
+//		"$lookup":{
+//			"from": from,
+//			"localField": localField,
+//			"foreignField" foreignField,
+//			"pipeline": [{"$match": match}]
+//			"as": as
+//		}
+//	}
+func (i *Pipeline) LookupMatch(from string, localField string, foreignField string, as string, match bson.D) {
 	lookup := bson.D{{
 		Key: "$lookup",
 		Value: bson.D{
 			{Key: "from", Value: from},
-			{Key: "localField", Value: root},
-			{Key: "foreignField", Value: child},
+			{Key: "localField", Value: localField},
+			{Key: "foreignField", Value: foreignField},
 			{Key: "pipeline", Value: append([]bson.D{}, bson.D{{Key: "$match", Value: match}})},
 			{Key: "as", Value: as},
 		}}}
 	i.Pipe = append(i.Pipe, lookup)
 }
 
-func (i *Pipeline) LookupList(from string, root string, child string, as string) {
+//LookupList represents an lookup to join an list of elements from a second collection to the result.
+//The value of the localField need to be a list of references. If the foreignField value is in the list, the element will joined to the as value.
+//
+//MongoDB:
+//	{
+//		"$lookup":{
+//			"from": from,
+//			"let": { localField: $localField },
+//			"foreignField" foreignField,
+//			"pipeline": [{
+//				"$match":{
+//					"$expr":{"$in: ["$foreinField", "$$localField"]}
+//				}
+//			}],
+//			"as": as
+//		}
+//	}
+func (i *Pipeline) LookupList(from string, localField string, foreignField string, as string) {
 	lookup := bson.D{{
 		Key: "$lookup",
 		Value: bson.D{
 			{Key: "from", Value: from},
-			{Key: "let", Value: bson.D{{Key: root, Value: "$" + root}}},
+			{Key: "let", Value: bson.D{{Key: localField, Value: "$" + localField}}},
 			{Key: "pipeline", Value: bson.A{
 				bson.D{
 					{Key: "$match", Value: bson.D{{
-						Key: "$expr", Value: bson.D{{Key: "$in", Value: bson.A{"$" + child, "$$" + root}}},
+						Key: "$expr", Value: bson.D{{Key: "$in", Value: bson.A{"$" + foreignField, "$$" + localField}}},
 					}}},
 				},
 			}},

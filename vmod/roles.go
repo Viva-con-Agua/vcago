@@ -6,6 +6,7 @@ import (
 	"github.com/google/uuid"
 )
 
+//Role represents an struct for handling access roles.
 type Role struct {
 	ID     string `json:"id" bson:"_id"`
 	Name   string `json:"name" bson:"name"`
@@ -14,10 +15,13 @@ type Role struct {
 	UserID string `json:"user_id" bson:"user_id"`
 }
 
+//RoleListCookie used for the access_token.
 type RoleListCookie []string
 
+//RoleList represents an slice of Role
 type RoleList []Role
 
+//Cookie return an slice of strings they contains all role names.
 func (i *RoleList) Cookie() (r *RoleListCookie) {
 	r = new(RoleListCookie)
 	for n := range *i {
@@ -26,6 +30,8 @@ func (i *RoleList) Cookie() (r *RoleListCookie) {
 	return
 }
 
+//CheckRoot check if the RoleListCookie object contains an role in the Root param.
+//So you can check if an user is allow to give an other user an role.
 func (i *RoleListCookie) CheckRoot(role *Role) bool {
 	for n := range *i {
 		if strings.Contains(role.Root, (*i)[n]) {
@@ -35,6 +41,10 @@ func (i *RoleListCookie) CheckRoot(role *Role) bool {
 	return false
 }
 
+//Validate check if an RoleListCookie contains an role in the roles string. We seperate the role by ;.
+//
+//Example:
+//	"admin;employee"
 func (i *RoleListCookie) Validate(roles string) bool {
 	for n := range *i {
 		if strings.Contains(roles, (*i)[n]) {
@@ -44,9 +54,10 @@ func (i *RoleListCookie) Validate(roles string) bool {
 	return false
 }
 
-func (i *RoleList) In(roles string) bool {
+//In check if a the RoleList contains an role.
+func (i *RoleList) In(role string) bool {
 	for n := range *i {
-		if (*i)[n].Name == roles {
+		if (*i)[n].Name == role {
 			return true
 		}
 	}
@@ -72,12 +83,15 @@ func (i *RoleList) CheckRoot(role *Role) bool {
 	return false
 }
 */
+
+//Append append a Role role to a RoleList i. If i contains the role, nothing happend.
 func (i *RoleList) Append(role *Role) {
 	if !i.In(role.Name) {
 		*i = append(*i, *role)
 	}
 }
 
+//RoleMember represents the member role.
 func RoleMember(userID string) *Role {
 	return &Role{
 		ID:     uuid.NewString(),
@@ -88,6 +102,7 @@ func RoleMember(userID string) *Role {
 	}
 }
 
+//RoleAdmin represents the admin role.
 func RoleAdmin(userID string) *Role {
 	return &Role{
 		ID:     uuid.NewString(),
@@ -98,6 +113,7 @@ func RoleAdmin(userID string) *Role {
 	}
 }
 
+//RoleEmployee represents the employee role.
 func RoleEmployee(userID string) *Role {
 	return &Role{
 		ID:     uuid.NewString(),

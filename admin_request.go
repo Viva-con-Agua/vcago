@@ -14,12 +14,14 @@ type AdminRequest struct {
 	URL string
 }
 
+//NewAdminRequest initial the AdminRequest model.
 func NewAdminRequest() *AdminRequest {
 	return &AdminRequest{
 		URL: Settings.String("ADMIN_URL", "n", "http://172.4.5.3"),
 	}
 }
 
+//Get provides an GET Request over the admin route. The Response model can contain an http.Error.
 func (i *AdminRequest) Get(path string) (r *Response, err error) {
 	url := i.URL + path
 	request := new(http.Request)
@@ -53,6 +55,7 @@ func (i *AdminRequest) Get(path string) (r *Response, err error) {
 	return
 }
 
+//Post posts the data via POST Request to the path using the admin route.
 func (i *AdminRequest) Post(path string, data interface{}) (r *Response, err error) {
 	var jsonData []byte
 	if jsonData, err = json.Marshal(data); err != nil {

@@ -7,7 +7,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-//HTTPErrorHandler handles echo.HTTPError and return the correct response.
 func HTTPErrorHandler(err error, c echo.Context) {
 	//set default error code
 	code := http.StatusInternalServerError
@@ -30,15 +29,10 @@ func HTTPErrorHandler(err error, c echo.Context) {
 			c.JSON(code, err)
 		}
 	} else if resp, ok := err.(*ValidationError); ok {
-		c.JSON(ValidationErrorResponseHandler(resp))
+		c.JSON(NewBadRequest("-", "validation error", resp).Response())
 	} else if err == mongo.ErrNoDocuments {
 		c.JSON(NewResp(http.StatusNotFound, "error", "document not found", "", nil).Response())
 	} else {
 		c.JSON(NewInternalServerError("-").Response())
 	}
-}
-
-//ValidationErrorResponseHandler handles the response for the ValidationError type.
-func ValidationErrorResponseHandler(i *ValidationError) (int, interface{}) {
-	return NewBadRequest("-", "validation error", i).Response()
 }

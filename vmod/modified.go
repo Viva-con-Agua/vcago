@@ -2,7 +2,7 @@ package vmod
 
 import "time"
 
-//Modified contains update and create time for an model
+//Modified contains update and create time for an model.
 type Modified struct {
 	Updated int64 `json:"updated" bson:"updated"`
 	Created int64 `json:"created" bson:"created"`

@@ -7,6 +7,7 @@ import (
 	"github.com/golang-jwt/jwt"
 )
 
+//AccessToken represents the default access_token contains the basic user informations.
 type AccessToken struct {
 	ID            string              `json:"id,omitempty" bson:"_id"`
 	Email         string              `json:"email" bson:"email" validate:"required,email"`
@@ -22,6 +23,7 @@ type AccessToken struct {
 	jwt.StandardClaims
 }
 
+//NewAccessToken creates an new access_token from vmod.User model.
 func NewAccessToken(user *vmod.User) *AccessToken {
 	return &AccessToken{
 		user.ID,
@@ -41,6 +43,7 @@ func NewAccessToken(user *vmod.User) *AccessToken {
 	}
 }
 
+//SignedString is used for Sign an accesstoken based on the secret param.
 func (i *AccessToken) SignedString(secret string) (string, error) {
 	temp := jwt.NewWithClaims(jwt.SigningMethodHS256, i)
 	return temp.SignedString([]byte(secret))

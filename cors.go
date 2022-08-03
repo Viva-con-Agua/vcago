@@ -1,5 +1,6 @@
 package vcago
 
+/*
 import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -19,4 +20,4 @@ func (i *CORSConfig) Init() echo.MiddlewareFunc {
 		AllowHeaders:     []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderAuthorization, echo.HeaderXRequestedWith},
 		AllowCredentials: true,
 	})
-}
+}*/
