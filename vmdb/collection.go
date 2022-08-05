@@ -2,7 +2,6 @@ package vmdb
 
 import (
 	"context"
-	"log"
 	"runtime"
 	"strings"
 	"time"
@@ -13,7 +12,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-//Collection represents an mongo db database collection
+// Collection represents an mongo db database collection
 type Collection struct {
 	Name         string
 	DatabaseName string
@@ -25,37 +24,34 @@ type DeletedResult struct {
 	ID    string `json:"id"`
 }
 
-//CreateIndex creates an index for a given collection.
-func (i *Collection) CreateIndex(field string, unique bool) *Collection {
+// CreateIndex creates an index for a given collection.
+func (i *Collection) CreateIndex(field string, unique bool) (*Collection, error) {
 	mod := mongo.IndexModel{
 		Keys:    bson.M{field: 1},
 		Options: options.Index().SetUnique(unique),
 	}
 	_, err := i.Collection.Indexes().CreateOne(context.Background(), mod)
 	if err != nil {
-		log.Print("database failed to create index")
+		return nil, err
 	}
-	log.Print("database index created for: " + i.Name)
-	return i
+	return i, nil
 }
 
-//CreateMultiIndex creates an index for an value combination.
-func (i *Collection) CreateMultiIndex(filter bson.D, unique bool) *Collection {
+// CreateMultiIndex creates an index for an value combination.
+func (i *Collection) CreateMultiIndex(filter bson.D, unique bool) (*Collection, error) {
 	mod := mongo.IndexModel{
 		Keys:    filter,
 		Options: options.Index().SetUnique(unique),
 	}
 	_, err := i.Collection.Indexes().CreateOne(context.Background(), mod)
 	if err != nil {
-		log.Print("database failed to create index " + i.Name)
-	} else {
-		log.Print("database index created for: " + i.Name)
+		return nil, err
 	}
-	return i
+	return i, nil
 
 }
 
-//InsertOne inserts a value and return an MongoError as error.
+// InsertOne inserts a value and return an MongoError as error.
 func (i *Collection) InsertOne(ctx context.Context, value interface{}) (err error) {
 	_, err = i.Collection.InsertOne(ctx, value)
 	if err != nil {
@@ -64,7 +60,7 @@ func (i *Collection) InsertOne(ctx context.Context, value interface{}) (err erro
 	return
 }
 
-//InsertMany inserts a list of value and return an MongoError as error.
+// InsertMany inserts a list of value and return an MongoError as error.
 func (i *Collection) InsertMany(ctx context.Context, value []interface{}) (err error) {
 	_, err = i.Collection.InsertMany(ctx, value)
 	if err != nil {
@@ -73,7 +69,7 @@ func (i *Collection) InsertMany(ctx context.Context, value []interface{}) (err e
 	return
 }
 
-//FindOne use the mongo.Collection.FindOne function for select one element from collection.
+// FindOne use the mongo.Collection.FindOne function for select one element from collection.
 func (i *Collection) FindOne(ctx context.Context, filter bson.D, value interface{}) (err error) {
 	if err = i.Collection.FindOne(ctx, filter).Decode(value); err != nil {
 		return i.log(err)
@@ -81,8 +77,8 @@ func (i *Collection) FindOne(ctx context.Context, filter bson.D, value interface
 	return
 }
 
-//AggregateOne use an aggregation pipeline for creating an struct that contains the information from more than one collection.
-//If the result cursor contains objects, the first one will be decoded in the value param.
+// AggregateOne use an aggregation pipeline for creating an struct that contains the information from more than one collection.
+// If the result cursor contains objects, the first one will be decoded in the value param.
 func (i *Collection) AggregateOne(ctx context.Context, pipeline mongo.Pipeline, value interface{}) (err error) {
 	var cursor *mongo.Cursor
 	cursor, err = i.Collection.Aggregate(ctx, pipeline)
@@ -99,8 +95,8 @@ func (i *Collection) AggregateOne(ctx context.Context, pipeline mongo.Pipeline, 
 	return
 }
 
-//Find use the mongo.Collection.Find function for select a list of elements from a collection.
-//The result will decode in the value param. So the value need to be a slice struct.
+// Find use the mongo.Collection.Find function for select a list of elements from a collection.
+// The result will decode in the value param. So the value need to be a slice struct.
 func (i *Collection) Find(ctx context.Context, filter bson.D, value interface{}) (err error) {
 	var cursor *mongo.Cursor
 	cursor, err = i.Collection.Find(ctx, filter)
@@ -113,7 +109,7 @@ func (i *Collection) Find(ctx context.Context, filter bson.D, value interface{})
 	return
 }
 
-//Aggregate use the mongo.Collection.Aggregate function for select a list of elements using an aggregation pipeline.
+// Aggregate use the mongo.Collection.Aggregate function for select a list of elements using an aggregation pipeline.
 func (i *Collection) Aggregate(ctx context.Context, filter mongo.Pipeline, value interface{}) (err error) {
 	cursor, err := i.Collection.Aggregate(ctx, filter)
 	if err != nil {
@@ -125,9 +121,9 @@ func (i *Collection) Aggregate(ctx context.Context, filter mongo.Pipeline, value
 	return
 }
 
-//UpdateOne use the mongo.Collection.UpdateOne function for update one element in an collection.
-//If the result.MatchedCount == 0, the function returns an mongo.ErrNoDocuments error.
-//If the result.MatchedCount != 0, the i.Collection.FindOne function is used to select the updated element and decode it into the result interface.
+// UpdateOne use the mongo.Collection.UpdateOne function for update one element in an collection.
+// If the result.MatchedCount == 0, the function returns an mongo.ErrNoDocuments error.
+// If the result.MatchedCount != 0, the i.Collection.FindOne function is used to select the updated element and decode it into the result interface.
 func (i *Collection) UpdateOne(ctx context.Context, filter bson.D, value interface{}, result interface{}) (err error) {
 	updateResult, err := i.Collection.UpdateOne(
 		ctx,
@@ -148,7 +144,7 @@ func (i *Collection) UpdateOne(ctx context.Context, filter bson.D, value interfa
 	return
 }
 
-//UpdateOneAggregate works the same way than UpdateOne but you can define the pipeline param for decode an aggregated model into the result interface.
+// UpdateOneAggregate works the same way than UpdateOne but you can define the pipeline param for decode an aggregated model into the result interface.
 func (i *Collection) UpdateOneAggregate(ctx context.Context, filter bson.D, value interface{}, result interface{}, pipeline mongo.Pipeline) (err error) {
 	updateResult, err := i.Collection.UpdateOne(
 		ctx,
@@ -169,7 +165,7 @@ func (i *Collection) UpdateOneAggregate(ctx context.Context, filter bson.D, valu
 	return
 }
 
-//TryUpdateOne returns no error if the model is not updated.
+// TryUpdateOne returns no error if the model is not updated.
 func (i *Collection) TryUpdateOne(ctx context.Context, filter bson.D, value interface{}) (err error) {
 	_, err = i.Collection.UpdateOne(
 		ctx,
@@ -182,8 +178,8 @@ func (i *Collection) TryUpdateOne(ctx context.Context, filter bson.D, value inte
 	return
 }
 
-//UpdateMany updates an slice of interfaces.
-//@TODO: create an result.
+// UpdateMany updates an slice of interfaces.
+// @TODO: create an result.
 func (i *Collection) UpdateMany(ctx context.Context, filter bson.A, value bson.M) (err error) {
 	result, err := i.Collection.UpdateMany(
 		ctx,
@@ -200,7 +196,7 @@ func (i *Collection) UpdateMany(ctx context.Context, filter bson.A, value bson.M
 
 }
 
-//TryUpdateMany returns no error if no models was updated.
+// TryUpdateMany returns no error if no models was updated.
 func (i *Collection) TryUpdateMany(ctx context.Context, filter bson.A, value bson.M) (err error) {
 	_, err = i.Collection.UpdateMany(
 		ctx,
@@ -213,7 +209,7 @@ func (i *Collection) TryUpdateMany(ctx context.Context, filter bson.A, value bso
 	return
 }
 
-//DeleteOne deletes an element from given collection by the bson.M filter.
+// DeleteOne deletes an element from given collection by the bson.M filter.
 func (i *Collection) DeleteOne(ctx context.Context, filter bson.D) (err error) {
 	result, err := i.Collection.DeleteOne(ctx, filter)
 	if err != nil {
@@ -225,7 +221,7 @@ func (i *Collection) DeleteOne(ctx context.Context, filter bson.D) (err error) {
 	return
 }
 
-//DeleteMany deletes all elements from collection they match the filter object.
+// DeleteMany deletes all elements from collection they match the filter object.
 func (i *Collection) DeleteMany(ctx context.Context, filter bson.D) (err error) {
 	result, err := i.Collection.DeleteMany(ctx, filter)
 	if err != nil {
@@ -237,7 +233,7 @@ func (i *Collection) DeleteMany(ctx context.Context, filter bson.D) (err error) 
 	return
 }
 
-//DeleteOne deletes an element from given collection by the bson.M filter.
+// DeleteOne deletes an element from given collection by the bson.M filter.
 func (i *Collection) TryDeleteOne(ctx context.Context, filter bson.D) (err error) {
 	_, err = i.Collection.DeleteOne(ctx, filter)
 	if err != nil {
@@ -246,7 +242,7 @@ func (i *Collection) TryDeleteOne(ctx context.Context, filter bson.D) (err error
 	return
 }
 
-//TryDeleteMany returns no error if no element was deleted.
+// TryDeleteMany returns no error if no element was deleted.
 func (i *Collection) TryDeleteMany(ctx context.Context, filter bson.D) (err error) {
 	_, err = i.Collection.DeleteMany(ctx, filter)
 	if err != nil {
@@ -279,7 +275,7 @@ func (i *Collection) log(err error) error {
 	}
 }
 
-//ErrNoDocuments return true if the error is an mongo.ErrNoDocuments error. Else the function returns false.
+// ErrNoDocuments return true if the error is an mongo.ErrNoDocuments error. Else the function returns false.
 func ErrNoDocuments(err error) bool {
 	if err != nil {
 		e := err.(*vcago.Error)
