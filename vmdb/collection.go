@@ -2,6 +2,7 @@ package vmdb
 
 import (
 	"context"
+	"log"
 	"runtime"
 	"strings"
 	"time"
@@ -25,29 +26,29 @@ type DeletedResult struct {
 }
 
 // CreateIndex creates an index for a given collection.
-func (i *Collection) CreateIndex(field string, unique bool) (*Collection, error) {
+func (i *Collection) CreateIndex(field string, unique bool) *Collection {
 	mod := mongo.IndexModel{
 		Keys:    bson.M{field: 1},
 		Options: options.Index().SetUnique(unique),
 	}
 	_, err := i.Collection.Indexes().CreateOne(context.Background(), mod)
 	if err != nil {
-		return nil, err
+		log.Fatal(err)
 	}
-	return i, nil
+	return i
 }
 
 // CreateMultiIndex creates an index for an value combination.
-func (i *Collection) CreateMultiIndex(filter bson.D, unique bool) (*Collection, error) {
+func (i *Collection) CreateMultiIndex(filter bson.D, unique bool) *Collection {
 	mod := mongo.IndexModel{
 		Keys:    filter,
 		Options: options.Index().SetUnique(unique),
 	}
 	_, err := i.Collection.Indexes().CreateOne(context.Background(), mod)
 	if err != nil {
-		return nil, err
+		log.Fatal(err)
 	}
-	return i, nil
+	return i
 
 }
 
