@@ -1,17 +1,19 @@
 package vcago
 
 import (
+	"net/http"
+
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
 
-//Server represents an echo.Echo interface.
+// Server represents an echo.Echo interface.
 type Server struct {
 	echo.Echo
 }
 
-//corsMiddleware is used for load the allow origins and return an CORSMiddleware.
+// corsMiddleware is used for load the allow origins and return an CORSMiddleware.
 func corsMiddleware() echo.MiddlewareFunc {
 	allowOrigins := Settings.StringList("ALLOW_ORIGINS", "w", []string{"localhost:8080"})
 	return middleware.CORSWithConfig(middleware.CORSConfig{
@@ -21,13 +23,13 @@ func corsMiddleware() echo.MiddlewareFunc {
 	})
 }
 
-//Run starts the echo.Echo server on default port 1323. Use the APP_PORT param for set an custom port.
+// Run starts the echo.Echo server on default port 1323. Use the APP_PORT param for set an custom port.
 func (i *Server) Run() {
 	port := Settings.String("APP_PORT", "n", "1323")
 	i.Logger.Fatal(i.Start(":" + port))
 }
 
-//NewServer
+// NewServer
 func NewServer() *Server {
 	Settings.Bool("DEBUG", "w", true)
 	Settings.Load()
@@ -43,5 +45,8 @@ func NewServer() *Server {
 		},
 		TargetHeader: echo.HeaderXRequestID,
 	}))
+	r.GET("/healthz", func(c echo.Context) error {
+		return c.String(http.StatusOK, "healthz")
+	})
 	return &Server{*r}
 }
