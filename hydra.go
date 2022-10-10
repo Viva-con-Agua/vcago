@@ -35,7 +35,7 @@ func NewHydraClient() (r *HydraClient) {
 			// "openid" is a required scope for OpenID Connect flows.
 			Scopes: []string{oidc.ScopeOpenID, "extra_vars"},
 		}
-		r.Oauth2Config.Endpoint.AuthStyle = oauth2.AuthStyleAutoDetect
+		r.Oauth2Config.Endpoint.AuthStyle = oauth2.AuthStyleInParams
 		r.Verifier = provider.Verifier(&oidc.Config{ClientID: r.Oauth2Config.ClientID})
 	}
 	return
