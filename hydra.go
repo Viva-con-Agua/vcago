@@ -68,12 +68,12 @@ func (i *HydraClient) Callback(ctx context.Context, callback *Callback) (r *vmod
 	}
 	resp := struct {
 		OAuth2Token   *oauth2.Token
-		IDTokenClaims *UserClaims // ID Token payload is just JSON.
-	}{oauth2Token, new(UserClaims)}
+		IDTokenClaims *vmod.User // ID Token payload is just JSON.
+	}{oauth2Token, new(vmod.User)}
 
 	if err = idToken.Claims(&resp.IDTokenClaims); err != nil {
 		return
 	}
-	r = &resp.IDTokenClaims.User
+	r = resp.IDTokenClaims
 	return
 }
