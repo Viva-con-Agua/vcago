@@ -67,7 +67,7 @@ func (i *Error) Print(id string) {
 	}
 }
 
-//MongoErrorResponseHandler handles the response for the MongoError type.
+// MongoErrorResponseHandler handles the response for the MongoError type.
 func (i *Error) Response() (int, interface{}) {
 	switch i.Type {
 	case "mongo":
@@ -98,7 +98,7 @@ func (i *Error) MongoResponse() (int, interface{}) {
 		response := &Response{
 			Status:  http.StatusNotFound,
 			Type:    "error",
-			Message: "docmument not fount",
+			Message: "docmument not found",
 			Model:   i.Model,
 		}
 		return response.Response()
