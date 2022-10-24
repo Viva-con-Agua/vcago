@@ -8,22 +8,23 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-//Filter represents an mongo filter object.
+// Filter represents an mongo filter object.
 type Filter bson.D
 
-//NewMatch return an empty Match type.
+// NewMatch return an empty Match type.
 func NewFilter() *Filter {
 	return &Filter{}
 }
 
-//Bson return the bson.D object.
+// Bson return the bson.D object.
 func (i *Filter) Bson() bson.D {
 	return bson.D(*i)
 }
 
-//EqualString match if the value is equal to the value of the key in a database collection.
+// EqualString match if the value is equal to the value of the key in a database collection.
 //
-//MongoDB:
+// MongoDB:
+//
 //	{
 //		key: value
 //	}
@@ -33,9 +34,10 @@ func (i *Filter) EqualString(key string, value string) {
 	}
 }
 
-//EqualStringList match if the the value of the key param is matching an element in the value param slice.
+// EqualStringList match if the the value of the key param is matching an element in the value param slice.
 //
-//MongoDB:
+// MongoDB:
+//
 //	{
 //		key: {"$or": value}
 //	}
@@ -49,10 +51,11 @@ func (i *Filter) EqualStringList(key string, value []string) {
 	}
 }
 
-//EqualBool the value is a string representation of an bool.
-//match if value is equal to the value of the key in a database entry.
+// EqualBool the value is a string representation of an bool.
+// match if value is equal to the value of the key in a database entry.
 //
-//MongoDB:
+// MongoDB:
+//
 //	{
 //		key: value as boolean
 //	}
@@ -67,10 +70,11 @@ func (i *Filter) EqualBool(key string, value string) {
 	}
 }
 
-//EqualInt the value is an string representation of an int64.
-//match if value is equal to the value of the key in a database entry.
+// EqualInt the value is an string representation of an int64.
+// match if value is equal to the value of the key in a database entry.
 //
-//MongoDB:
+// MongoDB:
+//
 //	{
 //		key: value as int64
 //	}
@@ -82,10 +86,11 @@ func (i *Filter) EqualInt64(key string, value string) {
 	}
 }
 
-//EqualInt the value is an string representation of an int.
-//match if the value is equal to the value of the given key in an database entry.
+// EqualInt the value is an string representation of an int.
+// match if the value is equal to the value of the given key in an database entry.
 //
-//MongoDB:
+// MongoDB:
+//
 //	{
 //		key: value as int
 //	}
@@ -97,14 +102,14 @@ func (i *Filter) EqualInt(key string, value string) {
 	}
 }
 
-//ElemMatch TODO
+// ElemMatch TODO
 func (i *Filter) ElemMatch(list string, key string, value string) {
 	if value != "" {
 		*i = append(*i, bson.E{Key: list, Value: bson.D{{Key: "$elemMatch", Value: bson.D{{Key: key, Value: value}}}}})
 	}
 }
 
-//ElemMatchList TODO
+// ElemMatchList TODO
 func (i *Filter) ElemMatchList(list string, key string, value []string) {
 	if value != nil {
 		filter := bson.A{}
@@ -119,9 +124,10 @@ func (i *Filter) ElemMatchList(list string, key string, value []string) {
 	}
 }
 
-//LikeString use regex for handling a substring matching.
+// LikeString use regex for handling a substring matching.
 //
-//MongoDB:
+// MongoDB:
+//
 //	{
 //		key: {"$regex": ^value}
 //	}
@@ -129,14 +135,16 @@ func (i *Filter) LikeString(key string, value string) {
 	if value != "" {
 		*i = append(*i, bson.E{Key: key, Value: bson.D{
 			{Key: "$regex", Value: primitive.Regex{Pattern: "^" + regexp.QuoteMeta(value)}},
+			{Key: "$options", Value: "i"},
 		}})
 	}
 }
 
-//GteInt64 provides $gte for key they have an int64 datatype.
-//If the value element is "" or not an int64 formated string no element will be added to the filter object.
+// GteInt64 provides $gte for key they have an int64 datatype.
+// If the value element is "" or not an int64 formated string no element will be added to the filter object.
 //
-//MongoDB:
+// MongoDB:
+//
 //	{
 //		key: {"$gte": value as int64}
 //	}
@@ -148,10 +156,11 @@ func (i *Filter) GteInt64(key string, value string) {
 	}
 }
 
-//LteInt64 provides $lte for key they have an int64 datatype.
-//If the value element is "" or not an int64 formated string no element will be added to the filter object.
+// LteInt64 provides $lte for key they have an int64 datatype.
+// If the value element is "" or not an int64 formated string no element will be added to the filter object.
 //
-//MongoDB:
+// MongoDB:
+//
 //	{
 //		key: {"$lte": value as int64}
 //	}
@@ -163,10 +172,11 @@ func (i *Filter) LteInt64(key string, value string) {
 	}
 }
 
-//GteInt provides $lte for key they have an int6 datatype.
-//If the value element is "" or not an int formated string no element will be added to the filter object.
+// GteInt provides $lte for key they have an int6 datatype.
+// If the value element is "" or not an int formated string no element will be added to the filter object.
 //
-//MongoDB:
+// MongoDB:
+//
 //	{
 //		key: {"$gte": value as int}
 //	}
@@ -178,10 +188,11 @@ func (i *Filter) GteInt(key string, value string) {
 	}
 }
 
-//LteInt provides $lte for key they have an int datatype.
-//If the value element is "" or not an int formated string no element will be added to the filter object.
+// LteInt provides $lte for key they have an int datatype.
+// If the value element is "" or not an int formated string no element will be added to the filter object.
 //
-//MongoDB:
+// MongoDB:
+//
 //	{
 //		key: {"$lte": value as int}
 //	}
@@ -193,7 +204,7 @@ func (i *Filter) LteInt(key string, value string) {
 	}
 }
 
-//ExpIn TODO
+// ExpIn TODO
 func (i *Filter) ExpIn(key string, value string) {
 	if value != "" {
 		*i = append(*i, bson.E{Key: key, Value: bson.D{{Key: "$in", Value: bson.A{value}}}})

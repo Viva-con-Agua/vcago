@@ -1,23 +1,24 @@
-//Package vmdb
+// Package vmdb
 package vmdb
 
 import "go.mongodb.org/mongo-driver/bson"
 
-//Pipeline represents an helper for handling mongodb pipeline. The Pipe param contains an []bson.D that represents an mongo pipeline.
+// Pipeline represents an helper for handling mongodb pipeline. The Pipe param contains an []bson.D that represents an mongo pipeline.
 type Pipeline struct {
 	Pipe []bson.D
 }
 
-//NewPipeline creates an new Pipeline struct.
+// NewPipeline creates an new Pipeline struct.
 func NewPipeline() *Pipeline {
 	return &Pipeline{
 		Pipe: []bson.D{},
 	}
 }
 
-//Match adds the filter param as $match to the end of the Pipeline struct.
+// Match adds the filter param as $match to the end of the Pipeline struct.
 //
-//MongoDB:
+// MongoDB:
+//
 //	{"$match": filter}
 func (i *Pipeline) Match(filter bson.D) *Pipeline {
 	if filter != nil {
@@ -30,9 +31,10 @@ func (i *Pipeline) Match(filter bson.D) *Pipeline {
 	return i
 }
 
-//LockupUnwind represents the lookup and unwind combination to join an element from a second collection to the result.
+// LockupUnwind represents the lookup and unwind combination to join an element from a second collection to the result.
 //
-//MongoDB:
+// MongoDB:
+//
 //	{
 //		"$lookup":{
 //			"from": from,
@@ -41,8 +43,8 @@ func (i *Pipeline) Match(filter bson.D) *Pipeline {
 //			"as": as
 //		},
 //		"$unwind": {
-// 			"path": "$as",
-// 			"preserveNullAndEmptyArrays": true
+//			"path": "$as",
+//			"preserveNullAndEmptyArrays": true
 //		}
 //	}
 func (i *Pipeline) LookupUnwind(from string, localField string, foreignField string, as string) {
@@ -59,9 +61,10 @@ func (i *Pipeline) LookupUnwind(from string, localField string, foreignField str
 	i.Pipe = append(i.Pipe, unwind)
 }
 
-//Lookup represents an lookup to join an list of elements from a second collection to the result.
+// Lookup represents an lookup to join an list of elements from a second collection to the result.
 //
-//MongoDB:
+// MongoDB:
+//
 //	{
 //		"$lookup":{
 //			"from": from,
@@ -82,10 +85,11 @@ func (i *Pipeline) Lookup(from string, localField string, foreignField string, a
 	i.Pipe = append(i.Pipe, lookup)
 }
 
-//LookupUnwindMatch represents the lookup and unwind combination to join an element from a second collection to the result.
-//The joined element can be filtered by the match param.
+// LookupUnwindMatch represents the lookup and unwind combination to join an element from a second collection to the result.
+// The joined element can be filtered by the match param.
 //
-//MongoDB:
+// MongoDB:
+//
 //	{
 //		"$lookup":{
 //			"from": from,
@@ -95,8 +99,8 @@ func (i *Pipeline) Lookup(from string, localField string, foreignField string, a
 //			"as": as
 //		},
 //		"$unwind": {
-// 			"path": "$as",
-// 			"preserveNullAndEmptyArrays": true
+//			"path": "$as",
+//			"preserveNullAndEmptyArrays": true
 //		}
 //	}
 func (i *Pipeline) LookupUnwindMatch(from string, localField string, foreignField string, as string, match bson.D) {
@@ -114,10 +118,11 @@ func (i *Pipeline) LookupUnwindMatch(from string, localField string, foreignFiel
 	i.Pipe = append(i.Pipe, unwind)
 }
 
-//LookupMatch represents an lookup to join an list of elements from a second collection to the result.
-//The joined elements can be filtered by the match param.
+// LookupMatch represents an lookup to join an list of elements from a second collection to the result.
+// The joined elements can be filtered by the match param.
 //
-//MongoDB:
+// MongoDB:
+//
 //	{
 //		"$lookup":{
 //			"from": from,
@@ -140,10 +145,11 @@ func (i *Pipeline) LookupMatch(from string, localField string, foreignField stri
 	i.Pipe = append(i.Pipe, lookup)
 }
 
-//LookupList represents an lookup to join an list of elements from a second collection to the result.
-//The value of the localField need to be a list of references. If the foreignField value is in the list, the element will joined to the as value.
+// LookupList represents an lookup to join an list of elements from a second collection to the result.
+// The value of the localField need to be a list of references. If the foreignField value is in the list, the element will joined to the as value.
 //
-//MongoDB:
+// MongoDB:
+//
 //	{
 //		"$lookup":{
 //			"from": from,
@@ -174,4 +180,11 @@ func (i *Pipeline) LookupList(from string, localField string, foreignField strin
 		},
 	}}
 	i.Pipe = append(i.Pipe, lookup)
+}
+
+// Append appends the elements in pipe to the the Pipeline object.
+func (i *Pipeline) Append(pipe []bson.D) {
+	for n := range pipe {
+		i.Pipe = append(i.Pipe, pipe[n])
+	}
 }
