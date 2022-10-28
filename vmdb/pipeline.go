@@ -183,8 +183,12 @@ func (i *Pipeline) LookupList(from string, localField string, foreignField strin
 }
 
 // Append appends the elements in pipe to the the Pipeline object.
-func (i *Pipeline) Append(pipe []bson.D) {
+func (i *Pipeline) AppendSlice(pipe []bson.D) {
 	for n := range pipe {
 		i.Pipe = append(i.Pipe, pipe[n])
 	}
+}
+
+func (i *Pipeline) Append(entry bson.D) {
+	i.Pipe = append(i.Pipe, entry)
 }
