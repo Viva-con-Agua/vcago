@@ -210,3 +210,7 @@ func (i *Filter) ExpIn(key string, value string) {
 		*i = append(*i, bson.E{Key: key, Value: bson.D{{Key: "$in", Value: bson.A{value}}}})
 	}
 }
+
+func (i *Filter) Append(value bson.E) {
+	*i = append(*i, value)
+}
