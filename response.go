@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-//Response represents the default api response struct
+// Response represents the default api response struct
 // Status defines the response status code
 // Type defines the response type. Can be success or error
 // Message shows action information
@@ -19,12 +19,23 @@ type Response struct {
 	Payload interface{} `json:"payload,omitempty" bson:"payload,omitempty"`
 }
 
-//Response returns an tuple that can be used with echo.Context.JSON.
+// IDParam data struct for handling '/:id'.
+// ID needs to be a uuid.
+type IDParam struct {
+	ID string `param:"id" validate:"uuid"`
+}
+
+// DeletedResponse used for handling response in deleted case.
+type DeletedResponse struct {
+	ID string `json:"id"`
+}
+
+// Response returns an tuple that can be used with echo.Context.JSON.
 func (i *Response) Response() (int, *Response) {
 	return i.Status, i
 }
 
-//NewResp creates new Response model.
+// NewResp creates new Response model.
 func NewResp(status int, typ string, message string, model string, payload interface{}) *Response {
 	return &Response{
 		Status:  status,
@@ -36,18 +47,19 @@ func NewResp(status int, typ string, message string, model string, payload inter
 
 }
 
-//Error implements an error interface for handling Responses as Error.
-//The function returns an json.Marshal of the error as string.
+// Error implements an error interface for handling Responses as Error.
+// The function returns an json.Marshal of the error as string.
 func (i *Response) Error() string {
 	res, _ := json.Marshal(i)
 	return string(res)
 }
 
-//NewCreated returns a Response model intended for a POST request that creates a model.
+// NewCreated returns a Response model intended for a POST request that creates a model.
 //
-//Status: 201 Created
+// Status: 201 Created
 //
-//JSON:
+// JSON:
+//
 //	{
 //		"type": "success",
 //		"message": "successfully_created",
@@ -58,11 +70,12 @@ func NewCreated(model string, payload interface{}) *Response {
 	return NewResp(http.StatusCreated, "success", "successfully_created", model, payload)
 }
 
-//NewUpdated returns a Response model intended for a PUT request that updates a model.
+// NewUpdated returns a Response model intended for a PUT request that updates a model.
 //
-//Status: 200 OK
+// Status: 200 OK
 //
-//JSON:
+// JSON:
+//
 //	{
 //		"type": "success",
 //		"message": "successfully_updated",
@@ -73,11 +86,12 @@ func NewUpdated(model string, payload interface{}) *Response {
 	return NewResp(http.StatusOK, "success", "successfully_updated", model, payload)
 }
 
-//NewDeleted returns a Response model intended for a DELETE request that deletes a model.
+// NewDeleted returns a Response model intended for a DELETE request that deletes a model.
 //
-//Status: 200 OK
+// Status: 200 OK
 //
-//JSON:
+// JSON:
+//
 //	{
 //		"type": "success",
 //		"message": "successfully_deleted",
@@ -88,11 +102,12 @@ func NewDeleted(model string, payload interface{}) *Response {
 	return NewResp(http.StatusOK, "success", "successfully_deleted", model, payload)
 }
 
-//NewSelected returns a Response model intended for a GET request that selects a model or list.
+// NewSelected returns a Response model intended for a GET request that selects a model or list.
 //
-//Status: 200 OK
+// Status: 200 OK
 //
-//JSON:
+// JSON:
+//
 //	{
 //		"type": "success",
 //		"message": "successfully_selected",
@@ -103,11 +118,12 @@ func NewSelected(model string, payload interface{}) *Response {
 	return NewResp(http.StatusOK, "success", "successfully_selected", model, payload)
 }
 
-//NewExecuted returns an Response model intended for a request that execute an process.
+// NewExecuted returns an Response model intended for a request that execute an process.
 //
-//Status: 200 OK
+// Status: 200 OK
 //
-//JSON:
+// JSON:
+//
 //	{
 //		"type": "success",
 //		"message": "successfully_executed",
@@ -118,11 +134,12 @@ func NewExecuted(model string, payload interface{}) *Response {
 	return NewResp(http.StatusOK, "success", "successfully_executed", model, payload)
 }
 
-//NewBadRequest returns an Response model intended for an bad request response.
+// NewBadRequest returns an Response model intended for an bad request response.
 //
-//Status: 400 Bad Request
+// Status: 400 Bad Request
 //
-//JSON with payload:
+// JSON with payload:
+//
 //	{
 //		"type": "error",
 //		"message": message,
@@ -130,7 +147,8 @@ func NewExecuted(model string, payload interface{}) *Response {
 //		"payload": payload
 //	}
 //
-//JSON without payload:
+// JSON without payload:
+//
 //	{
 //		"type": "error",
 //		"message": message,
@@ -140,12 +158,13 @@ func NewBadRequest(model string, message string, payload ...interface{}) *Respon
 	return NewResp(http.StatusBadRequest, "error", message, model, payload)
 }
 
-//NewInternalServerError returns an Response model intended for an internal server error response.
-//The payload param is optional.
+// NewInternalServerError returns an Response model intended for an internal server error response.
+// The payload param is optional.
 //
-//Status: 500 Internal Server Error
+// Status: 500 Internal Server Error
 //
-//JSON with payload:
+// JSON with payload:
+//
 //	{
 //		"type": "error",
 //		"message": "internal_server_error",
@@ -153,7 +172,8 @@ func NewBadRequest(model string, message string, payload ...interface{}) *Respon
 //		"payload": payload
 //	}
 //
-//JSON without payload:
+// JSON without payload:
+//
 //	{
 //		"type": "error",
 //		"message": "internal_server_error",
@@ -163,11 +183,12 @@ func NewInternalServerError(model string, payload ...interface{}) *Response {
 	return NewResp(http.StatusInternalServerError, "error", "internal_server_error", model, payload)
 }
 
-//NewConflict returns an Response model intended for an conflict error response.
+// NewConflict returns an Response model intended for an conflict error response.
 //
-//Status: 409 Conflict
+// Status: 409 Conflict
 //
-//JSON with payload:
+// JSON with payload:
+//
 //	{
 //		"type": "error",
 //		"message": "conflict",
@@ -175,7 +196,8 @@ func NewInternalServerError(model string, payload ...interface{}) *Response {
 //		"payload": payload
 //	}
 //
-//JSON without payload:
+// JSON without payload:
+//
 //	{
 //		"type": "error",
 //		"message": "conflict",
@@ -185,11 +207,12 @@ func NewConflict(model string, payload ...interface{}) *Response {
 	return NewResp(http.StatusConflict, "error", "conflict", model, payload)
 }
 
-//NewNotFound returns an Response model intended for an not found error response.
+// NewNotFound returns an Response model intended for an not found error response.
 //
-//Status: 404 Not Found
+// Status: 404 Not Found
 //
-//JSON with payload:
+// JSON with payload:
+//
 //	{
 //		"type": "error",
 //		"message": "not_found",
@@ -197,7 +220,8 @@ func NewConflict(model string, payload ...interface{}) *Response {
 //		"payload": payload
 //	}
 //
-//JSON without payload:
+// JSON without payload:
+//
 //	{
 //		"type": "error",
 //		"message": "not_found",
@@ -207,11 +231,12 @@ func NewNotFound(model string, payload ...interface{}) *Response {
 	return NewResp(http.StatusNotFound, "error", "not_found", model, payload)
 }
 
-//NewPermissionDenied returns an Response model intended for an permission denied error response.
+// NewPermissionDenied returns an Response model intended for an permission denied error response.
 //
-//Status: 400 Bad Request
+// Status: 400 Bad Request
 //
-//JSON with payload:
+// JSON with payload:
+//
 //	{
 //		"type": "error",
 //		"message": "permission_denied",
@@ -219,7 +244,8 @@ func NewNotFound(model string, payload ...interface{}) *Response {
 //		"payload": payload
 //	}
 //
-//JSON without payload:
+// JSON without payload:
+//
 //	{
 //		"type": "error",
 //		"message": "permission_denied",
