@@ -13,6 +13,7 @@ type (
 		FirstName     string   `bson:"first_name" json:"first_name"`
 		LastName      string   `bson:"last_name" json:"last_name"`
 		FullName      string   `bson:"full_name" json:"full_name"`
+		RealName      string   `bson:"real_name" json:"real_name"`
 		DisplayName   string   `bson:"display_name" json:"display_name"`
 		Roles         RoleList `json:"system_roles" bson:"system_roles"`
 		Country       string   `bson:"country" json:"country"`
@@ -22,8 +23,8 @@ type (
 	}
 )
 
-//CheckUpdate checks if the lastUpdate time string is older as the users LastUpdate param.
-//If the function return true, the user needs to be updated in this service.
+// CheckUpdate checks if the lastUpdate time string is older as the users LastUpdate param.
+// If the function return true, the user needs to be updated in this service.
 func (i *User) CheckUpdate(lastUpdate string) bool {
 	current, _ := time.Parse(time.RFC3339, i.LastUpdate)
 	last, _ := time.Parse(time.RFC3339, lastUpdate)
@@ -33,7 +34,7 @@ func (i *User) CheckUpdate(lastUpdate string) bool {
 	return false
 }
 
-//Load loads an interface in an vcago.User model
+// Load loads an interface in an vcago.User model
 func (i *User) Load(user interface{}) (err error) {
 	var ok bool
 	if i, ok = user.(*User); !ok {
