@@ -6,18 +6,26 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-//UpdateSet set all values in the database.
+// UpdateSet set all values in the database.
 //
-//MongoDB:
+// MongoDB:
+//
 //	{
 //		"$set": value,
 //		"$set": {
-// 			"modified.updated": time.Now().Unix(),
+//			"modified.updated": time.Now().Unix(),
 //		}
 //	}
 func UpdateSet(value interface{}) bson.D {
 	return bson.D{
 		{Key: "$set", Value: value},
+		{Key: "$set", Value: bson.D{{Key: "modified.updated", Value: time.Now().Unix()}}},
+	}
+}
+
+func UpdateInc(value interface{}) bson.D {
+	return bson.D{
+		{Key: "$inc", Value: value},
 		{Key: "$set", Value: bson.D{{Key: "modified.updated", Value: time.Now().Unix()}}},
 	}
 }
