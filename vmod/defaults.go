@@ -10,3 +10,8 @@ type IDParam struct {
 type DeletedResponse struct {
 	ID string `json:"id"`
 }
+
+// NewDeletedResponse creates a new DeletedResponse type.
+func NewDeletedResponse(id string) *DeletedResponse {
+	return &DeletedResponse{ID: id}
+}
