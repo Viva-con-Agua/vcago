@@ -1,7 +1,9 @@
 // Package vmdb
 package vmdb
 
-import "go.mongodb.org/mongo-driver/bson"
+import (
+	"go.mongodb.org/mongo-driver/bson"
+)
 
 // Pipeline represents an helper for handling mongodb pipeline. The Pipe param contains an []bson.D that represents an mongo pipeline.
 type Pipeline struct {
@@ -59,6 +61,39 @@ func (i *Pipeline) LookupUnwind(from string, localField string, foreignField str
 	unwind := bson.D{{Key: "$unwind", Value: bson.D{{Key: "path", Value: "$" + as}, {Key: "preserveNullAndEmptyArrays", Value: true}}}}
 	i.Pipe = append(i.Pipe, lookup)
 	i.Pipe = append(i.Pipe, unwind)
+}
+
+// Skip used for the mongo function $skip
+func (i *Pipeline) Skip(value int64, defaultValue int64) *Pipeline {
+	var skip = defaultValue
+	if value > 0 {
+		skip = value
+	}
+	skipPipe := bson.D{{Key: "$skip", Value: skip}}
+	i.Pipe = append(i.Pipe, skipPipe)
+	return i
+
+}
+
+// Sort is used for the mongo function $sort. Use Sort object for input.
+func (i *Pipeline) Sort(value bson.D) *Pipeline {
+	if len(value) > 0 {
+		sort := bson.D{{Key: "$sort", Value: value}}
+		i.Pipe = append(i.Pipe, sort)
+	}
+	return i
+}
+
+// Limit is used for the mongo function $limit
+func (i *Pipeline) Limit(value int64, defaultValue int64) *Pipeline {
+	var limit = defaultValue
+	if value > 0 {
+		limit = value
+	}
+	limitPipe := bson.D{{Key: "$limit", Value: limit}}
+	i.Pipe = append(i.Pipe, limitPipe)
+	return i
+
 }
 
 // Lookup represents an lookup to join an list of elements from a second collection to the result.
