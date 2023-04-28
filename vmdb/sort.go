@@ -15,10 +15,10 @@ func NewSort() *Sort {
 // Add adds an sort option to the sort object. The function convert ASC to 1 and DESC to -1.
 func (i *Sort) Add(key string, value string) {
 	if value != "" {
-		if value == "ASC" {
+		if value == "asc" {
 			i.Value = append(i.Value, bson.E{Key: key, Value: 1})
 		}
-		if value == "DESC" {
+		if value == "desc" {
 			i.Value = append(i.Value, bson.E{Key: key, Value: -1})
 		}
 	}

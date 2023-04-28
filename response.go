@@ -12,11 +12,12 @@ import (
 // Model shows the collection that would be attached
 // Payload contains the response model
 type Response struct {
-	Status  int         `json:"-"`
-	Type    string      `json:"type" bson:"type"`
-	Message string      `json:"message" bson:"message"`
-	Model   string      `json:"model,omitempty" bson:"model,omitempty"`
-	Payload interface{} `json:"payload,omitempty" bson:"payload,omitempty"`
+	Status   int         `json:"-"`
+	Type     string      `json:"type" bson:"type"`
+	Message  string      `json:"message" bson:"message"`
+	Model    string      `json:"model,omitempty" bson:"model,omitempty"`
+	Payload  interface{} `json:"payload,omitempty" bson:"payload,omitempty"`
+	ListSize int64       `json:"list_size,omitempty" bson:"list_size,omitempty"`
 }
 
 // Response returns an tuple that can be used with echo.Context.JSON.
@@ -105,6 +106,25 @@ func NewDeleted(model string, payload interface{}) *Response {
 //	}
 func NewSelected(model string, payload interface{}) *Response {
 	return NewResp(http.StatusOK, "success", "successfully_selected", model, payload)
+}
+
+// NewListeded returns a Response model intended for a GET request that selects a list.
+//
+// Status: 200 OK
+//
+// JSON:
+//
+//		{
+//			"type": "success",
+//			"message": "successfully_selected",
+//			"model": model,
+//			"payload": payload,
+//	     "list_size": listSize
+//		}
+func NewListed(model string, payload interface{}, listSize int64) *Response {
+	response := NewResp(http.StatusOK, "success", "successfully_selected", model, payload)
+	response.ListSize = listSize
+	return response
 }
 
 // NewExecuted returns an Response model intended for a request that execute an process.

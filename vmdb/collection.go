@@ -252,6 +252,15 @@ func (i *Collection) TryDeleteMany(ctx context.Context, filter bson.D) (err erro
 	return
 }
 
+// CountDocuments count all documents filtered by the filter object.
+func (i *Collection) CountDocuments(ctx context.Context, filter bson.D) (count int64, err error) {
+	count, err = i.Collection.CountDocuments(ctx, filter)
+	if err != nil {
+		return 0, i.log(err)
+	}
+	return
+}
+
 func (i *Collection) log(err error) error {
 	var lvl = "ERROR"
 	if strings.Contains(err.Error(), "duplicate key error") {

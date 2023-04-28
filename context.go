@@ -182,10 +182,11 @@ func (i *Context) Selected(payload interface{}) (err error) {
 //		"type": "success",
 //		"message": "successfully_selected",
 //		"model": "example_list",
-//		"payload": payload
+//		"payload": payload,
+//	    "list_size": listSize
 //	}
-func (i *Context) Listed(payload interface{}) (err error) {
-	return i.JSON(NewSelected(i.Model+"_list", payload).Response())
+func (i *Context) Listed(payload interface{}, listSize int64) (err error) {
+	return i.JSON(NewListed(i.Model+"_list", payload, listSize).Response())
 }
 
 // Updated returns an Updated response
