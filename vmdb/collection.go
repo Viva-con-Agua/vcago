@@ -63,9 +63,11 @@ func (i *Collection) InsertOne(ctx context.Context, value interface{}) (err erro
 
 // InsertMany inserts a list of value and return an MongoError as error.
 func (i *Collection) InsertMany(ctx context.Context, value []interface{}) (err error) {
-	_, err = i.Collection.InsertMany(ctx, value)
-	if err != nil {
-		return i.log(err)
+	if value != nil && len(value) != 0 {
+		_, err = i.Collection.InsertMany(ctx, value)
+		if err != nil {
+			return i.log(err)
+		}
 	}
 	return
 }
