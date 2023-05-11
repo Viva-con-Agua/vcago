@@ -220,7 +220,7 @@ func (i *Filter) LteInt(key string, value string) {
 	}
 }
 
-// Find searchs for a given string in all the given fields
+// SearchString searchs for a given string in all the given fields
 // If the value search string is "" no search string will be added to the filter object.
 //
 // MongoDB:
@@ -228,7 +228,7 @@ func (i *Filter) LteInt(key string, value string) {
 //	{
 //		key: {"$or": key: {"$regex": ".*value.*"}}
 //	}
-func (i *Filter) Find(fields []string, value string) bson.D {
+func (i *Filter) SearchString(fields []string, value string) bson.D {
 	if value != "" {
 		filter := bson.A{}
 		for _, field := range fields {
