@@ -124,7 +124,7 @@ func (i *Filter) ElemMatchList(list string, key string, value []string) {
 	}
 }
 
-// LikeString use regex for handling a substring matching.
+// LikeString use regex for handling a substring matching at the start of a string.
 //
 // MongoDB:
 //
@@ -135,6 +135,22 @@ func (i *Filter) LikeString(key string, value string) {
 	if value != "" {
 		*i = append(*i, bson.E{Key: key, Value: bson.D{
 			{Key: "$regex", Value: primitive.Regex{Pattern: "^" + regexp.QuoteMeta(value)}},
+			{Key: "$options", Value: "i"},
+		}})
+	}
+}
+
+// ContainsString use regex for handling a substring matching.
+//
+// MongoDB:
+//
+//	{
+//		key: {"$regex": .*value.*}
+//	}
+func (i *Filter) ContainsString(key string, value string) {
+	if value != "" {
+		*i = append(*i, bson.E{Key: key, Value: bson.D{
+			{Key: "$regex", Value: primitive.Regex{Pattern: ".*" + regexp.QuoteMeta(value) + ".*"}},
 			{Key: "$options", Value: "i"},
 		}})
 	}
@@ -202,6 +218,28 @@ func (i *Filter) LteInt(key string, value string) {
 			*i = append(*i, bson.E{Key: key, Value: bson.D{{Key: "$lte", Value: valueInt}}})
 		}
 	}
+}
+
+// SearchString searchs for a given string in all the given fields
+// If the value search string is "" no search string will be added to the filter object.
+//
+// MongoDB:
+//
+//	{
+//		key: {"$or": key: {"$regex": ".*value.*"}}
+//	}
+func (i *Filter) SearchString(fields []string, value string) bson.D {
+	if value != "" {
+		filter := bson.A{}
+		for _, field := range fields {
+			filter = append(filter, bson.D{{Key: field, Value: bson.D{
+				{Key: "$regex", Value: primitive.Regex{Pattern: ".*" + regexp.QuoteMeta(value) + ".*"}},
+				{Key: "$options", Value: "i"},
+			}}})
+		}
+		*i = append(*i, bson.E{Key: "$or", Value: filter})
+	}
+	return bson.D{}
 }
 
 // ExpIn TODO
