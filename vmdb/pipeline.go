@@ -39,8 +39,8 @@ func (i *Pipeline) Match(filter bson.D) *Pipeline {
 //
 //	{"$count": total}
 func (i *Pipeline) Count() *Pipeline {
-	match := bson.D{{Key: "$count", Value: "total"}}
-	i.Pipe = append(i.Pipe, match)
+	count := bson.D{{Key: "$count", Value: "total"}}
+	i.Pipe = append(i.Pipe, count)
 	return i
 }
 

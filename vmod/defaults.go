@@ -15,3 +15,8 @@ type DeletedResponse struct {
 func NewDeletedResponse(id string) *DeletedResponse {
 	return &DeletedResponse{ID: id}
 }
+
+// Count is used for counting results in db aggregations
+type Count struct {
+	Total int32 `json:"total" bson:"total"`
+}
