@@ -33,6 +33,17 @@ func (i *Pipeline) Match(filter bson.D) *Pipeline {
 	return i
 }
 
+// Count adds the value total as $count to the end of the Pipeline struct.
+//
+// MongoDB:
+//
+//	{"$count": total}
+func (i *Pipeline) Count() *Pipeline {
+	match := bson.D{{Key: "$count", Value: "total"}}
+	i.Pipe = append(i.Pipe, match)
+	return i
+}
+
 // LockupUnwind represents the lookup and unwind combination to join an element from a second collection to the result.
 //
 // MongoDB:
