@@ -97,12 +97,9 @@ func SortFields(sort bson.D) bson.D {
 }
 
 // Sort is used for the mongo function $sort. Use Sort object for input.
+// The fields for sorting have to be created via SortFields in first place due to performance (e.g. before lookup)
 func (i *Pipeline) Sort(value bson.D) *Pipeline {
 	if len(value) > 0 {
-		// Create case insensitive fields and pipe them
-		sortFields := SortFields(value)
-		i.Pipe = append(i.Pipe, sortFields)
-
 		// Add case insensitive fields to the sort
 		ciSort := bson.D{}
 		for _, s := range value {
