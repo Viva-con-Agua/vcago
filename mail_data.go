@@ -51,8 +51,8 @@ func (i *MailData) AddLinkToken(token *LinkToken) {
 	i.LinkToken = *token
 }
 
-func (i *MailData) AddContent(content *interface{}) {
-	i.Content = *content
+func (i *MailData) AddContent(content interface{}) {
+	i.Content = content
 }
 
 func (i *MailData) AddCurrentUser(id string, email string, firstName string, lastName string) {
