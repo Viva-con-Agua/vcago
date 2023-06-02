@@ -8,14 +8,15 @@ import (
 )
 
 type MailData struct {
-	TO          string    `json:"to" bson:"to"`
-	Service     string    `json:"service" bson:"service"`
-	Scope       string    `json:"scope" bson:"scope"`
-	Lang        string    `json:"lang" bson:"lang"`
-	User        vmod.User `json:"user" bson:"user"`
-	LinkToken   LinkToken `json:"link_token" bson:"link_token"`
-	CurrentUser MailUser  `json:"current_user" bson:"current_user"`
-	ContactUser MailUser  `json:"contact_user" bson:"contact_user"`
+	TO          string      `json:"to" bson:"to"`
+	Service     string      `json:"service" bson:"service"`
+	Scope       string      `json:"scope" bson:"scope"`
+	Lang        string      `json:"lang" bson:"lang"`
+	User        vmod.User   `json:"user" bson:"user"`
+	Content     interface{} `json:"content" bson:"content"`
+	LinkToken   LinkToken   `json:"link_token" bson:"link_token"`
+	CurrentUser MailUser    `json:"current_user" bson:"current_user"`
+	ContactUser MailUser    `json:"contact_user" bson:"contact_user"`
 }
 
 type MailUser struct {
@@ -48,6 +49,10 @@ func (i *MailData) AddUser(user *vmod.User) {
 
 func (i *MailData) AddLinkToken(token *LinkToken) {
 	i.LinkToken = *token
+}
+
+func (i *MailData) AddContent(content *interface{}) {
+	i.Content = *content
 }
 
 func (i *MailData) AddCurrentUser(id string, email string, firstName string, lastName string) {
