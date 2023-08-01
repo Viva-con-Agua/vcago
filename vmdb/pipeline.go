@@ -87,13 +87,15 @@ func (i *Pipeline) Skip(value int64, defaultValue int64) *Pipeline {
 }
 
 // Create case insensitive fields
-func SortFields(sort bson.D) bson.D {
+func (i *Pipeline) SortFields(sort bson.D) *Pipeline {
 	fields := bson.D{}
 	for _, entry := range sort {
 		lower := bson.E{Key: "lower" + entry.Key, Value: bson.D{{Key: "$toLower", Value: "$" + entry.Key}}}
 		fields = append(fields, lower)
 	}
-	return bson.D{{Key: "$addFields", Value: fields}}
+	sortFields := bson.D{{Key: "$addFields", Value: fields}}
+	i.Pipe = append(i.Pipe, sortFields)
+	return i
 }
 
 // Sort is used for the mongo function $sort. Use Sort object for input.
