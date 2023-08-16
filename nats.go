@@ -2,18 +2,19 @@ package vcago
 
 import (
 	"log"
+	"time"
 
 	"github.com/nats-io/nats.go"
 )
 
-//Nats represents the config struct for Nats service.
+// Nats represents the config struct for Nats service.
 type NatsDAO struct {
 	url        string
 	skip       bool
 	connection *nats.EncodedConn
 }
 
-//Nats used for Nats connection
+// Nats used for Nats connection
 var Nats = new(NatsDAO)
 
 func (i *NatsDAO) Connect() {
@@ -51,4 +52,12 @@ func (i *NatsDAO) Subscribe(message string, catch interface{}) {
 		log.Print(err)
 	}
 
+}
+
+func (i *NatsDAO) Request(message string, request interface{}, response interface{}) (err error) {
+	if i.skip {
+		return
+	}
+	err = i.connection.Request(message, request, response, 1000*time.Millisecond)
+	return
 }
