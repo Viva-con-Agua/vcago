@@ -183,7 +183,7 @@ func (i *Collection) TryUpdateOne(ctx context.Context, filter bson.D, value inte
 
 // UpdateMany updates an slice of interfaces.
 // @TODO: create an result.
-func (i *Collection) UpdateMany(ctx context.Context, filter bson.A, value bson.M) (err error) {
+func (i *Collection) UpdateMany(ctx context.Context, filter bson.D, value bson.D) (err error) {
 	result, err := i.Collection.UpdateMany(
 		ctx,
 		filter,
