@@ -10,6 +10,7 @@ type (
 		Service      string       `json:"service" bson:"service"`
 		Scope        string       `json:"scope" bson:"scope"`
 		Lang         string       `json:"lang" bson:"lang"`
+		Name         string       `json:"name" bson:"name"`
 		Content      vmod.Content `json:"content" bson:"content"`
 		User         vmod.User    `json:"user" bson:"user"`
 		OriginUserID string       `json:"origin_user_id" bson:"origin_user_id"`
@@ -20,6 +21,7 @@ type (
 		Service      string       `json:"service" bson:"service"`
 		Scope        string       `json:"scope" bson:"scope"`
 		Lang         string       `json:"lang" bson:"lang"`
+		Name         string       `json:"name" bson:"name"`
 		Content      vmod.Content `json:"content" bson:"content"`
 		User         vmod.User    `json:"user" bson:"user"`
 		OriginUserID string       `json:"origin_user_id" bson:"origin_user_id"`
@@ -29,10 +31,11 @@ type (
 	}
 )
 
-func NewMNotificationData(to string, service string, scope string, lang string, user_id string) *NotificationData {
+func NewMNotificationData(to string, service string, name string, scope string, lang string, user_id string) *NotificationData {
 	return &NotificationData{
 		To:           to,
 		Service:      service,
+		Name:         name,
 		Scope:        scope,
 		Lang:         lang,
 		OriginUserID: user_id,
@@ -43,6 +46,7 @@ func (i *NotificationData) Response() *NotificationResponse {
 	return &NotificationResponse{
 		To:           i.To,
 		Service:      i.Service,
+		Name:         i.Name,
 		Scope:        i.Scope,
 		Lang:         i.Lang,
 		Content:      i.Content,
