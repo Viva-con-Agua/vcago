@@ -10,6 +10,7 @@ import (
 type MailData struct {
 	TO          string       `json:"to" bson:"to"`
 	Service     string       `json:"service" bson:"service"`
+	Name        string       `json:"name" bson:"name"`
 	Scope       string       `json:"scope" bson:"scope"`
 	Lang        string       `json:"lang" bson:"lang"`
 	User        vmod.User    `json:"user" bson:"user"`
@@ -26,10 +27,11 @@ type MailUser struct {
 	LastName  string `json:"last_name"`
 }
 
-func NewMailData(to string, service string, scope string, lang string) *MailData {
+func NewMailData(to string, service string, name string, scope string, lang string) *MailData {
 	return &MailData{
 		TO:      to,
 		Service: service,
+		Name:    name,
 		Scope:   scope,
 	}
 }
