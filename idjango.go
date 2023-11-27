@@ -3,30 +3,38 @@ package vcago
 import (
 	"bytes"
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"runtime"
+	"time"
 )
 
-//Mongo represents the initial struct for an Mongo connection.
+// Mongo represents the initial struct for an Mongo connection.
 type IDjangoHandler struct {
 	URL    string
 	Key    string
+	Delay  int
 	Export bool
 }
 
-//LoadEnv loads the Host and Port From .env file.
-//Host can be set via NATS_HOST
-//Port can be set via NATS_PORT
+// LoadEnv loads the Host and Port From .env file.
+// Host can be set via NATS_HOST
+// Port can be set via NATS_PORT
 func NewIDjangoHandler() *IDjangoHandler {
 	return &IDjangoHandler{
 		URL:    Settings.String("IDJANGO_URL", "w", "https://idjangostage.vivaconagua.org"),
 		Key:    Settings.String("IDJANGO_KEY", "w", ""),
+		Delay:  Settings.Int("IDJANGO_DELAY", "w", 15),
 		Export: Settings.Bool("IDJANGO_EXPORT", "w", false),
 	}
 }
 
-func (i *IDjangoHandler) Post(data interface{}, path string) (err error) {
+func (i *IDjangoHandler) Post(data interface{}, path string, sleep ...bool) (err error) {
+	if sleep != nil {
+		if sleep[0] == true {
+			time.Sleep(time.Duration(i.Delay) * time.Second)
+		}
+	}
 	if i.Export {
 		var jsonData []byte
 		if jsonData, err = json.Marshal(data); err != nil {
@@ -45,7 +53,45 @@ func (i *IDjangoHandler) Post(data interface{}, path string) (err error) {
 		defer response.Body.Close()
 		if response.StatusCode != 201 {
 			var bodyBytes []byte
-			if bodyBytes, err = ioutil.ReadAll(response.Body); err != nil {
+			if bodyBytes, err = io.ReadAll(response.Body); err != nil {
+				return NewIDjangoError(err, response.StatusCode, nil)
+			}
+			body := new(interface{})
+			if err = json.Unmarshal(bodyBytes, body); err != nil {
+				return NewIDjangoError(err, 500, string(bodyBytes))
+			}
+			return NewIDjangoError(nil, response.StatusCode, body)
+		}
+
+	}
+	return
+}
+
+func (i *IDjangoHandler) Put(data interface{}, path string, sleep ...bool) (err error) {
+	if sleep != nil {
+		if sleep[0] == true {
+			time.Sleep(time.Duration(i.Delay) * time.Second)
+		}
+	}
+	if i.Export {
+		var jsonData []byte
+		if jsonData, err = json.Marshal(data); err != nil {
+			return
+		}
+		request := new(http.Request)
+		request, err = http.NewRequest("PUT", i.URL+path, bytes.NewBuffer(jsonData))
+		request.Header.Set("Content-Type", "application/json; charset=UTF-8")
+		request.Header.Set("Authorization", "Api-Key "+i.Key)
+		client := &http.Client{}
+		response := new(http.Response)
+		response, err = client.Do(request)
+		if err != nil {
+			return NewIDjangoError(err, 500, nil)
+		}
+		defer response.Body.Close()
+		if response.StatusCode != 200 {
+			var bodyBytes []byte
+			if bodyBytes, err = io.ReadAll(response.Body); err != nil {
 				return NewIDjangoError(err, response.StatusCode, nil)
 			}
 			body := new(interface{})
