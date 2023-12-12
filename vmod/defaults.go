@@ -1,5 +1,7 @@
 package vmod
 
+import "mime/multipart"
+
 // IDParam data struct for handling '/:id'.
 // ID needs to be a uuid.
 type IDParam struct {
@@ -23,4 +25,9 @@ func NewDeletedResponse(id string) *DeletedResponse {
 // Count is used for counting results in db aggregations
 type Count struct {
 	Total int32 `json:"total" bson:"total"`
+}
+
+type File struct {
+	File   multipart.File
+	Header *multipart.FileHeader
 }

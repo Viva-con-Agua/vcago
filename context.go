@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/Viva-con-Agua/vcago/vmod"
 	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -52,6 +53,14 @@ func (i *Context) BindAndValidate(body interface{}) error {
 		return NewError(err, "DEBUG", "validation").AddModel(i.Model)
 	}
 	return nil
+}
+
+func (i *Context) BindFile() (file *vmod.File, err error) {
+	file = new(vmod.File)
+	if file.File, file.Header, err = i.Request().FormFile("file"); err != nil {
+		return nil, NewError(err, "DEBUG", "bind").AddModel(i.Model)
+	}
+	return
 }
 
 // AccessToken binds the accessToken form an cookie into the token interface.

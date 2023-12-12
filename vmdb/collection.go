@@ -25,6 +25,11 @@ type DeletedResult struct {
 	ID    string `json:"id"`
 }
 
+var (
+	FSChunkCollection *Collection
+	FSFileCollection  *Collection
+)
+
 // CreateIndex creates an index for a given collection.
 func (i *Collection) CreateIndex(field string, unique bool) *Collection {
 	mod := mongo.IndexModel{

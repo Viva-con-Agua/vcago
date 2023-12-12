@@ -1,11 +1,16 @@
 package vmdb
 
 import (
+	"bytes"
 	"context"
+	"io"
 	"log"
 
 	"github.com/Viva-con-Agua/vcago"
+	"github.com/Viva-con-Agua/vcago/vmod"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/gridfs"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
@@ -64,6 +69,8 @@ func (i *Database) Connect() *Database {
 	}
 	i.Database = client.Database(i.Name)
 	log.Print("MongoDB successfully connected!")
+	FSChunkCollection = i.Collection("fs.chunk")
+	FSFileCollection = i.Collection("fs.file")
 	return i
 }
 
@@ -75,4 +82,49 @@ func (i *Database) Collection(name string) *Collection {
 		DatabaseName: i.Name,
 		Collection:   i.Database.Collection(name),
 	}
+}
+
+func (i *Database) UploadFile(file *vmod.File, id string) (err error) {
+	buf := bytes.NewBuffer(nil)
+	if _, err = io.Copy(buf, file.File); err != nil {
+		return
+	}
+	bucket := new(gridfs.Bucket)
+	if bucket, err = gridfs.NewBucket(i.Database); err != nil {
+		return
+	}
+	uploadStream := new(gridfs.UploadStream)
+	if uploadStream, err = bucket.OpenUploadStreamWithID(id, file.Header.Filename); err != nil {
+		return
+	}
+	defer uploadStream.Close()
+	if _, err = uploadStream.Write(buf.Bytes()); err != nil {
+		return
+	}
+	return
+}
+
+func (i *Database) DownloadFile(id string) (result []byte, err error) {
+	var buf bytes.Buffer
+	var bucket *gridfs.Bucket
+	if bucket, err = gridfs.NewBucket(i.Database); err != nil {
+		return
+	}
+	if _, err = bucket.DownloadToStream(id, &buf); err != nil {
+		return
+	}
+	result = buf.Bytes()
+	return
+}
+
+func (i *Database) DeleteFile(ctx context.Context, id string) (err error) {
+	filterChunk := bson.D{{Key: "file_id", Value: id}}
+	filterFile := bson.D{{Key: "_id", Value: id}}
+	if err = FSChunkCollection.DeleteOne(ctx, filterChunk); err != nil {
+		return
+	}
+	if err = FSFileCollection.DeleteOne(ctx, filterFile); err != nil {
+		return
+	}
+	return
 }
