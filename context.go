@@ -55,9 +55,21 @@ func (i *Context) BindAndValidate(body interface{}) error {
 	return nil
 }
 
-func (i *Context) BindFile() (file *vmod.File, err error) {
+// BindFormDataAndValidate
+func (i *Context) BindFormDataAndValidate(key string, body interface{}) error {
+	jsonData := i.FormValue(key)
+	if err := json.Unmarshal([]byte(jsonData), body); err != nil {
+		return NewError(err, "DEBUG", "bind").AddModel(i.Model)
+	}
+	if err := i.Validate(body); err != nil {
+		return NewError(err, "DEBUG", "validation").AddModel(i.Model)
+	}
+	return nil
+}
+
+func (i *Context) BindFormDataFile(key string) (file *vmod.File, err error) {
 	file = new(vmod.File)
-	if file.File, file.Header, err = i.Request().FormFile("file"); err != nil {
+	if file.File, file.Header, err = i.Request().FormFile(key); err != nil {
 		return nil, NewError(err, "DEBUG", "bind").AddModel(i.Model)
 	}
 	return
