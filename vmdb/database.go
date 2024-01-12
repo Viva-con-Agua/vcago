@@ -70,7 +70,7 @@ func (i *Database) Connect() *Database {
 	i.Database = client.Database(i.Name)
 	log.Print("MongoDB successfully connected!")
 	FSChunkCollection = i.Collection("fs.chunks")
-	FSFileCollection = i.Collection("fs.file")
+	FSFileCollection = i.Collection("fs.files")
 	return i
 }
 
