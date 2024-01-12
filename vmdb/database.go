@@ -118,7 +118,7 @@ func (i *Database) DownloadFile(id string) (result []byte, err error) {
 }
 
 func (i *Database) DeleteFile(ctx context.Context, id string) (err error) {
-	filterChunk := bson.D{{Key: "file_id", Value: id}}
+	filterChunk := bson.D{{Key: "files_id", Value: id}}
 	filterFile := bson.D{{Key: "_id", Value: id}}
 	if err = FSChunkCollection.DeleteOne(ctx, filterChunk); err != nil {
 		return
