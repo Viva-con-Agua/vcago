@@ -1,7 +1,7 @@
 package vmod
 
 type ModelID struct {
-	MID  string `json:"m_id" bson:"m_id"`
+	MID  string `json:"id" bson:"id"`
 	Type string `json:"type" bson:"type"`
 }
 
