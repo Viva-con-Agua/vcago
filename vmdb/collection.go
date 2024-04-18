@@ -105,14 +105,35 @@ func (i *Collection) AggregateOne(ctx context.Context, pipeline mongo.Pipeline, 
 
 // Find use the mongo.Collection.Find function for select a list of elements from a collection.
 // The result will decode in the value param. So the value need to be a slice struct.
-func (i *Collection) Find(ctx context.Context, filter bson.D, value interface{}) (err error) {
+func (i *Collection) Find(ctx context.Context, filter bson.D, value interface{}, opts ...*options.FindOptions) (err error) {
 	var cursor *mongo.Cursor
-	cursor, err = i.Collection.Find(ctx, filter)
+	cursor, err = i.Collection.Find(ctx, filter, opts...)
 	if err != nil {
 		return i.log(err)
 	}
 	if err = cursor.All(ctx, value); err != nil {
 		return i.log(err)
+	}
+	return
+}
+
+// FindAndCount use the mongo.Collection.Find function for select a list of elements from a collection.
+// The result will decode in the value param. So the value need to be a slice struct.
+// The return value listSize counts all elements in the collection that match the given filter.
+func (i *Collection) FindAndCount(ctx context.Context, filter bson.D, value interface{}, opts ...*options.FindOptions) (listSize int64, err error) {
+	var cursor *mongo.Cursor
+	cursor, err = i.Collection.Find(ctx, filter, opts...)
+	if err != nil {
+		return 0, i.log(err)
+	}
+	if err = cursor.All(ctx, value); err != nil {
+		return 0, i.log(err)
+	}
+	opts_count := options.Count().SetHint("_id_")
+	if cursor, cErr := i.Collection.CountDocuments(ctx, filter, opts_count); cErr != nil {
+		listSize = 0
+	} else {
+		listSize = cursor
 	}
 	return
 }
@@ -296,10 +317,7 @@ func (i *Collection) log(err error) error {
 func ErrNoDocuments(err error) bool {
 	if err != nil {
 		e := err.(*vcago.Error)
-		if e.Err == mongo.ErrNoDocuments {
-			return true
-		}
-		return false
+		return e.Err == mongo.ErrNoDocuments
 	}
 	return false
 }
