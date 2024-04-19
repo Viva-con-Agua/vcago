@@ -42,7 +42,7 @@ func (i *Filter) EqualString(key string, value string) {
 //		key: {"$or": value}
 //	}
 func (i *Filter) EqualStringList(key string, value []string) {
-	if value != nil && len(value) != 0 {
+	if len(value) != 0 {
 		filter := bson.A{}
 		for n := range value {
 			filter = append(filter, bson.D{{Key: key, Value: value[n]}})
