@@ -321,3 +321,13 @@ func ErrNoDocuments(err error) bool {
 	}
 	return false
 }
+
+func ErrDuplicateKey(err error) bool {
+	if err != nil {
+		e := err.(*vcago.Error)
+		if strings.Contains(e.Err.Error(), "duplicate key error") {
+			return true
+		}
+	}
+	return false
+}
