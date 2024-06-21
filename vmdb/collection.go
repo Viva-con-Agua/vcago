@@ -87,9 +87,9 @@ func (i *Collection) FindOne(ctx context.Context, filter bson.D, value interface
 
 // AggregateOne use an aggregation pipeline for creating an struct that contains the information from more than one collection.
 // If the result cursor contains objects, the first one will be decoded in the value param.
-func (i *Collection) AggregateOne(ctx context.Context, pipeline mongo.Pipeline, value interface{}) (err error) {
+func (i *Collection) AggregateOne(ctx context.Context, pipeline mongo.Pipeline, value interface{}, opts ...*options.AggregateOptions) (err error) {
 	var cursor *mongo.Cursor
-	cursor, err = i.Collection.Aggregate(ctx, pipeline)
+	cursor, err = i.Collection.Aggregate(ctx, pipeline, opts...)
 	if err != nil {
 		return i.log(err)
 	}
@@ -139,8 +139,8 @@ func (i *Collection) FindAndCount(ctx context.Context, filter bson.D, value inte
 }
 
 // Aggregate use the mongo.Collection.Aggregate function for select a list of elements using an aggregation pipeline.
-func (i *Collection) Aggregate(ctx context.Context, filter mongo.Pipeline, value interface{}) (err error) {
-	cursor, err := i.Collection.Aggregate(ctx, filter)
+func (i *Collection) Aggregate(ctx context.Context, filter mongo.Pipeline, value interface{}, opts ...*options.AggregateOptions) (err error) {
+	cursor, err := i.Collection.Aggregate(ctx, filter, opts...)
 	if err != nil {
 		return i.log(err)
 	}
