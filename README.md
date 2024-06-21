@@ -2,26 +2,13 @@
 The package contains standard functions that are used in the Viva-con-Agua API services and is on the [echo web framework](https://github.com/labstack/echo)
 
 
-## PACKAGE
-
-### Basic Webserver
-
-
-#### Setup in server.go
+### Setup Webserver
 
 ```
 func main() {
-    e := echo.New()
-    e.HTTPErrorHandler = vcago.HTTPErrorHandler    
-    e.Validator = vcago.JSONValidator
-    e.Use(vcago.CORS.Init())
-    e.Use(vcago.Logger.Init()) 
+    e := vcago.NewServer()
     ...
-
-    ...
-	appPort := vcago.Config.GetEnvString("APP_PORT", "n", "1323")
-	e.Logger.Fatal(e.Start(":" + appPort))
-
+    e.Run()
 }
 ```
 #### edit the .env file
