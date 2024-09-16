@@ -6,7 +6,7 @@ import (
 	"github.com/google/uuid"
 )
 
-//Role represents an struct for handling access roles.
+// Role represents an struct for handling access roles.
 type Role struct {
 	ID     string `json:"id" bson:"_id"`
 	Name   string `json:"name" bson:"name"`
@@ -14,14 +14,22 @@ type Role struct {
 	Root   string `json:"root" bson:"root"`
 	UserID string `json:"user_id" bson:"user_id"`
 }
+type WebAppRole struct {
+	Name  string    `json:"name" validate:"required"`
+	Roles []AppRole `json:"roles" validate:"required"`
+}
+type AppRole struct {
+	Label string `json:"label" validate:"required"`
+	Role  string `json:"role" validate:"required"`
+}
 
-//RoleListCookie used for the access_token.
+// RoleListCookie used for the access_token.
 type RoleListCookie []string
 
-//RoleList represents an slice of Role
+// RoleList represents an slice of Role
 type RoleList []Role
 
-//Cookie return an slice of strings they contains all role names.
+// Cookie return an slice of strings they contains all role names.
 func (i *RoleList) Cookie() (r *RoleListCookie) {
 	r = new(RoleListCookie)
 	for n := range *i {
@@ -30,8 +38,8 @@ func (i *RoleList) Cookie() (r *RoleListCookie) {
 	return
 }
 
-//CheckRoot check if the RoleListCookie object contains an role in the Root param.
-//So you can check if an user is allow to give an other user an role.
+// CheckRoot check if the RoleListCookie object contains an role in the Root param.
+// So you can check if an user is allow to give an other user an role.
 func (i *RoleListCookie) CheckRoot(role *Role) bool {
 	for n := range *i {
 		if strings.Contains(role.Root, (*i)[n]) {
@@ -41,20 +49,24 @@ func (i *RoleListCookie) CheckRoot(role *Role) bool {
 	return false
 }
 
-//Validate check if an RoleListCookie contains an role in the roles string. We seperate the role by ;.
+// Validate check if an RoleListCookie contains an role in the roles string. We seperate the role by ;.
 //
-//Example:
+// Example:
+//
 //	"admin;employee"
 func (i *RoleListCookie) Validate(roles string) bool {
 	for n := range *i {
-		if strings.Contains(roles, (*i)[n]) {
-			return true
+		validations := strings.Split(roles, ";")
+		for _, validation := range validations {
+			if validation == (*i)[n] {
+				return true
+			}
 		}
 	}
 	return false
 }
 
-//In check if a the RoleList contains an role.
+// In check if a the RoleList contains an role.
 func (i *RoleList) In(role string) bool {
 	for n := range *i {
 		if (*i)[n].Name == role {
@@ -84,14 +96,14 @@ func (i *RoleList) CheckRoot(role *Role) bool {
 }
 */
 
-//Append append a Role role to a RoleList i. If i contains the role, nothing happend.
+// Append append a Role role to a RoleList i. If i contains the role, nothing happend.
 func (i *RoleList) Append(role *Role) {
 	if !i.In(role.Name) {
 		*i = append(*i, *role)
 	}
 }
 
-//RoleMember represents the member role.
+// RoleMember represents the member role.
 func RoleMember(userID string) *Role {
 	return &Role{
 		ID:     uuid.NewString(),
@@ -102,7 +114,7 @@ func RoleMember(userID string) *Role {
 	}
 }
 
-//RoleAdmin represents the admin role.
+// RoleAdmin represents the admin role.
 func RoleAdmin(userID string) *Role {
 	return &Role{
 		ID:     uuid.NewString(),
@@ -113,7 +125,7 @@ func RoleAdmin(userID string) *Role {
 	}
 }
 
-//RoleEmployee represents the employee role.
+// RoleEmployee represents the employee role.
 func RoleEmployee(userID string) *Role {
 	return &Role{
 		ID:     uuid.NewString(),
