@@ -1,11 +1,19 @@
 package vmod
 
-import "mime/multipart"
+import (
+	"mime/multipart"
+
+	"go.mongodb.org/mongo-driver/bson"
+)
 
 // IDParam data struct for handling '/:id'.
 // ID needs to be a uuid.
 type IDParam struct {
 	ID string `param:"id" validate:"uuid"`
+}
+
+func (i *IDParam) Filter() bson.D {
+	return bson.D{{Key: "_id", Value: i.ID}}
 }
 
 // DeletedResponse used for handling response in deleted case.
