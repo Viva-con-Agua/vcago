@@ -90,7 +90,7 @@ func (i *Pipeline) Skip(value int64, defaultValue int64) *Pipeline {
 func (i *Pipeline) SortFields(sort bson.D) *Pipeline {
 	fields := bson.D{}
 	for _, entry := range sort {
-		lower := bson.E{Key: "lower" + entry.Key, Value: bson.D{{Key: "$toLower", Value: "$" + entry.Key}}}
+		lower := bson.E{Key: "lower" + entry.Key, Value: bson.D{{Key: "$toLower", Value: bson.D{{Key: "$toString", Value: "$" + entry.Key}}}}}
 		fields = append(fields, lower)
 	}
 	sortFields := bson.D{{Key: "$addFields", Value: fields}}
