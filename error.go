@@ -98,7 +98,7 @@ func (i *Error) MongoResponse() (int, interface{}) {
 		response := &Response{
 			Status:  http.StatusNotFound,
 			Type:    "error",
-			Message: "docmument not found",
+			Message: "document not found",
 			Model:   i.Model,
 		}
 		return response.Response()
