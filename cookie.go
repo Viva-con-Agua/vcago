@@ -8,14 +8,14 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
-//CookieConfig represents the cookie parameters
+// CookieConfig represents the cookie parameters
 type CookieConfig struct {
 	SameSite http.SameSite
 	Secure   bool
 	HttpOnly bool
 }
 
-//NewCookieConfig loads the cookie parameters from the .env file and return a new CookieConfig.
+// NewCookieConfig loads the cookie parameters from the .env file and return a new CookieConfig.
 func NewCookieConfig() *CookieConfig {
 	cookieSameSite := Settings.String("COOKIE_SAME_SITE", "w", "strict")
 	sameSite := http.SameSiteStrictMode
@@ -35,7 +35,7 @@ func NewCookieConfig() *CookieConfig {
 	}
 }
 
-//Cookie returns an http.Cookie using the CookieConfig parameters.
+// Cookie returns an http.Cookie using the CookieConfig parameters.
 // @param name  cookie name
 // @param value cookie value
 func (i *CookieConfig) Cookie(name string, value string) *http.Cookie {
@@ -49,8 +49,8 @@ func (i *CookieConfig) Cookie(name string, value string) *http.Cookie {
 	}
 }
 
-//AccessCookieConfig can with echo for middleware.JWTWithConfig(vmod.AccessConfig) to handling access controll
-//The token is reachable with c.Get("token")
+// AccessCookieConfig can with echo for middleware.JWTWithConfig(vmod.AccessConfig) to handling access controll
+// The token is reachable with c.Get("token")
 func AccessCookieMiddleware(i jwt.Claims) echo.MiddlewareFunc {
 	return middleware.JWTWithConfig(
 		middleware.JWTConfig{
@@ -61,8 +61,8 @@ func AccessCookieMiddleware(i jwt.Claims) echo.MiddlewareFunc {
 		})
 }
 
-//RefreshCookieConfig can with echo for middleware.JWTWithConfig(vmod.AccessConfig) to handling access controll
-//The token is reachable with c.Get("token")
+// RefreshCookieConfig can with echo for middleware.JWTWithConfig(vmod.AccessConfig) to handling access controll
+// The token is reachable with c.Get("token")
 func RefreshCookieMiddleware() echo.MiddlewareFunc {
 	return middleware.JWTWithConfig(
 		middleware.JWTConfig{

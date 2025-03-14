@@ -31,7 +31,7 @@ func NewIDjangoHandler() *IDjangoHandler {
 
 func (i *IDjangoHandler) Post(data interface{}, path string, sleep ...bool) (err error) {
 	if sleep != nil {
-		if sleep[0] == true {
+		if sleep[0] {
 			time.Sleep(time.Duration(i.Delay) * time.Second)
 		}
 	}
@@ -69,7 +69,7 @@ func (i *IDjangoHandler) Post(data interface{}, path string, sleep ...bool) (err
 
 func (i *IDjangoHandler) Put(data interface{}, path string, sleep ...bool) (err error) {
 	if sleep != nil {
-		if sleep[0] == true {
+		if sleep[0] {
 			time.Sleep(time.Duration(i.Delay) * time.Second)
 		}
 	}

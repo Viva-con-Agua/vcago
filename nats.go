@@ -17,6 +17,7 @@ type NatsDAO struct {
 // Nats used for Nats connection
 var Nats = new(NatsDAO)
 
+// Connect connects the NatsDAO to a nats-server
 func (i *NatsDAO) Connect() {
 	i.skip = Settings.Bool("NATS_SKIP", "n", false)
 	if i.skip {
@@ -32,7 +33,6 @@ func (i *NatsDAO) Connect() {
 		log.Fatal(err)
 	}
 	log.Print("nats successfully connected!")
-	return
 }
 
 func (i *NatsDAO) Publish(message string, body interface{}) {

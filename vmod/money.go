@@ -1,6 +1,9 @@
 package vmod
 
 // Money represent the simple Money object. The Amount is a cent representation.
+// @Description Beispiel eines benutzerdefinierten Geldtyps
+// @property amount float64 "Betrag"
+// @property currency string "Währung"
 type Money struct {
 	Amount   int64  `bson:"amount" json:"amount"`
 	Currency string `bson:"currency" json:"currency" validate:"required"`

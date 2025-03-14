@@ -53,7 +53,10 @@ func (i *MailSend) Post(mailData *MailData) {
 		return
 	}
 	request := new(http.Request)
-	request, err = http.NewRequest("POST", i.URL+"/mails/send", bytes.NewBuffer(jsonData))
+	if request, err = http.NewRequest("POST", i.URL+"/mails/send", bytes.NewBuffer(jsonData)); err != nil {
+		log.Print(err)
+		return
+	}
 	request.Header.Set("Content-Type", "application/json; charset=UTF-8")
 	request.Header.Set("Authorization", "Bearer "+i.Key)
 	client := &http.Client{}
@@ -78,8 +81,6 @@ func (i *MailSend) Post(mailData *MailData) {
 		log.Print(NewIDjangoError(nil, response.StatusCode, body))
 		return
 	}
-	return
-
 }
 
 func (i *MailSend) PostCycularMail(data *CycularMail) {
@@ -90,7 +91,10 @@ func (i *MailSend) PostCycularMail(data *CycularMail) {
 		return
 	}
 	request := new(http.Request)
-	request, err = http.NewRequest("POST", i.URL+"/mails/send/cycle", bytes.NewBuffer(jsonData))
+	if request, err = http.NewRequest("POST", i.URL+"/mails/send/cycle", bytes.NewBuffer(jsonData)); err != nil {
+		log.Print(err)
+		return
+	}
 	request.Header.Set("Content-Type", "application/json; charset=UTF-8")
 	request.Header.Set("Authorization", "Bearer "+i.Key)
 	client := &http.Client{}
@@ -115,5 +119,4 @@ func (i *MailSend) PostCycularMail(data *CycularMail) {
 		log.Print(NewIDjangoError(nil, response.StatusCode, body))
 		return
 	}
-	return
 }

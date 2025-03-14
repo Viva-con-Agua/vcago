@@ -95,7 +95,7 @@ func (i *Context) AccessToken(token interface{}) (err error) {
 func (i *Context) RefreshTokenID() (string, error) {
 	token := i.Get("token").(*jwt.Token)
 	if token == nil {
-		return "", errors.New("No user in Conext")
+		return "", errors.New("no user in context")
 	}
 	return token.Claims.(*RefreshToken).UserID, nil
 }
@@ -239,6 +239,22 @@ func (i *Context) Updated(payload interface{}) (err error) {
 //		"payload": payload
 //	}
 func (i *Context) Deleted(payload interface{}) (err error) {
+	return i.JSON(NewDeleted(i.Model, payload).Response())
+}
+
+// Synced returns an sync response.
+//
+// Status: 200 OK
+//
+// JSON:  model == "example"
+//
+//	{
+//		"type": "success",
+//		"message": "successfully_synced",
+//		"model": "example",
+//		"payload": payload
+//	}
+func (i *Context) Synced(payload interface{}) (err error) {
 	return i.JSON(NewDeleted(i.Model, payload).Response())
 }
 

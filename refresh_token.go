@@ -25,7 +25,7 @@ func NewRefreshToken(userID string) *RefreshToken {
 func RefreshCookieUserID(c echo.Context) (string, error) {
 	token := c.Get("token").(*jwt.Token)
 	if token == nil {
-		return "", errors.New("No user in context")
+		return "", errors.New("no user in context")
 	}
 	return token.Claims.(*RefreshToken).UserID, nil
 }
