@@ -255,7 +255,7 @@ func (i *Context) Deleted(payload interface{}) (err error) {
 //		"payload": payload
 //	}
 func (i *Context) Synced(payload interface{}) (err error) {
-	return i.JSON(NewDeleted(i.Model, payload).Response())
+	return i.JSON(NewSynced(i.Model, payload).Response())
 }
 
 // SuccessResponse returns an new success 200 OK response with an custom message string.
@@ -276,16 +276,4 @@ func (i *Context) SuccessResponse(status int, message string, model string, payl
 
 func (i *Context) BadRequest(message string, payload interface{}) (err error) {
 	return i.JSON(NewResp(http.StatusBadRequest, "bad_request", message, i.Model, payload).Response())
-}
-
-func getCollectionFromDupKey(err error) string {
-	temp := strings.Split(err.Error(), "collection: ")
-	temp = strings.Split(temp[1], " key:")
-	return temp[0]
-}
-
-func getKeyFromDupKey(err error) string {
-	temp := strings.Split(err.Error(), "key: {")
-	temp = strings.Split(temp[1], "}")
-	return temp[0]
 }

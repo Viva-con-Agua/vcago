@@ -11,6 +11,7 @@ import (
 // Message shows action information
 // Model shows the collection that would be attached
 // Payload contains the response model
+// @Model: Response Model
 type Response struct {
 	Status   int         `json:"-"`
 	Type     string      `json:"type" bson:"type"`
@@ -44,6 +45,12 @@ func (i *Response) Error() string {
 	return string(res)
 }
 
+type ResponseCreated struct {
+	Response
+	Type    string `example:"success"`
+	Message string `example:"successfully_created"`
+}
+
 // NewCreated returns a Response model intended for a POST request that creates a model.
 //
 // Status: 201 Created
@@ -58,6 +65,12 @@ func (i *Response) Error() string {
 //	}
 func NewCreated(model string, payload interface{}) *Response {
 	return NewResp(http.StatusCreated, "success", "successfully_created", model, payload)
+}
+
+type ResponseUpdated struct {
+	Response
+	Type    string `example:"success"`
+	Message string `example:"successfully_updated"`
 }
 
 // NewUpdated returns a Response model intended for a PUT request that updates a model.
@@ -76,6 +89,12 @@ func NewUpdated(model string, payload interface{}) *Response {
 	return NewResp(http.StatusOK, "success", "successfully_updated", model, payload)
 }
 
+type ResponseDeleted struct {
+	Response
+	Type    string `example:"success"`
+	Message string `example:"successfully_deleted"`
+}
+
 // NewDeleted returns a Response model intended for a DELETE request that deletes a model.
 //
 // Status: 200 OK
@@ -92,6 +111,12 @@ func NewDeleted(model string, payload interface{}) *Response {
 	return NewResp(http.StatusOK, "success", "successfully_deleted", model, payload)
 }
 
+type ResponseSelected struct {
+	Response
+	Type    string `example:"success"`
+	Message string `example:"successfully_selected"`
+}
+
 // NewSelected returns a Response model intended for a GET request that selects a model or list.
 //
 // Status: 200 OK
@@ -106,6 +131,12 @@ func NewDeleted(model string, payload interface{}) *Response {
 //	}
 func NewSelected(model string, payload interface{}) *Response {
 	return NewResp(http.StatusOK, "success", "successfully_selected", model, payload)
+}
+
+type ResponseListed struct {
+	Response
+	Type    string `example:"success"`
+	Message string `example:"successfully_selected"`
 }
 
 // NewListeded returns a Response model intended for a GET request that selects a list.
@@ -127,6 +158,12 @@ func NewListed(model string, payload interface{}, listSize int64) *Response {
 	return response
 }
 
+type ResponseSynced struct {
+	Response
+	Type    string `example:"success"`
+	Message string `example:"successfully_synced"`
+}
+
 // NewExecuted returns an Response model intended for a request that execute an process.
 //
 // Status: 200 OK
@@ -139,8 +176,8 @@ func NewListed(model string, payload interface{}, listSize int64) *Response {
 //		"model": model,
 //		"payload": payload
 //	}
-func NewExecuted(model string, payload interface{}) *Response {
-	return NewResp(http.StatusOK, "success", "successfully_executed", model, payload)
+func NewSynced(model string, payload interface{}) *Response {
+	return NewResp(http.StatusOK, "success", "successfully_synced", model, payload)
 }
 
 // NewBadRequest returns an Response model intended for an bad request response.

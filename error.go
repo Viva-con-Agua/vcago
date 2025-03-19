@@ -81,6 +81,18 @@ func (i *Error) Response() (int, interface{}) {
 	}
 }
 
+type MongoDuplicatedErrorResponse struct {
+	Response
+	Type    string `example:"error"`
+	Message string `example:"duplicate key error: <key>"`
+}
+
+type MongoNoDocumentErrorResponse struct {
+	Response
+	Type    string `example:"error"`
+	Message string `example:"document not found"`
+}
+
 func (i *Error) MongoResponse() (int, interface{}) {
 	if strings.Contains(i.Message, "duplicate key error") {
 		temp := strings.Split(i.Message, "key: {")
@@ -107,10 +119,24 @@ func (i *Error) MongoResponse() (int, interface{}) {
 	}
 }
 
+type BindErrorResponse struct {
+	Response
+	Type    string   `example:"error"`
+	Message string   `example:"bind error"`
+	Payload []string `example:"cant bind string to int"`
+}
+
 func (i *Error) BindResponse() (int, interface{}) {
 	response := new(ValidationError)
 	response.Bind(i.Err)
 	return NewBadRequest(i.Model, "bind error", response).Response()
+}
+
+type ValidationErrorResponse struct {
+	Response
+	Type    string   `example:"error"`
+	Message string   `example:"validate error"`
+	Payload []string `example:"currency is required"`
 }
 
 func (i *Error) ValidationResponse() (int, interface{}) {
