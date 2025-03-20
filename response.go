@@ -204,6 +204,12 @@ func NewBadRequest(model string, message string, payload ...interface{}) *Respon
 	return NewResp(http.StatusBadRequest, "error", message, model, payload)
 }
 
+type ResponseInternalServerError struct {
+	Response
+	Type    string `example:"error"`
+	Message string `example:"internal_server_error"`
+}
+
 // NewInternalServerError returns an Response model intended for an internal server error response.
 // The payload param is optional.
 //
@@ -275,6 +281,12 @@ func NewConflict(model string, payload ...interface{}) *Response {
 //	}
 func NewNotFound(model string, payload ...interface{}) *Response {
 	return NewResp(http.StatusNotFound, "error", "not_found", model, payload)
+}
+
+type ResponsePermissionDenied struct {
+	Response
+	Type    string `example:"error"`
+	Message string `example:"permission_denied"`
 }
 
 // NewPermissionDenied returns an Response model intended for an permission denied error response.
