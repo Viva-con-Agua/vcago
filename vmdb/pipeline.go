@@ -87,11 +87,20 @@ func (i *Pipeline) Skip(value int64, defaultValue int64) *Pipeline {
 }
 
 // Create case insensitive fields
-func (i *Pipeline) SortFields(sort bson.D) *Pipeline {
+func (i *Pipeline) SortFields(sort bson.D, option ...bool) *Pipeline {
 	fields := bson.D{}
+	number := false
+	if len(option) > 0 {
+		number = option[0]
+	}
 	for _, entry := range sort {
-		lower := bson.E{Key: "lower" + entry.Key, Value: bson.D{{Key: "$toLower", Value: bson.D{{Key: "$toString", Value: "$" + entry.Key}}}}}
-		fields = append(fields, lower)
+		if number {
+			lower := bson.E{Key: "lower" + entry.Key, Value: "$" + entry.Key}
+			fields = append(fields, lower)
+		} else {
+			lower := bson.E{Key: "lower" + entry.Key, Value: bson.D{{Key: "$toLower", Value: bson.D{{Key: "$toString", Value: "$" + entry.Key}}}}}
+			fields = append(fields, lower)
+		}
 	}
 	sortFields := bson.D{{Key: "$addFields", Value: fields}}
 	i.Pipe = append(i.Pipe, sortFields)
