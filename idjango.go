@@ -56,8 +56,8 @@ func (i *IDjangoHandler) Post(data interface{}, path string, sleep ...bool) (err
 			if bodyBytes, err = io.ReadAll(response.Body); err != nil {
 				return NewIDjangoError(err, response.StatusCode, nil)
 			}
-			body := new(interface{})
-			if err = json.Unmarshal(bodyBytes, body); err != nil {
+			var body interface{}
+			if err = json.Unmarshal(bodyBytes, &body); err != nil {
 				return NewIDjangoError(err, 500, string(bodyBytes))
 			}
 			return NewIDjangoError(nil, response.StatusCode, body)
@@ -109,6 +109,13 @@ func NewIDjangoError(err error, code int, body interface{}) *IDjangoError {
 	var message = ""
 	if err != nil {
 		message = err.Error()
+	}
+	if message == "" && body != nil {
+		if bodyMap, ok := body.(map[string]interface{}); ok {
+			if errMsg, exists := bodyMap["error_message"].(string); exists && errMsg != "" {
+				message = errMsg
+			}
+		}
 	}
 	pc := make([]uintptr, 10)
 	runtime.Callers(3, pc)
