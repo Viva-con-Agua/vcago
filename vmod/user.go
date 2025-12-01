@@ -56,7 +56,7 @@ func (i *User) Load(user interface{}) (err error) {
 	return
 }
 
-func walkStruct(data interface{}, prefix string, result *map[string]string) map[string]string {
+func WalkStruct(data interface{}, prefix string, result *map[string]string) map[string]string {
 	walk(reflect.ValueOf(data), prefix, *result)
 	return *result
 }
